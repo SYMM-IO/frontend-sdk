@@ -41,7 +41,7 @@ export function useWriteSign(): {
   const functionName = "storeSignatureForCurrentVersion";
 
   const constructCall = useCallback(
-    async (sign: string): ConstructCallReturnType => {
+    async (sign: string): Promise<ConstructCallReturnType> => {
       try {
         if (!Contract || !sign || !isSupportedChainId) {
           throw new Error("Missing dependencies.");

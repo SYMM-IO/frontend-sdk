@@ -54,38 +54,39 @@ export function useCancelQuote(
 
   const market = useMarket(quote?.marketId);
 
-  const preConstructCall = useCallback(async (): ConstructCallReturnType => {
-    try {
-      if (
-        !account ||
-        !Contract ||
-        !quote ||
-        !functionName ||
-        !isSupportedChainId
-      ) {
-        throw new Error("Missing dependencies.");
-      }
+  const preConstructCall =
+    useCallback(async (): Promise<ConstructCallReturnType> => {
+      try {
+        if (
+          !account ||
+          !Contract ||
+          !quote ||
+          !functionName ||
+          !isSupportedChainId
+        ) {
+          throw new Error("Missing dependencies.");
+        }
 
-      const args = [BigInt(quote.id)];
-      return {
-        args,
-        functionName,
-        config: {
-          account,
-          to: Contract.address,
-          data: encodeFunctionData({
-            abi: Contract.abi,
-            functionName,
-            args,
-          }),
-          value: BigInt(0),
-        },
-      };
-    } catch (error) {
-      if (error && typeof error === "string") throw new Error(error);
-      throw new Error("error3");
-    }
-  }, [account, Contract, quote, functionName, isSupportedChainId]);
+        const args = [BigInt(quote.id)];
+        return {
+          args,
+          functionName,
+          config: {
+            account,
+            to: Contract.address,
+            data: encodeFunctionData({
+              abi: Contract.abi,
+              functionName,
+              args,
+            }),
+            value: BigInt(0),
+          },
+        };
+      } catch (error) {
+        if (error && typeof error === "string") throw new Error(error);
+        throw new Error("error3");
+      }
+    }, [account, Contract, quote, functionName, isSupportedChainId]);
 
   const constructCall = useMultiAccountable(preConstructCall);
 

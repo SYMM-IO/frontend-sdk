@@ -33,33 +33,34 @@ export function useAddAccountToContract(accountName: string): {
 
   const functionName = "addAccount";
 
-  const constructCall = useCallback(async (): ConstructCallReturnType => {
-    try {
-      if (!Contract || !accountName || !isSupportedChainId || !account) {
-        throw new Error("Missing dependencies.");
+  const constructCall =
+    useCallback(async (): Promise<ConstructCallReturnType> => {
+      try {
+        if (!Contract || !accountName || !isSupportedChainId || !account) {
+          throw new Error("Missing dependencies.");
+        }
+
+        const args = [accountName];
+
+        return {
+          args,
+          functionName,
+          config: {
+            account,
+            to: Contract.address,
+            data: encodeFunctionData({
+              abi: Contract.abi,
+              functionName,
+              args,
+            }),
+            value: BigInt(0),
+          },
+        };
+      } catch (error) {
+        if (error && typeof error === "string") throw new Error(error);
+        throw new Error("error3");
       }
-
-      const args = [accountName];
-
-      return {
-        args,
-        functionName,
-        config: {
-          account,
-          to: Contract.address,
-          data: encodeFunctionData({
-            abi: Contract.abi,
-            functionName,
-            args,
-          }),
-          value: BigInt(0),
-        },
-      };
-    } catch (error) {
-      if (error && typeof error === "string") throw new Error(error);
-      throw new Error("error3");
-    }
-  }, [Contract, account, accountName, isSupportedChainId]);
+    }, [Contract, account, accountName, isSupportedChainId]);
 
   return useMemo(() => {
     if (!account || !chainId || !Contract || !accountName) {

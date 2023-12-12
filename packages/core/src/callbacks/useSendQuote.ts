@@ -201,94 +201,95 @@ export function useSentQuoteCallback(): {
     if (freeCap.minus(notionalValue).lte(0)) throw new Error("Cap is reached.");
   }, [appName, baseUrl, market, openPriceBN, quantityAsset, updateNotionalCap]);
 
-  const preConstructCall = useCallback(async (): ConstructCallReturnType => {
-    try {
-      if (
-        !account ||
-        !DiamondContract ||
-        !marketId ||
-        !collateralCurrency ||
-        !partyBWhiteList ||
-        !isSupportedChainId ||
-        !cva ||
-        !mm ||
-        !lf
-      ) {
-        throw new Error("Missing dependencies.");
+  const preConstructCall =
+    useCallback(async (): Promise<ConstructCallReturnType> => {
+      try {
+        if (
+          !account ||
+          !DiamondContract ||
+          !marketId ||
+          !collateralCurrency ||
+          !partyBWhiteList ||
+          !isSupportedChainId ||
+          !cva ||
+          !mm ||
+          !lf
+        ) {
+          throw new Error("Missing dependencies.");
+        }
+
+        await getNotionalCap();
+        const { signature, price } = await getSignature();
+
+        if (!signature) {
+          throw new Error("Missing signature for constructCall.");
+        }
+
+        const muonNotionalValue = toBN(quantityAsset).times(price);
+        const muonCVA = muonNotionalValue.times(cva).div(100).div(leverage);
+        const muonMM = muonNotionalValue.times(mm).div(100).div(leverage);
+        const muonLF = muonNotionalValue.times(lf).div(100).div(leverage);
+
+        const deadline =
+          orderType === OrderType.MARKET
+            ? Math.floor(Date.now() / 1000) + MARKET_ORDER_DEADLINE
+            : Math.floor(Date.now() / 1000) + LIMIT_ORDER_DEADLINE;
+
+        const args = [
+          partyBWhiteList,
+          BigInt(marketId),
+          (positionType === PositionType.SHORT ? 1 : 0) as number,
+          (orderType === OrderType.MARKET ? 1 : 0) as number,
+          BigInt(openPriceWied),
+          BigInt(toWei(quantityAsset, 18)),
+          orderType === OrderType.MARKET ? toWei(muonCVA) : toWei(lockedCVA),
+          orderType === OrderType.MARKET ? toWei(muonMM) : toWei(lockedMM),
+          orderType === OrderType.MARKET ? toWei(muonLF) : toWei(lockedLF),
+          toWei(maxInterestRate),
+          BigInt(deadline),
+          signature,
+        ];
+
+        return {
+          args,
+          functionName,
+          config: {
+            account,
+            to: DiamondContract.address,
+            data: encodeFunctionData({
+              abi: DiamondContract.abi,
+              functionName,
+              args,
+            }),
+            value: BigInt(0),
+          },
+        };
+      } catch (error) {
+        if (error && typeof error === "string") throw new Error(error);
+        throw new Error("error3");
       }
-
-      await getNotionalCap();
-      const { signature, price } = await getSignature();
-
-      if (!signature) {
-        throw new Error("Missing signature for constructCall.");
-      }
-
-      const muonNotionalValue = toBN(quantityAsset).times(price);
-      const muonCVA = muonNotionalValue.times(cva).div(100).div(leverage);
-      const muonMM = muonNotionalValue.times(mm).div(100).div(leverage);
-      const muonLF = muonNotionalValue.times(lf).div(100).div(leverage);
-
-      const deadline =
-        orderType === OrderType.MARKET
-          ? Math.floor(Date.now() / 1000) + MARKET_ORDER_DEADLINE
-          : Math.floor(Date.now() / 1000) + LIMIT_ORDER_DEADLINE;
-
-      const args = [
-        partyBWhiteList,
-        BigInt(marketId),
-        (positionType === PositionType.SHORT ? 1 : 0) as number,
-        (orderType === OrderType.MARKET ? 1 : 0) as number,
-        BigInt(openPriceWied),
-        BigInt(toWei(quantityAsset, 18)),
-        orderType === OrderType.MARKET ? toWei(muonCVA) : toWei(lockedCVA),
-        orderType === OrderType.MARKET ? toWei(muonMM) : toWei(lockedMM),
-        orderType === OrderType.MARKET ? toWei(muonLF) : toWei(lockedLF),
-        toWei(maxInterestRate),
-        BigInt(deadline),
-        signature,
-      ];
-
-      return {
-        args,
-        functionName,
-        config: {
-          account,
-          to: DiamondContract.address,
-          data: encodeFunctionData({
-            abi: DiamondContract.abi,
-            functionName,
-            args,
-          }),
-          value: BigInt(0),
-        },
-      };
-    } catch (error) {
-      if (error && typeof error === "string") throw new Error(error);
-      throw new Error("error3");
-    }
-  }, [
-    account,
-    DiamondContract,
-    marketId,
-    collateralCurrency,
-    partyBWhiteList,
-    isSupportedChainId,
-    cva,
-    mm,
-    lf,
-    getNotionalCap,
-    getSignature,
-    quantityAsset,
-    leverage,
-    orderType,
-    positionType,
-    openPriceWied,
-    lockedCVA,
-    lockedMM,
-    lockedLF,
-    maxInterestRate,
-  ]);
+    }, [
+      account,
+      DiamondContract,
+      marketId,
+      collateralCurrency,
+      partyBWhiteList,
+      isSupportedChainId,
+      cva,
+      mm,
+      lf,
+      getNotionalCap,
+      getSignature,
+      quantityAsset,
+      leverage,
+      orderType,
+      positionType,
+      openPriceWied,
+      lockedCVA,
+      lockedMM,
+      lockedLF,
+      maxInterestRate,
+    ]);
 
   const constructCall = useMultiAccountable(preConstructCall);
 

@@ -85,162 +85,169 @@ export function useTransferCollateral(
       : "";
   }, [activeTab]);
 
-  const constructCall = useCallback(async (): ConstructCallReturnType => {
-    try {
-      if (
-        !account ||
-        !activeAccount ||
-        !DiamondContract ||
-        !MultiAccountContract ||
-        !collateralCurrency ||
-        !typedAmount ||
-        !isSupportedChainId
-      ) {
-        throw new Error("Missing dependencies.");
-      }
-      const amount = new BigNumber(typedAmount)
-        .shiftedBy(collateralCurrency.decimals)
-        .toFixed();
-      const collateralShiftAmount = `1e${collateralCurrency.decimals}`;
+  const constructCall =
+    useCallback(async (): Promise<ConstructCallReturnType> => {
+      try {
+        if (
+          !account ||
+          !activeAccount ||
+          !DiamondContract ||
+          !MultiAccountContract ||
+          !collateralCurrency ||
+          !typedAmount ||
+          !isSupportedChainId
+        ) {
+          throw new Error("Missing dependencies.");
+        }
+        const amount = new BigNumber(typedAmount)
+          .shiftedBy(collateralCurrency.decimals)
+          .toFixed();
+        const collateralShiftAmount = `1e${collateralCurrency.decimals}`;
 
-      if (activeTab === TransferTab.DEPOSIT) {
-        const args = [activeAccount.accountAddress as Address, BigInt(amount)];
-        const functionName = "depositAndAllocateForAccount";
+        if (activeTab === TransferTab.DEPOSIT) {
+          const args = [
+            activeAccount.accountAddress as Address,
+            BigInt(amount),
+          ];
+          const functionName = "depositAndAllocateForAccount";
 
-        return {
-          args,
-          functionName,
-          config: {
-            account,
-            to: MultiAccountContract.address,
-            data: encodeFunctionData({
-              abi: MultiAccountContract.abi,
-              functionName,
-              args,
-            }),
-            value: BigInt(0),
-          },
-        };
-      } else if (activeTab === TransferTab.DEALLOCATE) {
-        const fixedAmount = formatPrice(
-          typedAmount,
-          collateralCurrency.decimals
-        );
-        const amount = new BigNumber(fixedAmount).times(1e18).toFixed();
+          return {
+            args,
+            functionName,
+            config: {
+              account,
+              to: MultiAccountContract.address,
+              data: encodeFunctionData({
+                abi: MultiAccountContract.abi,
+                functionName,
+                args,
+              }),
+              value: BigInt(0),
+            },
+          };
+        } else if (activeTab === TransferTab.DEALLOCATE) {
+          const fixedAmount = formatPrice(
+            typedAmount,
+            collateralCurrency.decimals
+          );
+          const amount = new BigNumber(fixedAmount).times(1e18).toFixed();
 
-        const { signature } = await getSignature();
+          const { signature } = await getSignature();
 
-        if (!signature) {
-          throw new Error(`Unable to fetch Muon signature`);
+          if (!signature) {
+            throw new Error(`Unable to fetch Muon signature`);
+          }
+
+          const diamondArgs = [BigInt(amount), signature] as const;
+
+          const calldata = encodeFunctionData({
+            abi: DiamondContract.abi,
+            functionName: "deallocate",
+            args: [...diamondArgs],
+          });
+
+          const args = [activeAccount.accountAddress as Address, [calldata]];
+          const functionName = "_call";
+
+          return {
+            args,
+            functionName,
+            config: {
+              account,
+              value: BigInt(0),
+              to: MultiAccountContract.address,
+              data: encodeFunctionData({
+                abi: MultiAccountContract.abi,
+                functionName,
+                args,
+              }),
+            },
+          };
+        } else if (activeTab === TransferTab.WITHDRAW) {
+          const fixedAmount = formatPrice(
+            typedAmount,
+            collateralCurrency.decimals
+          );
+          const amount = new BigNumber(fixedAmount)
+            .times(collateralShiftAmount)
+            .toFixed();
+          const args = [
+            activeAccount.accountAddress as Address,
+            BigInt(amount),
+          ];
+          const functionName = "withdrawFromAccount";
+          return {
+            args,
+            functionName,
+            config: {
+              account,
+              to: MultiAccountContract.address,
+              data: encodeFunctionData({
+                abi: MultiAccountContract.abi,
+                functionName,
+                args,
+              }),
+              value: BigInt(0),
+            },
+          };
+        } else if (activeTab === TransferTab.ALLOCATE) {
+          const fixedAmount = formatPrice(
+            typedAmount,
+            collateralCurrency.decimals
+          );
+          const amount = new BigNumber(fixedAmount).times(1e18).toFixed();
+          const diamondArgs = [BigInt(amount)] as const;
+
+          const calldata = encodeFunctionData({
+            abi: DiamondContract.abi,
+            functionName: "allocate",
+            args: [...diamondArgs],
+          });
+
+          const args = [activeAccount.accountAddress as Address, [calldata]];
+          const functionName = "_call";
+
+          return {
+            args,
+            functionName,
+            config: {
+              account,
+              value: BigInt(0),
+              to: MultiAccountContract.address,
+              data: encodeFunctionData({
+                abi: MultiAccountContract.abi,
+                functionName,
+                args,
+              }),
+            },
+          };
         }
 
-        const diamondArgs = [BigInt(amount), signature] as const;
-
-        const calldata = encodeFunctionData({
-          abi: DiamondContract.abi,
-          functionName: "deallocate",
-          args: [...diamondArgs],
-        });
-
-        const args = [activeAccount.accountAddress as Address, [calldata]];
-        const functionName = "_call";
-
         return {
-          args,
-          functionName,
-          config: {
-            account,
-            value: BigInt(0),
-            to: MultiAccountContract.address,
-            data: encodeFunctionData({
-              abi: MultiAccountContract.abi,
-              functionName,
-              args,
-            }),
-          },
-        };
-      } else if (activeTab === TransferTab.WITHDRAW) {
-        const fixedAmount = formatPrice(
-          typedAmount,
-          collateralCurrency.decimals
-        );
-        const amount = new BigNumber(fixedAmount)
-          .times(collateralShiftAmount)
-          .toFixed();
-        const args = [activeAccount.accountAddress as Address, BigInt(amount)];
-        const functionName = "withdrawFromAccount";
-        return {
-          args,
-          functionName,
+          args: [],
+          functionName: "",
           config: {
             account,
             to: MultiAccountContract.address,
-            data: encodeFunctionData({
-              abi: MultiAccountContract.abi,
-              functionName,
-              args,
-            }),
+            data: "0x",
             value: BigInt(0),
           },
         };
-      } else if (activeTab === TransferTab.ALLOCATE) {
-        const fixedAmount = formatPrice(
-          typedAmount,
-          collateralCurrency.decimals
-        );
-        const amount = new BigNumber(fixedAmount).times(1e18).toFixed();
-        const diamondArgs = [BigInt(amount)] as const;
-
-        const calldata = encodeFunctionData({
-          abi: DiamondContract.abi,
-          functionName: "allocate",
-          args: [...diamondArgs],
-        });
-
-        const args = [activeAccount.accountAddress as Address, [calldata]];
-        const functionName = "_call";
-
-        return {
-          args,
-          functionName,
-          config: {
-            account,
-            value: BigInt(0),
-            to: MultiAccountContract.address,
-            data: encodeFunctionData({
-              abi: MultiAccountContract.abi,
-              functionName,
-              args,
-            }),
-          },
-        };
+      } catch (error) {
+        if (error && typeof error === "string") throw new Error(error);
+        throw new Error("error3");
       }
-
-      return {
-        args: [],
-        functionName: "",
-        config: {
-          account,
-          to: MultiAccountContract.address,
-          data: "0x",
-          value: BigInt(0),
-        },
-      };
-    } catch (error) {
-      if (error && typeof error === "string") throw new Error(error);
-      throw new Error("error3");
-    }
-  }, [
-    account,
-    activeAccount,
-    DiamondContract,
-    MultiAccountContract,
-    collateralCurrency,
-    typedAmount,
-    isSupportedChainId,
-    activeTab,
-    getSignature,
-  ]);
+    }, [
+      account,
+      activeAccount,
+      DiamondContract,
+      MultiAccountContract,
+      collateralCurrency,
+      typedAmount,
+      isSupportedChainId,
+      activeTab,
+      getSignature,
+    ]);
 
   return useMemo(() => {
     if (

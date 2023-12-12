@@ -23,7 +23,7 @@ export enum TransactionCallbackState {
 export async function createTransactionCallback(
   functionName: string,
   Contract: NonNullable<ReturnType<typeof useContract>>,
-  constructCall: () => ConstructCallReturnType,
+  constructCall: () => Promise<ConstructCallReturnType>,
   addTransaction: ReturnType<typeof useTransactionAdder>,
   addRecentTransaction: ReturnType<typeof useAddRecentTransaction>,
   txInfo: TransactionInfo,
@@ -46,6 +46,7 @@ export async function createTransactionCallback(
       ...request,
       gas: calculateGasMargin(gas),
     });
+    console.log({ data });
     addTransaction(data.hash, txInfo, summary);
     addRecentTransaction({
       hash: data.hash,

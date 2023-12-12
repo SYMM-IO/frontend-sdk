@@ -148,72 +148,73 @@ export function useClosePosition(
     }
   }, [Contract, activeAccountAddress, chainId, fakeSignature, quote]);
 
-  const preConstructCall = useCallback(async (): ConstructCallReturnType => {
-    try {
-      if (
-        !account ||
-        !Contract ||
-        !quote ||
-        !quantityToClose ||
-        !isSupportedChainId
-      ) {
-        throw new Error("Missing dependencies for constructCall.");
+  const preConstructCall =
+    useCallback(async (): Promise<ConstructCallReturnType> => {
+      try {
+        if (
+          !account ||
+          !Contract ||
+          !quote ||
+          !quantityToClose ||
+          !isSupportedChainId
+        ) {
+          throw new Error("Missing dependencies for constructCall.");
+        }
+
+        const { signature } = await getSignature();
+        if (!signature) {
+          throw new Error("Missing signature for constructCall.");
+        }
+
+        const deadline =
+          orderType === OrderType.MARKET
+            ? Math.floor(Date.now() / 1000) + MARKET_ORDER_DEADLINE
+            : Math.floor(Date.now() / 1000) + LIMIT_ORDER_DEADLINE;
+
+        const args = [
+          BigInt(quote.id),
+          BigInt(closePriceWied),
+          BigInt(toWei(quantityToClose)),
+          orderType === OrderType.MARKET ? 1 : 0,
+          BigInt(deadline),
+          signature,
+        ] as const;
+
+        return {
+          args,
+          functionName,
+          config: {
+            account,
+            to: Contract.address,
+            data: encodeFunctionData({
+              abi: Contract.abi,
+              functionName,
+              args: [
+                BigInt(quote.id),
+                BigInt(closePriceWied),
+                BigInt(toWei(quantityToClose)),
+                orderType === OrderType.MARKET ? 1 : 0,
+                BigInt(deadline),
+                signature,
+              ],
+            }),
+            value: BigInt(0),
+          },
+        };
+      } catch (error) {
+        if (error && typeof error === "string") throw new Error(error);
+        throw new Error("error3");
       }
-
-      const { signature } = await getSignature();
-      if (!signature) {
-        throw new Error("Missing signature for constructCall.");
-      }
-
-      const deadline =
-        orderType === OrderType.MARKET
-          ? Math.floor(Date.now() / 1000) + MARKET_ORDER_DEADLINE
-          : Math.floor(Date.now() / 1000) + LIMIT_ORDER_DEADLINE;
-
-      const args = [
-        BigInt(quote.id),
-        BigInt(closePriceWied),
-        BigInt(toWei(quantityToClose)),
-        orderType === OrderType.MARKET ? 1 : 0,
-        BigInt(deadline),
-        signature,
-      ] as const;
-
-      return {
-        args,
-        functionName,
-        config: {
-          account,
-          to: Contract.address,
-          data: encodeFunctionData({
-            abi: Contract.abi,
-            functionName,
-            args: [
-              BigInt(quote.id),
-              BigInt(closePriceWied),
-              BigInt(toWei(quantityToClose)),
-              orderType === OrderType.MARKET ? 1 : 0,
-              BigInt(deadline),
-              signature,
-            ],
-          }),
-          value: BigInt(0),
-        },
-      };
-    } catch (error) {
-      if (error && typeof error === "string") throw new Error(error);
-      throw new Error("error3");
-    }
-  }, [
-    account,
-    Contract,
-    quote,
-    quantityToClose,
-    isSupportedChainId,
-    getSignature,
-    orderType,
-    closePriceWied,
-  ]);
+    }, [
+      account,
+      Contract,
+      quote,
+      quantityToClose,
+      isSupportedChainId,
+      getSignature,
+      orderType,
+      closePriceWied,
+    ]);
 
   const constructCall = useMultiAccountable(preConstructCall);
 

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo } from "react";
 import isEmpty from "lodash/isEmpty.js";
 import { useWebSocket } from "react-use-websocket/dist/lib/use-websocket.js";
+import { JsonValue } from "react-use-websocket/dist/lib/types";
+
 // const useWebSocket = useWebSocketRaw.useWebSocket;
 
 import { getNotifications } from "./thunks";
@@ -72,7 +74,7 @@ function useNotificationsWebSocket() {
       const json = {
         address: [activeAccountAddress],
       };
-      sendJsonMessage(json);
+      sendJsonMessage(json as unknown as JsonValue);
     }
   }, [activeAccountAddress, sendJsonMessage]);
 

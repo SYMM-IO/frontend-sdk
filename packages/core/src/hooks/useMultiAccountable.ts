@@ -8,7 +8,7 @@ import useWagmi from "../lib/hooks/useWagmi";
 import { ContractFunctionRevertedError, BaseError } from "viem";
 
 export function useMultiAccountable(
-  constructCall: () => ConstructCallReturnType,
+  constructCall: () => Promise<ConstructCallReturnType>,
   disable?: boolean
 ) {
   const activeAccountAddress = useActiveAccountAddress();
@@ -16,7 +16,7 @@ export function useMultiAccountable(
   const MultiAccountContract = useMultiAccountContract();
   const DiamondContract = useDiamondContract();
 
-  return useCallback(async (): ConstructCallReturnType => {
+  return useCallback(async (): Promise<ConstructCallReturnType> => {
     if (disable || GLOBAL_MULTI_ACCOUNTABLE_PAUSED)
       return await constructCall();
 
