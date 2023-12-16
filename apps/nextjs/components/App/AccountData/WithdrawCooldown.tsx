@@ -172,7 +172,7 @@ export default function WithdrawCooldown({
         <RemainingWrap>
           <Text filling>
             <span>
-              Withdraw {fixedAccountBalance} {collateralCurrency.symbol}
+              Withdraw {fixedAccountBalance} {collateralCurrency?.symbol}
             </span>
             <Timer />
           </Text>
