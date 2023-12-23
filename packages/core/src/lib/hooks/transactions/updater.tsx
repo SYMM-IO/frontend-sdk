@@ -49,12 +49,19 @@ export default function Updater({
   const lastBlockNumber = useBlockNumber();
 
   const getReceipt = useCallback(
-    (hash: string) => {
-      if (!provider || !chainId) throw new Error("No provider or chainId");
-      return waitForTransaction({
-        hash: hash as Address,
-        onReplaced: (transaction) => console.log("OnReplace", transaction),
-      });
+    async (hash: string) => {
+      try {
+        if (!provider || !chainId) throw new Error("No provider or chainId");
+        return await waitForTransaction({
+          hash: hash as Address,
+          onReplaced: (transaction) => console.log("OnReplace", transaction),
+        });
+      } catch (event){
+        if (event) {
+          console.log("event", event);
+        }
+      }
+
     },
     [chainId, provider]
   );

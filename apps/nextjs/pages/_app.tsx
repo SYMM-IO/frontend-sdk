@@ -15,6 +15,7 @@ import Popups from "components/Popups";
 import { BlockNumberProvider } from "@symmio-client/core/lib/hooks/useBlockNumber";
 import ConfigSDKComponent from "./configSDK";
 import { setUseWhatChange } from "@simbathesailor/use-what-changed";
+import ErrorBoundaries from "components/App/ErrorBoundaries";
 
 const Updaters = dynamic(() => import("@symmio-client/core/state/updaters"), {
   ssr: false,
@@ -29,6 +30,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <ReduxProvider store={store}>
+     <ErrorBoundaries>
       <PersistGate loading={null} persistor={persistor}>
         <WagmiConfig config={wagmiConfig}>
           <RainbowKitProvider
@@ -60,6 +62,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           </RainbowKitProvider>
         </WagmiConfig>
       </PersistGate>
+     </ErrorBoundaries>
     </ReduxProvider>
   );
 }

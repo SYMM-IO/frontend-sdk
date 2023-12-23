@@ -46,10 +46,12 @@ export async function createTransactionCallback(
       ...request,
       gas: calculateGasMargin(gas),
     });
-    const waitForTrx = await waitForTransaction({
+    console.log("orig hash", data.hash)
+    const wait = await waitForTransaction({
       hash: data?.hash,
       onReplaced: (replace)=>{
         data.hash = replace.transaction.hash;
+        console.log('replaced hash', data.hash);
       }
     })
     addTransaction(data.hash, txInfo, summary);
