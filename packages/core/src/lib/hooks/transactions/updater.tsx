@@ -56,12 +56,11 @@ export default function Updater({
           hash: hash as Address,
           onReplaced: (transaction) => console.log("OnReplace", transaction),
         });
-      } catch (event){
+      } catch (event) {
         if (event) {
           console.log("event", event);
         }
       }
-
     },
     [chainId, provider]
   );

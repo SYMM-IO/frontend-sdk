@@ -30,39 +30,39 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <ReduxProvider store={store}>
-     <ErrorBoundaries>
-      <PersistGate loading={null} persistor={persistor}>
-        <WagmiConfig config={wagmiConfig}>
-          <RainbowKitProvider
-            chains={chains}
-            initialChain={initialChain}
-            showRecentTransactions={true}
-            theme={darkTheme({
-              accentColor: "#AEE3FA",
-              accentColorForeground: "#151A1F",
-              borderRadius: "small",
-              fontStack: "system",
-              overlayBlur: "small",
-            })}
-          >
-            <ThemeProvider>
-              <ThemedGlobalStyle />
-              <ModalProvider backgroundComponent={ModalBackground}>
-                <Toaster position="bottom-center" />
-                <BlockNumberProvider>
-                  <Popups />
-                  <Updaters />
-                  <ConfigSDKComponent />
-                  <Layout>
-                    <Component {...pageProps} />
-                  </Layout>
-                </BlockNumberProvider>
-              </ModalProvider>
-            </ThemeProvider>
-          </RainbowKitProvider>
-        </WagmiConfig>
-      </PersistGate>
-     </ErrorBoundaries>
+      <ErrorBoundaries>
+        <PersistGate loading={null} persistor={persistor}>
+          <WagmiConfig config={wagmiConfig}>
+            <RainbowKitProvider
+              chains={chains}
+              initialChain={initialChain}
+              showRecentTransactions={true}
+              theme={darkTheme({
+                accentColor: "#AEE3FA",
+                accentColorForeground: "#151A1F",
+                borderRadius: "small",
+                fontStack: "system",
+                overlayBlur: "small",
+              })}
+            >
+              <ThemeProvider>
+                <ThemedGlobalStyle />
+                <ModalProvider backgroundComponent={ModalBackground}>
+                  <Toaster position="bottom-center" />
+                  <BlockNumberProvider>
+                    <Popups />
+                    <Updaters />
+                    <ConfigSDKComponent />
+                    <Layout>
+                      <Component {...pageProps} />
+                    </Layout>
+                  </BlockNumberProvider>
+                </ModalProvider>
+              </ThemeProvider>
+            </RainbowKitProvider>
+          </WagmiConfig>
+        </PersistGate>
+      </ErrorBoundaries>
     </ReduxProvider>
   );
 }
