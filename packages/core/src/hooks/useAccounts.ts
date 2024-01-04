@@ -1,10 +1,16 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Address, useContractRead } from "wagmi";
 
 import { Account } from "../types/user";
 import { useMultiAccountContract } from "./useContract";
 import { useSupportedChainId } from "../lib/hooks/useSupportedChainId";
 import useActiveWagmi from "../lib/hooks/useActiveWagmi";
+import { BalanceInfosType } from "../state/user/types";
+import { ApiState } from "../types/api";
+import { useHedgerInfo } from "../state/hedger/hooks";
+import { useMultiAccountAddress } from "../state/chains";
+import { AppThunkDispatch, useAppDispatch } from "../state";
+import { getBalanceInfo } from "../state/user/thunks";
 
 export function useUserAccounts() {
   const { account } = useActiveWagmi();
@@ -78,4 +84,36 @@ export function useAccountsLength(): {
     }),
     [data, isError, isLoading, isSuccess]
   );
+}
+
+export function useBalanceInfos() {
+  const [balanceInfo, setBalanceInfo] = useState<BalanceInfosType>({});
+  const [balanceInfoStatus, setBalanceInfoStatus] = useState<ApiState>(
+    ApiState.OK
+  );
+
+  const hedger = useHedgerInfo();
+  const { baseUrl, clientName } = hedger || {};
+  const { account, chainId } = useActiveWagmi();
+  const MULTI_ACCOUNT_ADDRESS = useMultiAccountAddress();
+  const multiAccountAddress = chainId
+    ? MULTI_ACCOUNT_ADDRESS[chainId]
+    : undefined;
+  const dispatch: AppThunkDispatch = useAppDispatch();
+
+  useEffect(() => {
+    setBalanceInfoStatus(ApiState.LOADING);
+    dispatch(getBalanceInfo({ account, multiAccountAddress, baseUrl }))
+      .unwrap()
+      .then((res) => {
+        setBalanceInfo(res);
+        setBalanceInfoStatus(ApiState.OK);
+      })
+      .catch(() => {
+        setBalanceInfo({});
+        setBalanceInfoStatus(ApiState.ERROR);
+      });
+  }, [account, baseUrl, clientName, dispatch, multiAccountAddress]);
+
+  return { balanceInfo, balanceInfoStatus };
 }

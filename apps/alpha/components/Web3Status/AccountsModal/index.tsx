@@ -14,6 +14,7 @@ import {
   useModalOpen,
 } from "@symmio/frontend-sdk/state/application/hooks";
 import { ApplicationModal } from "@symmio/frontend-sdk/state/application/reducer";
+import { useBalanceInfos } from "@symmio/frontend-sdk/hooks/useAccounts";
 
 const HoverWrapper = styled.div`
   padding: 0px 8px 12px 8px;
@@ -65,6 +66,8 @@ export default function AccountsModal({
     onDismiss();
   };
 
+  const { balanceInfo, balanceInfoStatus } = useBalanceInfos();
+
   function getInnerContent() {
     return (
       <div>
@@ -78,6 +81,8 @@ export default function AccountsModal({
                   ? activeAccountAddress === account.accountAddress
                   : false
               }
+              balanceInfo={balanceInfo[index]}
+              balanceInfoStatus={balanceInfoStatus}
               onClick={() => onClick(account)}
             />
           );

@@ -7,7 +7,12 @@ import {
   TOTAL_DEPOSITS_AND_WITHDRAWALS,
 } from "../../apollo/queries";
 import { makeHttpRequest } from "../../utils/http";
-import { BalanceHistoryData, DepositWithdrawalsData } from "./types";
+import {
+  BalanceHistoryData,
+  BalanceInfo,
+  BalanceInfosType,
+  DepositWithdrawalsData,
+} from "./types";
 import { BALANCE_HISTORY_ITEMS_NUMBER } from "../../constants/misc";
 import { getAppNameHeader } from "../hedger/thunks";
 import { WEB_SETTING } from "../../config/index";
@@ -142,5 +147,62 @@ export const getTotalDepositsAndWithdrawals = createAsyncThunk(
       console.error(error);
       throw new Error(`Unable to query Deposits And Withdrawals from Client`);
     }
+  }
+);
+
+export const getBalanceInfo = createAsyncThunk(
+  "user/getBalanceInfo",
+  async (payload: {
+    baseUrl: string | undefined;
+    account: string | undefined;
+    multiAccountAddress: string | undefined;
+  }) => {
+    const { baseUrl: hedgerUrl, account, multiAccountAddress } = payload;
+
+    if (!hedgerUrl) {
+      throw new Error("hedgerUrl is empty");
+    }
+    if (!account) {
+      throw new Error("account is empty");
+    }
+
+    const { href: balanceInfoUrl } = new URL(
+      `/get_balance_info/${account}/${multiAccountAddress}`,
+      hedgerUrl
+    );
+
+    const balanceInfos: BalanceInfosType = {};
+    try {
+      const [balanceInfoRes] = await Promise.allSettled([
+        makeHttpRequest(balanceInfoUrl),
+      ]);
+
+      if (balanceInfoRes.status === "fulfilled") {
+        const value = balanceInfoRes.value as BalanceInfo;
+        const keys = Object.keys(value);
+
+        keys.forEach((key) => {
+          const info = value[key]?.party_a;
+          balanceInfos[key.toLowerCase()] = {
+            allocatedBalance: info.allocated_balance,
+            availableBalance: info.available_balance,
+            cva: info.cva,
+            lf: info.lf,
+            notional: info.notional,
+            mm: info.party_a_mm,
+            pendingCva: info.pending_cva,
+            pendingLf: info.pending_lf,
+            pendingMm: info.pending_party_a_mm,
+            upnl: info.upnl,
+            timestamp: info.timestamp,
+          } as BalanceInfo;
+        });
+      }
+    } catch (error) {
+      console.error(error, " happened in getBalanceInfo");
+      throw error;
+    }
+
+    return balanceInfos;
   }
 );

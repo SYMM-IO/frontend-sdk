@@ -1134,33 +1134,6 @@
   dependencies:
     tslib "^2.4.0"
 
-"@symmio/frontend-sdk@file:apps/alpha/.yalc/@symmio/frontend-sdk":
-  version "0.0.1"
-  dependencies:
-    "@apollo/client" "^3.7.12"
-    "@rainbow-me/rainbowkit" "1.1.1"
-    "@reduxjs/toolkit" "^1.6.2"
-    "@uniswap/sdk-core" "^4.0.3"
-    axios "^1.2.6"
-    bignumber.js "^9.1.1"
-    dayjs "^1.11.7"
-    fuse.js "^3.4.5"
-    graphql "^16.6.0"
-    graphql-tag "^2.12.6"
-    jsbi "^3.1.4"
-    lodash "^4.17.21"
-    react "^18.2.0"
-    react-dom "^18.2.0"
-    react-redux "^8.0.2"
-    react-select-search "^4.1.6"
-    react-use-websocket "4.5.0"
-    redux "^4.1.2"
-    redux-persist "^6.0.0"
-    redux-persist-node-storage "^2.0.0"
-    tiny-invariant "^1.2.0"
-    viem "1.16.2"
-    wagmi "1.4.3"
-
 "@tanstack/query-core@4.35.3":
   version "4.35.3"
   resolved "https://registry.npmjs.org/@tanstack/query-core/-/query-core-4.35.3.tgz"
