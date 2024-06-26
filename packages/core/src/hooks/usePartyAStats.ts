@@ -1,7 +1,5 @@
-import { Address, useBalance } from "wagmi";
+import { Address } from "viem";
 
-import { useToken } from "../lib/hooks/useTokens";
-import useActiveWagmi from "../lib/hooks/useActiveWagmi";
 import { useSingleContractMultipleMethods } from "../lib/hooks/multicall";
 
 import { useSupportedChainId } from "../lib/hooks/useSupportedChainId";
@@ -9,9 +7,10 @@ import { useSupportedChainId } from "../lib/hooks/useSupportedChainId";
 import { fromWei } from "../utils/numbers";
 import { getMultipleBN, getSingleWagmiResult } from "../utils/multicall";
 
-import { useDiamondContract } from "./useContract";
+import { useCollateralContract, useDiamondContract } from "./useContract";
 import { UserPartyAStatDetail } from "../types/user";
-import { useCollateralAddress } from "../state/chains/hooks";
+import { useCollateralDecimal, useFallbackChainId } from "../state/chains";
+import useActiveWagmi from "../lib/hooks/useActiveWagmi";
 
 //TODO why its not covered by useMemo
 //we converted all BigNumbers to string to avoid spurious rerenders
@@ -21,8 +20,9 @@ export function usePartyAStats(
   const { chainId } = useActiveWagmi();
   const isSupportedChainId = useSupportedChainId();
   const DiamondContract = useDiamondContract();
-  const COLLATERAL_ADDRESS = useCollateralAddress();
-  const cToken = useToken(COLLATERAL_ADDRESS);
+  const CollateralContract = useCollateralContract();
+  const collateralDecimal = useCollateralDecimal();
+  const fallBackChainId = useFallbackChainId();
 
   const partyAStatsCallsFirstCall = isSupportedChainId
     ? !account
@@ -58,13 +58,22 @@ export function usePartyAStats(
         ]
     : [];
 
-  const cBalance = useBalance({
-    address: account as Address,
-    chainId,
-    token: cToken?.address as Address,
-    watch: true,
-    cacheTime: 4_000,
-  });
+  const {
+    data: cBalance,
+    isLoading: iscBalanceLoading,
+    isError: isFcBalanceError,
+  } = useSingleContractMultipleMethods(
+    CollateralContract,
+    [
+      {
+        functionName: "balanceOf",
+        callInputs: [account as Address],
+      },
+    ],
+    {
+      watch: true,
+    }
+  );
 
   const {
     data: firstData,
@@ -92,13 +101,18 @@ export function usePartyAStats(
     }
   );
 
-  const loading = isFirstCallLoading || isSecondCallLoading;
-  const isError = isFirstCallError || isSecondCallError;
+  const loading =
+    isFirstCallLoading || isSecondCallLoading || iscBalanceLoading;
+  const isError = isFirstCallError || isSecondCallError || isFcBalanceError;
 
   const multipleBNResult = getMultipleBN(firstData?.[1]?.result);
 
   return {
-    collateralBalance: cBalance.data?.formatted ?? "0",
+    collateralBalance:
+      fromWei(
+        getSingleWagmiResult(cBalance),
+        collateralDecimal[chainId ?? fallBackChainId]
+      ) ?? "0",
     accountBalance: fromWei(getSingleWagmiResult(firstData, 0)),
     liquidationStatus:
       getSingleWagmiResult<boolean[]>(firstData, 1)?.[0] ?? false,

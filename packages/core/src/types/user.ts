@@ -1,5 +1,7 @@
+import { Address } from "viem";
+
 export type Account = {
-  accountAddress: string;
+  accountAddress: Address;
   name: string;
 };
 

@@ -17,19 +17,23 @@ import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
 import { ConstructCallReturnType } from "../types/web3";
 import { Address, encodeFunctionData } from "viem";
 import useActiveWagmi from "../lib/hooks/useActiveWagmi";
-import { SendTransactionResult } from "@wagmi/core";
 import { useActiveAccountAddress } from "../state/user/hooks";
-import { useFallbackChainId, usePartyBWhitelistAddress } from "../state/chains";
+import {
+  useFallbackChainId,
+  usePartyBWhitelistAddress,
+  useWagmiConfig,
+} from "../state/chains";
 
 export function useDelegateAccess(): {
   state: TransactionCallbackState;
-  callback: null | (() => Promise<SendTransactionResult | undefined>);
+  callback: null | (() => Promise<any>);
   error: string | null;
 } {
   const { account, chainId } = useActiveWagmi();
   const addTransaction = useTransactionAdder();
   const addRecentTransaction = useAddRecentTransaction();
   const isSupportedChainId = useSupportedChainId();
+  const wagmiConfig = useWagmiConfig();
 
   const MultiAccountContract = useMultiAccountContract();
   const activeAccountAddress = useActiveAccountAddress();
@@ -118,6 +122,7 @@ export function useDelegateAccess(): {
           addTransaction,
           addRecentTransaction,
           txInfo,
+          wagmiConfig,
           undefined,
           false
         ),
@@ -129,5 +134,6 @@ export function useDelegateAccess(): {
     constructCall,
     addTransaction,
     addRecentTransaction,
+    wagmiConfig,
   ]);
 }

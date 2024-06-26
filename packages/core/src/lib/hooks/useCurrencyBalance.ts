@@ -9,7 +9,8 @@ import {
 } from "./multicall";
 
 import { isAddress } from "../../utils/validate";
-import { erc20ABI } from "wagmi";
+import { erc20Abi } from "viem";
+
 import useWagmi from "./useWagmi";
 import { getSingleWagmiResult } from "../../utils/multicall";
 import { nativeOnChain } from "../../utils/token";
@@ -85,7 +86,7 @@ export function useTokenBalancesWithLoadingIndicator(
   const { data: balances, isLoading: anyLoading } =
     useMultipleContractSingleData(
       validatedTokenAddresses,
-      erc20ABI,
+      erc20Abi,
       "balanceOf",
       useMemo(() => (address ? [address] : []), [address]),
       { watch: true, cacheTime: 4_000 }

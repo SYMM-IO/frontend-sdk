@@ -1,6 +1,5 @@
-import { configureChains, createConfig } from "wagmi";
-import { infuraProvider } from "wagmi/providers/infura";
-import { publicProvider } from "wagmi/providers/public";
+import { createConfig, http } from "wagmi";
+import { Chain } from "wagmi/chains";
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import {
   injectedWallet,
@@ -25,47 +24,47 @@ export const getWagmiConfig = () => {
   }
 
   const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
-  const { chains, publicClient, webSocketPublicClient } = configureChains(
-    APP_CHAINS,
+
+  const chains: readonly [Chain, ...Chain[]] =
+    APP_CHAINS as unknown as readonly [Chain, ...Chain[]];
+
+  const transports = chains.reduce((acc, chain) => {
+    acc[chain.id] = http();
+    return acc;
+  }, {});
+
+  const connectors = connectorsForWallets(
     [
-      infuraProvider({ apiKey: process.env.NEXT_PUBLIC_INFURA_KEY }),
-      publicProvider(),
+      {
+        groupName: "Popular",
+        wallets: [
+          injectedWallet,
+          metaMaskWallet,
+          rabbyWallet,
+          walletConnectWallet,
+        ],
+      },
+      {
+        groupName: "Others",
+        wallets: [rainbowWallet, coinbaseWallet, safeWallet],
+      },
     ],
     {
-      batch: { multicall: true },
-      retryCount: 5,
-      pollingInterval: 2_000,
-      stallTimeout: 2_000,
+      appName: APP_NAME,
+      projectId,
     }
   );
 
-  const connectors = connectorsForWallets([
-    {
-      groupName: "Popular",
+  const config = createConfig({
+    chains,
+    transports,
+    connectors,
+    batch: { multicall: true },
+    pollingInterval: 2_000,
+  });
 
-      wallets: [
-        injectedWallet({ chains }),
-        metaMaskWallet({ projectId, chains }),
-        rabbyWallet({ chains }),
-        walletConnectWallet({ projectId, chains }),
-      ],
-    },
-    {
-      groupName: "Others",
-      wallets: [
-        coinbaseWallet({ chains, appName: APP_NAME }),
-        rainbowWallet({ projectId, chains }),
-        safeWallet({ chains }),
-      ],
-    },
-  ]);
   return {
-    wagmiConfig: createConfig({
-      autoConnect: true,
-      connectors,
-      publicClient,
-      webSocketPublicClient,
-    }),
+    wagmiConfig: config,
     chains,
     initialChain: chains[0],
   };

@@ -36,7 +36,9 @@ function getValuesByName(
   return result;
 }
 
-export function useCollateralAddress() {
+export function useCollateralAddress(): {
+  [chainId: number]: string;
+} {
   const FE_NAME = useFEName();
   const chains = useAppSelector((state: AppState) => state.chains.chains);
   const v3_ids = useAppSelector((state: AppState) => state.chains.V3_CHAIN_IDS);
@@ -52,7 +54,9 @@ export function useCollateralAddress() {
   }, [FE_NAME, chains, v3_ids]);
 }
 
-export function useCollateralSymbol() {
+export function useCollateralSymbol(): {
+  [chainId: number]: string;
+} {
   const FE_NAME = useFEName();
   const chains = useAppSelector((state: AppState) => state.chains.chains);
   const v3_ids = useAppSelector((state: AppState) => state.chains.V3_CHAIN_IDS);
@@ -67,7 +71,9 @@ export function useCollateralSymbol() {
   }, [FE_NAME, chains, v3_ids]);
 }
 
-export function useCollateralDecimal() {
+export function useCollateralDecimal(): {
+  [chainId: number]: number;
+} {
   const FE_NAME = useFEName();
   const chains = useAppSelector((state: AppState) => state.chains.chains);
   const v3_ids = useAppSelector((state: AppState) => state.chains.V3_CHAIN_IDS);
@@ -281,6 +287,13 @@ export function useMuonData(): { [chainId: number]: MuonDataType } {
   return MuonData;
 }
 
+export function useWagmiConfig() {
+  const wagmiConfig = useAppSelector(
+    (state: AppState) => state.chains.wagmiConfig
+  );
+  return wagmiConfig;
+}
+
 export function useSetSdkConfig(): ({
   chains,
   V3_CHAIN_IDS,
@@ -289,6 +302,7 @@ export function useSetSdkConfig(): ({
   hedgers,
   appName,
   MuonData,
+  wagmiConfig,
 }: ChainsState) => void {
   const dispatch = useAppDispatch();
   return useCallback(
@@ -300,6 +314,7 @@ export function useSetSdkConfig(): ({
       hedgers,
       appName,
       MuonData,
+      wagmiConfig,
     }: ChainsState) => {
       dispatch(
         setChains({
@@ -310,6 +325,7 @@ export function useSetSdkConfig(): ({
           hedgers,
           appName,
           MuonData,
+          wagmiConfig,
         })
       );
     },

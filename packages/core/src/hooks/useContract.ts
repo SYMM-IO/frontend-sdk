@@ -1,5 +1,4 @@
-import { Abi } from "viem";
-import { erc20ABI, erc721ABI } from "wagmi";
+import { Abi, erc20Abi, erc721Abi } from "viem";
 import { useContract } from "../lib/hooks/contract";
 
 import {
@@ -49,13 +48,13 @@ export function useSignatureStoreContract(): ReturnType<typeof useContract> {
 ################################### */
 
 export function useERC20Contract(tokenAddress: string | null | undefined) {
-  return useContract(tokenAddress, erc20ABI);
+  return useContract(tokenAddress, erc20Abi);
 }
 export function useERC721Contract(
   tokenAddress: string | null | undefined,
   ABI?: Abi
 ) {
-  return useContract(tokenAddress, ABI ?? erc721ABI);
+  return useContract(tokenAddress, ABI ?? erc721Abi);
 }
 
 export function useBytes32TokenContract(tokenAddress?: string) {

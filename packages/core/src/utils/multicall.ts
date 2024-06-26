@@ -1,5 +1,6 @@
 import BigNumber from "bignumber.js";
 import { toBN } from "./numbers";
+import { ReadContractsData } from "wagmi/query";
 
 export function getMultipleBN(result: unknown): BigNumber[] {
   if (!Array.isArray(result)) return [];
@@ -21,7 +22,8 @@ export function getSingleWagmiResult<T>(
             status: "success";
           }
       )[]
-    | undefined,
+    | undefined
+    | ReadContractsData<any, true>,
   index?: number
 ): T | null {
   return result && result[index || 0]?.status === "success"

@@ -7,6 +7,8 @@ import {
   arbitrum,
   mainnet,
   mantle,
+  blast,
+  Chain,
 } from "wagmi/chains";
 import { FrontEndsName } from "./addresses";
 
@@ -18,9 +20,10 @@ const supportedWagmiChain = {
   [SupportedChainId.ARBITRUM]: arbitrum,
   [SupportedChainId.MAINNET]: mainnet,
   [SupportedChainId.MANTLE]: mantle,
+  [SupportedChainId.BLAST]: blast,
 };
 
-function getWagmiChain(supportChainList: number[]) {
+function getWagmiChain(supportChainList: number[]): Chain[] {
   return supportChainList.map((chainId) => supportedWagmiChain[chainId]);
 }
 

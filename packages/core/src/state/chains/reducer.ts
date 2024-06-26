@@ -1,3 +1,4 @@
+import { Config } from "@wagmi/core";
 import * as toolkitRaw from "@reduxjs/toolkit/dist/redux-toolkit.cjs.production.min.js";
 const { createReducer } = ((toolkitRaw as any).default ??
   toolkitRaw) as typeof toolkitRaw;
@@ -42,6 +43,7 @@ export interface ChainsState {
   readonly hedgers: HedgerInfoMap;
   readonly appName: string;
   readonly MuonData: { [chainId: number]: MuonDataType };
+  readonly wagmiConfig: Config;
 }
 
 const initialState: ChainsState = {
@@ -59,6 +61,7 @@ const initialState: ChainsState = {
   hedgers: { [SupportedChainId.NOT_SET]: [] },
   appName: "",
   MuonData: {},
+  wagmiConfig: {} as Config,
 };
 
 export default createReducer(initialState, (builder) =>

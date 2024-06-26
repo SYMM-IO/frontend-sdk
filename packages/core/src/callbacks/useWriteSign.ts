@@ -21,19 +21,18 @@ import {
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
 import { Address, encodeFunctionData } from "viem";
 import { ConstructCallReturnType } from "../types/web3";
-import { SendTransactionResult } from "@wagmi/core";
+import { useWagmiConfig } from "../state/chains";
 
 export function useWriteSign(): {
   state: TransactionCallbackState;
-  callback:
-    | null
-    | ((sign: string) => Promise<SendTransactionResult | undefined>);
+  callback: null | ((sign: string) => Promise<any>);
   error: string | null;
 } {
   const { account, chainId } = useActiveWagmi();
   const { data: provider } = useWalletClient();
   const addTransaction = useTransactionAdder();
   const addRecentTransaction = useAddRecentTransaction();
+  const wagmiConfig = useWagmiConfig();
 
   const isSupportedChainId = useSupportedChainId();
   const Contract = useSignatureStoreContract();
@@ -98,6 +97,7 @@ export function useWriteSign(): {
           addTransaction,
           addRecentTransaction,
           txInfo,
+          wagmiConfig,
           summary,
           false
         ),
@@ -109,6 +109,7 @@ export function useWriteSign(): {
     Contract,
     addTransaction,
     addRecentTransaction,
+    wagmiConfig,
     constructCall,
   ]);
 }

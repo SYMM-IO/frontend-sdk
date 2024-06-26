@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { Address, useContractRead } from "wagmi";
+import { useReadContract } from "wagmi";
+import { Address } from "viem";
 
 import { Account } from "../types/user";
 import { useMultiAccountContract } from "./useContract";
-import { useSupportedChainId } from "../lib/hooks/useSupportedChainId";
 import useActiveWagmi from "../lib/hooks/useActiveWagmi";
 import { BalanceInfosType } from "../state/user/types";
 import { ApiState } from "../types/api";
@@ -15,7 +15,6 @@ import { getBalanceInfo } from "../state/user/thunks";
 export function useUserAccounts() {
   const { account } = useActiveWagmi();
   const MultiAccountContract = useMultiAccountContract();
-  const isSupportedChainId = useSupportedChainId();
   const { accountLength } = useAccountsLength();
 
   const {
@@ -24,18 +23,19 @@ export function useUserAccounts() {
     error,
     isError,
     isSuccess,
-  } = useContractRead({
+  } = useReadContract({
     address: MultiAccountContract?.address,
     abi: MultiAccountContract?.abi,
     functionName: "getAccounts",
     args: [account as Address, BigInt(0), BigInt(accountLength)],
-    watch: true,
-    enabled: Boolean(account) && Boolean(accountLength) && isSupportedChainId,
   });
 
   const accountsUnsorted = useMemo(() => {
     if (!accounts || !isSuccess || isError) return [];
-    return accounts.map(
+
+    const accountsArray = accounts as Account[];
+
+    return accountsArray.map(
       (acc: {
         accountAddress: Address; // or whatever the correct type is
         name: string;
@@ -62,18 +62,14 @@ export function useAccountsLength(): {
   accountLength: number;
   loading: boolean;
 } {
-  const isSupportedChainId = useSupportedChainId();
-
   const { account } = useActiveWagmi();
   const MultiAccountContract = useMultiAccountContract();
 
-  const { data, isLoading, isSuccess, isError } = useContractRead({
+  const { data, isLoading, isSuccess, isError } = useReadContract({
     address: MultiAccountContract?.address,
     abi: MultiAccountContract?.abi,
     functionName: "getAccountsLength",
     args: [account as Address],
-    watch: true,
-    enabled: Boolean(account) && isSupportedChainId,
   });
 
   return useMemo(

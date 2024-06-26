@@ -10,7 +10,7 @@ import React, {
 
 import useIsWindowVisible from "./useIsWindowVisible";
 import useActiveWagmi from "./useActiveWagmi";
-import { usePublicClient } from "wagmi";
+import { Config, usePublicClient } from "wagmi";
 import { watchBlockNumber } from "@wagmi/core";
 
 const MISSING_PROVIDER = Symbol();
@@ -41,7 +41,13 @@ export function useFastForwardBlockNumber(): (block: number) => void {
   return useBlockNumberContext().fastForward;
 }
 
-export function BlockNumberProvider({ children }: { children: ReactNode }) {
+export function BlockNumberProvider({
+  wagmiConfig,
+  children,
+}: {
+  wagmiConfig: Config;
+  children: ReactNode;
+}) {
   const { chainId: activeChainId } = useActiveWagmi();
   const provider = usePublicClient();
   const [{ chainId, block }, setChainBlock] = useState<{
@@ -65,13 +71,12 @@ export function BlockNumberProvider({ children }: { children: ReactNode }) {
 
   const windowVisible = useIsWindowVisible();
 
-  const unwatch = watchBlockNumber(
-    {
-      chainId: activeChainId,
-      listen: windowVisible ? true : false,
+  const unwatch = watchBlockNumber(wagmiConfig, {
+    chainId: activeChainId,
+    onBlockNumber(blockNumber) {
+      onBlock(Number(blockNumber));
     },
-    (blockNumber) => onBlock(Number(blockNumber))
-  );
+  });
 
   useEffect(() => {
     if (activeChainId) {

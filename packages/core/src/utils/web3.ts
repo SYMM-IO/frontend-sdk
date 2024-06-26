@@ -1,7 +1,8 @@
 import {
-  prepareSendTransaction,
   sendTransaction,
-  waitForTransaction,
+  estimateGas,
+  waitForTransactionReceipt,
+  Config,
 } from "@wagmi/core";
 import { UserRejectedRequestError, parseEther } from "viem";
 import { ContractFunctionRevertedError, BaseError } from "viem";
@@ -32,6 +33,7 @@ export async function createTransactionCallback(
   addTransaction: ReturnType<typeof useTransactionAdder>,
   addRecentTransaction: ReturnType<typeof useAddRecentTransaction>,
   txInfo: TransactionInfo,
+  wagmiConfig: Config,
   summary?: string,
   isMultiAccount?: boolean,
   expertMode?: ReturnType<typeof useExpertMode>
@@ -41,28 +43,42 @@ export async function createTransactionCallback(
     if (WEB_SETTING.notAllowedMethods.includes(functionName)) {
       throw new Error(`${functionName} not allowed`);
     }
+    console.log("in the web3 ", constructCall);
 
     call = await constructCall();
-    const gas: bigint = await Contract.estimateGas[
-      isMultiAccount ? "_call" : functionName
-    ](call.args);
-    const request = await prepareSendTransaction(call.config);
-    const data = await sendTransaction({
-      ...request,
+
+    // const gas: bigint = await Contract.estimateGas[
+    //   isMultiAccount ? "_call" : functionName
+    // ](call.args);
+    console.log("in the web3 3", call.args, call.config);
+    // {
+    //   account: '0xA0Cf798816D4b9b9866b5330EEa46a18382f251e',
+    //   to: '0xd2135CfB216b74109775236E36d4b433F1DF507B',
+    //   value: parseEther('0.01'),
+    // }
+
+    const gas = await estimateGas(wagmiConfig, {
+      ...call.config,
+      to: isMultiAccount && Contract.address,
+    });
+    console.log("in the web3 4");
+    console.log({ gas });
+    let hash = await sendTransaction(wagmiConfig, {
+      ...call.config,
       gas: calculateGasMargin(gas),
     });
-    await waitForTransaction({
-      hash: data?.hash,
+    await waitForTransactionReceipt(wagmiConfig, {
+      hash,
       onReplaced: (replace) => {
-        data.hash = replace.transaction.hash;
+        hash = replace.transaction.hash;
       },
     });
-    addTransaction(data.hash, txInfo, summary);
+    addTransaction(hash, txInfo, summary);
     addRecentTransaction({
-      hash: data.hash,
+      hash,
       description: summary || "-------",
     });
-    return data;
+    return hash;
   } catch (error) {
     if (error instanceof Error) {
       console.log("Error", { error });
@@ -81,13 +97,13 @@ export async function createTransactionCallback(
               data: config.data,
               value: parseEther(config.value),
             };
-        const data = await sendTransaction(tx);
-        addTransaction(data.hash, txInfo, summary);
+        const hash = await sendTransaction(wagmiConfig, tx);
+        addTransaction(hash, txInfo, summary);
         addRecentTransaction({
-          hash: data.hash,
+          hash,
           description: summary || "-------",
         });
-        return data;
+        return hash;
       }
 
       if (error instanceof BaseError) {

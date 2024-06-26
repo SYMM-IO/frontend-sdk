@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { Abi, getContract } from "viem";
-import { Address, WalletClient, usePublicClient, useWalletClient } from "wagmi";
+import { Abi, Address, getContract } from "viem";
+import { usePublicClient, useWalletClient } from "wagmi";
 import { AddressZero } from "../../constants/misc";
 import useWagmi from "./useWagmi";
 
@@ -21,17 +21,19 @@ export function useContract<T extends Abi>(
     let address: string | undefined;
     if (typeof addressOrAddressMap === "string") address = addressOrAddressMap;
     else address = addressOrAddressMap[chainId];
-    if (!address || address === AddressZero) return null;
+    if (!address || address === AddressZero || !publicClient) return null;
     try {
       return getContract({
         address: address as Address,
         abi: ABI,
-        publicClient,
-        walletClient: (walletClient as WalletClient) ?? publicClient,
+        client: {
+          public: publicClient,
+          wallet: walletClient,
+        },
       });
     } catch (error) {
       console.error("Failed to get contract", error);
       return null;
     }
-  }, [addressOrAddressMap, ABI, chainId, walletClient, publicClient]);
+  }, [addressOrAddressMap, ABI, chainId, publicClient, walletClient]);
 }

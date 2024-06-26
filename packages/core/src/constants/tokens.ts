@@ -101,4 +101,11 @@ export const WRAPPED_NATIVE_CURRENCY: { [chainId: number]: Token | undefined } =
       "WMANTLE",
       "Wrapped MANTLE"
     ),
+    [SupportedChainId.BLAST]: new Token(
+      SupportedChainId.BLAST,
+      ChainInfo[SupportedChainId.BLAST].WRAPPED_NATIVE_ADDRESS,
+      18,
+      "WETH",
+      "Wrapped Ether"
+    ),
   };
