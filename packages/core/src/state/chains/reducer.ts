@@ -74,6 +74,7 @@ export default createReducer(initialState, (builder) =>
       hedgers,
       appName,
       MuonData,
+      wagmiConfig,
     } = payload;
     state.chains = chains;
     state.V3_CHAIN_IDS = V3_CHAIN_IDS;
@@ -82,5 +83,6 @@ export default createReducer(initialState, (builder) =>
     state.hedgers = hedgers;
     state.appName = appName;
     state.MuonData = MuonData;
+    state.wagmiConfig = wagmiConfig;
   })
 );
