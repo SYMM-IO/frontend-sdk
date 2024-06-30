@@ -113,5 +113,21 @@ export const HedgerInfo = {
       clientName: "BLAST",
     },
   ],
+  [SupportedChainId.ARBITRUM]: [
+    {
+      apiUrl: "https://fapi.binance.com/",
+      webSocketUrl: "wss://fstream.binance.com/stream",
+      baseUrl: `https://${process.env.NEXT_PUBLIC_ARBITRUM_HEDGER_URL}`,
+      webSocketUpnlUrl: `wss://${process.env.NEXT_PUBLIC_ARBITRUM_HEDGER_URL}/ws/upnl-ws`,
+      webSocketNotificationUrl: `wss://${process.env.NEXT_PUBLIC_ARBITRUM_HEDGER_URL}/ws/position-state-ws3`,
+      webSocketFundingRateUrl: `wss://${process.env.NEXT_PUBLIC_ARBITRUM_HEDGER_URL}/ws/funding-rate-ws`,
+      defaultMarketId: 1,
+      markets: [],
+      openInterest: { total: 0, used: 0 } as OpenInterest,
+      id: "arbitrum-hedger",
+      fetchData: true,
+      clientName: "ARBITRUM",
+    },
+  ],
   [SupportedChainId.NOT_SET]: [DEFAULT_HEDGER],
 };

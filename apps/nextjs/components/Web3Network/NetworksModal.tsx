@@ -38,7 +38,7 @@ const ModalWrapper = styled(Card)`
 const InlineModal = styled(Card)<{ isOpen: boolean; height?: string }>`
   padding: 0px;
   border-radius: 4px;
-  width: clamp(100px, 245px, 99%);
+  width: clamp(100px, 275px, 99%);
   max-height: ${({ height }) => height ?? "554px"};
   position: absolute;
   z-index: ${Z_INDEX.modal};

@@ -33,3 +33,8 @@ export const BLAST_MUON_BASE_URL = [
   "https://muon-oracle3.rasa.capital/v1/",
   "https://muon-oracle4.rasa.capital/v1/",
 ];
+
+export const ARBITRUM_MUON_BASE_URL = [
+  "https://intentx-shield1.deus.finance/v1/",
+  "https://intentx-shield.deus.finance/v1/",
+];
