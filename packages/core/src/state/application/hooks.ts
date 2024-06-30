@@ -1,25 +1,9 @@
 import { useCallback, useMemo } from "react";
 
-import useActiveWagmi from "../../lib/hooks/useActiveWagmi";
-
 import { DEFAULT_TXN_DISMISS_MS } from "../../constants/misc";
 import { AppState, useAppDispatch, useAppSelector } from "../declaration";
 import { addPopup, removePopup, setOpenModal } from "./actions";
 import { ApplicationModal, Popup, PopupContent, PopupList } from "./reducer";
-
-export function useBlockNumber(): number | undefined {
-  const { chainId } = useActiveWagmi();
-  return useAppSelector(
-    (state: AppState) => state.application.blockNumber[chainId ?? -1]
-  );
-}
-
-export function useBlockTimestamp(): number | undefined {
-  const { chainId } = useActiveWagmi();
-  return useAppSelector(
-    (state: AppState) => state.application.blockTimestamp[chainId ?? -1]
-  );
-}
 
 export function useModalOpen(modal: ApplicationModal): boolean {
   const openModal = useAppSelector(
