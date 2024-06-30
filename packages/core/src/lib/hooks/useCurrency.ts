@@ -55,9 +55,9 @@ export function useTokenFromActiveNetwork(
   );
 
   // Yo
-  // cacheTime: 60 * 60 * 24 * 1000, // 24 ho urs,
   const { data, isLoading } = useReadContracts({
     allowFailure: true,
+    query: { gcTime: 60 * 60 * 24 * 1000 },
     contracts: [
       { ...tokenContract, functionName: "name" },
       { ...tokenContractBytes32, functionName: "name" },

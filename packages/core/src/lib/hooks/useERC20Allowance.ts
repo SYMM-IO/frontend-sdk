@@ -18,6 +18,7 @@ export function useERC20Allowance({
   token,
   owner,
   spender,
+  enabled = true,
 }: UseERC20Allowance): {
   tokenAllowance: BigNumber | undefined;
   isSyncing: boolean;
@@ -30,6 +31,10 @@ export function useERC20Allowance({
     abi: contract?.abi,
     functionName: "allowance",
     args: [owner as Address, spender as Address],
+    query: {
+      enabled: Boolean(token && owner && spender && token.chainId && enabled),
+      refetchInterval: 2000,
+    },
   });
 
   return useMemo(

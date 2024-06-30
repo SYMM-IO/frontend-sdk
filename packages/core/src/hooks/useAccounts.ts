@@ -9,12 +9,14 @@ import { BalanceInfosType } from "../state/user/types";
 import { ApiState } from "../types/api";
 import { useHedgerInfo } from "../state/hedger/hooks";
 import { useMultiAccountAddress } from "../state/chains";
+import { useSupportedChainId } from "../lib/hooks/useSupportedChainId";
 import { AppThunkDispatch, useAppDispatch } from "../state";
 import { getBalanceInfo } from "../state/user/thunks";
 
 export function useUserAccounts() {
   const { account } = useActiveWagmi();
   const MultiAccountContract = useMultiAccountContract();
+  const isSupportedChainId = useSupportedChainId();
   const { accountLength } = useAccountsLength();
 
   const {
@@ -28,6 +30,9 @@ export function useUserAccounts() {
     abi: MultiAccountContract?.abi,
     functionName: "getAccounts",
     args: [account as Address, BigInt(0), BigInt(accountLength)],
+    query: {
+      enabled: Boolean(account) && Boolean(accountLength) && isSupportedChainId,
+    },
   });
 
   const accountsUnsorted = useMemo(() => {
@@ -62,6 +67,8 @@ export function useAccountsLength(): {
   accountLength: number;
   loading: boolean;
 } {
+  const isSupportedChainId = useSupportedChainId();
+
   const { account } = useActiveWagmi();
   const MultiAccountContract = useMultiAccountContract();
 
@@ -70,6 +77,9 @@ export function useAccountsLength(): {
     abi: MultiAccountContract?.abi,
     functionName: "getAccountsLength",
     args: [account as Address],
+    query: {
+      enabled: Boolean(account) && isSupportedChainId,
+    },
   });
 
   return useMemo(

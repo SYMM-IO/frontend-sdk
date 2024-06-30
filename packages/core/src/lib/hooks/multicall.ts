@@ -24,7 +24,11 @@ export function useSingleContractMultipleData(
     functionName,
     args,
   }));
-  return useReadContracts({ contracts: configs, ...{ option } });
+  return useReadContracts({
+    contracts: configs,
+    ...{ option },
+    query: { refetchInterval: 2000 },
+  });
 }
 
 interface CallData {
@@ -56,7 +60,11 @@ export function useSingleContractMultipleMethods(
         .filter(Boolean)) ||
     [];
 
-  const readContractsConfig = { contracts: configs, ...option };
+  const readContractsConfig = {
+    contracts: configs,
+    ...option,
+    query: { refetchInterval: 2000 },
+  };
   const result = useReadContracts(readContractsConfig);
 
   return result;
@@ -73,6 +81,7 @@ export function useSingleCallResult(
     functionName,
     args: [...[callInputs]],
     ...{ option },
+    query: { refetchInterval: 2000 },
   });
 }
 
@@ -91,5 +100,9 @@ export function useMultipleContractSingleData(
     args: (callInputs && callInputs[i] ? callInputs[i] : []) as any,
   }));
 
-  return useReadContracts({ contracts: configs, ...{ option } });
+  return useReadContracts({
+    contracts: configs,
+    ...{ option },
+    query: { refetchInterval: 2000 },
+  });
 }

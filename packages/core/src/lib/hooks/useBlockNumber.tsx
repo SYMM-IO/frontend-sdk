@@ -76,6 +76,8 @@ export function BlockNumberProvider({
     onBlockNumber(blockNumber) {
       onBlock(Number(blockNumber));
     },
+    poll: true,
+    pollingInterval: 1_000,
   });
 
   useEffect(() => {

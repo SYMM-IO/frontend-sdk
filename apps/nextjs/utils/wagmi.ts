@@ -60,7 +60,8 @@ export const getWagmiConfig = () => {
     transports,
     connectors,
     batch: { multicall: true },
-    pollingInterval: 2_000,
+    cacheTime: 2000,
+    pollingInterval: 2000,
   });
 
   return {
