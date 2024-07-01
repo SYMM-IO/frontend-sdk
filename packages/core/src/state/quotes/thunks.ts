@@ -3,7 +3,7 @@ const { createAsyncThunk } = ((toolkitRaw as any).default ??
   toolkitRaw) as typeof toolkitRaw;
 import { ApolloClient, NormalizedCacheObject } from "@apollo/client";
 import { ORDER_HISTORY_DATA } from "../../apollo/queries";
-import { SubGraphData } from "./types";
+import { InstantCloseResponseType, SubGraphData } from "./types";
 import { Quote } from "../../types/quote";
 import { OrderType } from "../../types/trade";
 import { fromWei } from "../../utils/numbers";
@@ -11,6 +11,7 @@ import {
   getPositionTypeByIndex,
   getQuoteStateByIndex,
 } from "../../hooks/useQuotes";
+import { makeHttpRequest } from "../../utils/http";
 
 function toQuoteFromGraph(entity: SubGraphData) {
   return {
@@ -91,6 +92,47 @@ export const getHistory = createAsyncThunk(
     } catch (error) {
       console.error(error);
       throw new Error(`Unable to query data from Client`);
+    }
+  }
+);
+
+export const getInstantCloses = createAsyncThunk(
+  "quotes/getInstantCloses",
+  async ({
+    baseUrl,
+    account,
+    appName,
+  }: {
+    baseUrl: string | undefined;
+    account: string;
+    appName: string;
+  }): Promise<{ openInstantCloses: InstantCloseResponseType }> => {
+    if (!baseUrl) {
+      throw new Error("baseUrl is empty");
+    }
+
+    const getInstantClosesUrl = new URL(`instant_close/${account}`, baseUrl)
+      .href;
+    let openInstantCloses: InstantCloseResponseType = [];
+
+    try {
+      const [instantClosesRes] = await Promise.allSettled([
+        makeHttpRequest<InstantCloseResponseType>(getInstantClosesUrl, {
+          method: "GET",
+          headers: [
+            ["Content-Type", "application/json"],
+            ["App-Name", appName],
+          ],
+        }),
+      ]);
+
+      if (instantClosesRes.status === "fulfilled" && instantClosesRes.value) {
+        openInstantCloses = instantClosesRes.value;
+      }
+
+      return { openInstantCloses };
+    } catch (error) {
+      throw new Error(`Unable to get instant closes data from hedger`);
     }
   }
 );

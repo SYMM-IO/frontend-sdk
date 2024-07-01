@@ -4,7 +4,7 @@ const { createReducer } = ((toolkitRaw as any).default ??
 import find from "lodash/find.js";
 import unionBy from "lodash/unionBy.js";
 
-import { QuotesState } from "./types";
+import { InstantCloseResponse, InstantCloseStatus, QuotesState } from "./types";
 import { Quote } from "../../types/quote";
 
 import { ApiState } from "../../types/api";
@@ -22,7 +22,7 @@ import {
   setQuoteDetail,
   updateQuoteInstantCloseStatus,
 } from "./actions";
-import { getHistory } from "./thunks";
+import { getHistory, getInstantCloses } from "./thunks";
 
 export const initialState: QuotesState = {
   history: {},
@@ -33,6 +33,7 @@ export const initialState: QuotesState = {
   historyState: ApiState.LOADING,
   hasMoreHistory: false,
   instantClosesStates: {},
+  openInstantClosesState: ApiState.LOADING,
 };
 
 export default createReducer(initialState, (builder) =>
@@ -148,4 +149,39 @@ export default createReducer(initialState, (builder) =>
         state.instantClosesStates[id] = { ...data, status: newStatus };
       }
     )
+
+    .addCase(getInstantCloses.pending, (state) => {
+      state.openInstantClosesState = ApiState.LOADING;
+    })
+
+    .addCase(
+      getInstantCloses.fulfilled,
+      (state, { payload: { openInstantCloses } }) => {
+        const instantClosesStates = state.instantClosesStates;
+
+        openInstantCloses.forEach((d: InstantCloseResponse) => {
+          const data = instantClosesStates[d.quote_id];
+
+          if (data && data.amount === d.quantity_to_close) {
+            instantClosesStates[d.quote_id] = {
+              ...data,
+              status: InstantCloseStatus.PROCESSING,
+            };
+          } else {
+            instantClosesStates[d.quote_id] = {
+              amount: d.quantity_to_close,
+              timestamp: Math.floor(new Date().getTime() / 1000),
+              status: InstantCloseStatus.PROCESSING,
+            };
+          }
+        });
+
+        state.instantClosesStates = instantClosesStates;
+      }
+    )
+
+    .addCase(getInstantCloses.rejected, (state) => {
+      state.openInstantClosesState = ApiState.ERROR;
+      console.error("Unable to fetch from The Hedger");
+    })
 );

@@ -6,6 +6,7 @@ import { Quote } from "@symmio/frontend-sdk/types/quote";
 import useActiveWagmi from "@symmio/frontend-sdk/lib/hooks/useActiveWagmi";
 import { useActiveAccountAddress } from "@symmio/frontend-sdk/state/user/hooks";
 import {
+  useGetOpenInstantClosesCallback,
   useGetOrderHistoryCallback,
   useHistoryQuotes,
   usePendingsQuotes,
@@ -57,6 +58,11 @@ export default function UserPanel(): JSX.Element | null {
   const { quotes: positions } = usePositionsQuotes();
   const { quotes: pendings } = usePendingsQuotes();
   const getHistory = useGetOrderHistoryCallback();
+  const getOpenInstantCloses = useGetOpenInstantClosesCallback();
+
+  useEffect(() => {
+    if (positions.length) getOpenInstantCloses();
+  }, [getOpenInstantCloses, positions.length]);
 
   function getHistoryQuotes() {
     const skip = page * ItemsPerPage;

@@ -235,7 +235,8 @@ function TableRow({
   const isInstantClose =
     instantCloseData &&
     (instantCloseData.status === InstantCloseStatus.PROCESSING ||
-      instantCloseData.status === InstantCloseStatus.STARTED);
+      instantCloseData.status === InstantCloseStatus.STARTED ||
+      instantCloseData.status === InstantCloseStatus.FAILED);
 
   const [buttonText, disableButton] = useMemo(() => {
     if (liquidationStatus) {
@@ -512,12 +513,6 @@ function QuoteRow({
     () => (
       <>
         {" "}
-        {isInstantClose && (
-          <InstantCloseText>
-            The trade has been closed off-chain and is being written on-chain by
-            PartyB
-          </InstantCloseText>
-        )}
         <QuoteWrap
           canceled={quoteStatus === QuoteStatus.CANCELED}
           onClick={() => setQuoteDetail(quote)}
@@ -584,6 +579,12 @@ function QuoteRow({
             </TwoColumn>
           ) : (
             <div>{quoteOpenPrice}</div>
+          )}
+          {isInstantClose && (
+            <InstantCloseText>
+              The trade has been closed off-chain and is being written on-chain
+              by PartyB
+            </InstantCloseText>
           )}
           {fillAmountPercent === null ? (
             liquidatePending ? (

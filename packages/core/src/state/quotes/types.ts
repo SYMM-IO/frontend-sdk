@@ -10,6 +10,7 @@ export interface QuotesState {
   historyState: ApiState;
   hasMoreHistory?: boolean;
   instantClosesStates: InstantCloseObject;
+  openInstantClosesState: ApiState;
 }
 
 export interface SubGraphData {
@@ -53,14 +54,24 @@ export interface SubGraphData {
 export enum InstantCloseStatus {
   STARTED,
   PROCESSING,
-  FINISHED,
   FAILED,
+  FINISHED,
 }
+
 export interface InstantCloseItem {
   amount: string;
   timestamp: number;
   status: InstantCloseStatus;
 }
+
 export interface InstantCloseObject {
   [id: number]: InstantCloseItem;
 }
+
+export interface InstantCloseResponse {
+  quantity_to_close: number;
+  quote_id: number;
+  close_price: number;
+}
+
+export type InstantCloseResponseType = InstantCloseResponse[];

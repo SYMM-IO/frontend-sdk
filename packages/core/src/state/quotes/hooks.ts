@@ -22,13 +22,14 @@ import {
 import { useActiveAccountAddress } from "../user/hooks";
 import { sortQuotesByModifyTimestamp } from "../../hooks/useQuotes";
 import { useOrderHistoryApolloClient } from "../../apollo/client/orderHistory";
-import { getHistory } from "./thunks";
-import { useOrderHistorySubgraphAddress } from "../chains";
+import { getHistory, getInstantCloses } from "./thunks";
+import { useAppName, useOrderHistorySubgraphAddress } from "../chains";
 import {
   InstantCloseItem,
   InstantCloseObject,
   InstantCloseStatus,
 } from "./types";
+import { useHedgerInfo } from "../hedger/hooks";
 
 // returns all the histories
 export function useHistoryQuotes(): {
@@ -237,4 +238,22 @@ export function useGetOrderHistoryCallback() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [thunkDispatch, subgraphAddress]
   );
+}
+
+export function useGetOpenInstantClosesCallback() {
+  const thunkDispatch: AppThunkDispatch = useAppDispatch();
+  const { baseUrl } = useHedgerInfo() || {};
+  const account = useActiveAccountAddress();
+  const appName = useAppName();
+
+  return useCallback(() => {
+    if (!account) return;
+    thunkDispatch(
+      getInstantCloses({
+        account,
+        baseUrl,
+        appName,
+      })
+    );
+  }, [account, appName, baseUrl, thunkDispatch]);
 }
