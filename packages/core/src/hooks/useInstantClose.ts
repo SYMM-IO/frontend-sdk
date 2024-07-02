@@ -141,166 +141,132 @@ export default function useInstantClose(
     [activeAddress, baseUrl]
   );
 
-  const requestToClose = useCallback(
-    async (quoteId: number, quantityToClose: string, closePrice: string) => {
-      const instantCloseUrl = new URL("instant_close", baseUrl).href;
-      const token = localStorage.getItem("access_token");
+  const checkAccessToken = useCallback(async () => {
+    if (!account || !chainId) return;
 
-      const body = {
-        quote_id: quoteId,
-        quantity_to_close: quantityToClose,
-        close_price: closePrice,
-      };
+    const token = localStorage.getItem("access_token");
+    const sub_account_address = localStorage.getItem("active_address");
+    const currentDate = new Date();
+    const expiration_date = new Date(
+      localStorage.getItem("expiration_time") ?? "0"
+    );
 
-      console.log("request to instant close", body);
+    if (
+      token &&
+      expiration_date > currentDate &&
+      sub_account_address === activeAddress
+    ) {
+      return;
+    } else {
+      const nonceRes = await getNonce();
+      const host = window.location.hostname;
+      const { expirationTime, issuedAt, message } = createSiweMessage(
+        account,
+        `msg: ${activeAddress}`,
+        chainId,
+        nonceRes,
+        host,
+        `${baseUrl}/login`
+      );
 
-      try {
-        const res = await axios.post<InstantCloseResponseType>(
-          instantCloseUrl,
-          body,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (res.status === 200) GetOpenInstantCloses();
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          if (error.response?.status === 401) {
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("expiration_time");
-            throw new Error(
-              `${error.response?.data.error_message}, try again` ||
-                "An unknown error occurred"
-            );
-          }
-          console.error("Axios error:", error.response?.data);
-          throw new Error(
-            error.response?.data.error_message || "An unknown error occurred"
-          );
-        } else {
-          console.error("Unexpected error:", error);
-          throw new Error("An unexpected error occurred");
-        }
+      const sign = await onSignMessage(message);
+      if (sign) {
+        await getAccessToken(sign, expirationTime, issuedAt, nonceRes);
       }
-    },
-    [GetOpenInstantCloses, baseUrl]
-  );
+    }
+  }, [
+    account,
+    activeAddress,
+    baseUrl,
+    chainId,
+    getAccessToken,
+    getNonce,
+    onSignMessage,
+  ]);
 
-  const requestToCancelClose = useCallback(
-    async (quoteId: number) => {
-      const cancelCloseUrl = new URL(`instant_close/${quoteId}`, baseUrl).href;
+  const cancelClose = useCallback(async () => {
+    if (!quoteId) throw new Error("quote id is required");
+
+    const cancelCloseUrl = new URL(`instant_close/${quoteId}`, baseUrl).href;
+    try {
+      await checkAccessToken();
       const token = localStorage.getItem("access_token");
-      try {
-        const res = await axios.delete(cancelCloseUrl, {
+      const res = await axios.delete(cancelCloseUrl, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status === 200) {
+        GetOpenInstantCloses();
+        updateInstantCloseData({
+          id: quoteId,
+          status: InstantCloseStatus.FINISHED,
+        });
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Axios error:", error.response?.data);
+        throw new Error(
+          error.response?.data.error_message || "An unknown error occurred"
+        );
+      } else {
+        console.error("Unexpected error:", error);
+        throw new Error("An unexpected error occurred");
+      }
+    }
+  }, [
+    GetOpenInstantCloses,
+    baseUrl,
+    checkAccessToken,
+    quoteId,
+    updateInstantCloseData,
+  ]);
+
+  const instantClose = useCallback(async () => {
+    if (!quoteId || !closePrice) throw new Error("missing props");
+    if (!quantityToClose) throw new Error("Amount is too low");
+    const instantCloseUrl = new URL("instant_close", baseUrl).href;
+
+    const body = {
+      quote_id: quoteId,
+      quantity_to_close: quantityToClose,
+      close_price: closePrice,
+    };
+
+    try {
+      await checkAccessToken();
+      const token = localStorage.getItem("access_token");
+      const res = await axios.post<InstantCloseResponseType>(
+        instantCloseUrl,
+        body,
+        {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-        });
-        if (res.status === 200) {
-          GetOpenInstantCloses();
-          updateInstantCloseData({
-            id: quoteId,
-            status: InstantCloseStatus.FINISHED,
-          });
         }
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          console.error("Axios error:", error.response?.data);
-
-          if (error.response?.status === 401) {
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("expiration_time");
-            throw new Error(
-              `${error.response?.data.error_message}, try again` ||
-                "An unknown error occurred"
-            );
-          }
-          throw new Error(
-            error.response?.data.error_message || "An unknown error occurred"
-          );
-        } else {
-          console.error("Unexpected error:", error);
-          throw new Error("An unexpected error occurred");
-        }
-      }
-    },
-    [GetOpenInstantCloses, baseUrl, updateInstantCloseData]
-  );
-
-  const checkAccessToken = useCallback(
-    async (fn: () => void) => {
-      if (!account || !chainId) return;
-
-      const token = localStorage.getItem("access_token");
-      const sub_account_address = localStorage.getItem("active_address");
-      const currentDate = new Date();
-      const expiration_date = new Date(
-        localStorage.getItem("expiration_time") ?? "0"
       );
-
-      console.log(token, expiration_date);
-
-      if (
-        token &&
-        expiration_date > currentDate &&
-        sub_account_address === activeAddress
-      ) {
-        await fn();
-      } else {
-        const nonceRes = await getNonce();
-        const host = window.location.hostname;
-        const { expirationTime, issuedAt, message } = createSiweMessage(
-          account,
-          `msg: ${activeAddress}`,
-          chainId,
-          nonceRes,
-          host,
-          `${baseUrl}/login`
+      if (res.status === 200) GetOpenInstantCloses();
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Axios error:", error.response?.data);
+        throw new Error(
+          error.response?.data.error_message || "An unknown error occurred"
         );
-
-        const sign = await onSignMessage(message);
-        if (sign) {
-          await getAccessToken(sign, expirationTime, issuedAt, nonceRes);
-        }
-        await fn();
+      } else {
+        console.error("Unexpected error:", error);
+        throw new Error("An unexpected error occurred");
       }
-    },
-    [
-      account,
-      activeAddress,
-      baseUrl,
-      chainId,
-      getAccessToken,
-      getNonce,
-      onSignMessage,
-    ]
-  );
-
-  const cancelClose = useCallback(() => {
-    if (!quoteId) throw new Error("quote id is required");
-
-    try {
-      checkAccessToken(() => requestToCancelClose(quoteId));
-    } catch (error) {
-      throw error;
     }
-  }, [requestToCancelClose, checkAccessToken, quoteId]);
-
-  const instantClose = useCallback(async () => {
-    try {
-      if (!quoteId || !closePrice) throw new Error("missing props");
-      if (!quantityToClose) throw new Error("Amount is too low");
-      checkAccessToken(() =>
-        requestToClose(quoteId, quantityToClose, closePrice)
-      );
-    } catch (error) {
-      throw error;
-    }
-  }, [quoteId, closePrice, quantityToClose, checkAccessToken, requestToClose]);
+  }, [
+    GetOpenInstantCloses,
+    baseUrl,
+    checkAccessToken,
+    closePrice,
+    quantityToClose,
+    quoteId,
+  ]);
 
   return { instantClose, cancelClose, isAccessDelegated };
 }
