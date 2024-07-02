@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Currency, Token } from "@uniswap/sdk-core";
-import { useContractReads } from "wagmi";
+import { useReadContracts } from "wagmi";
 import { toBytes, hexToString } from "viem";
 
 import { useTokenShorthand } from "../../constants/tokens";
@@ -55,11 +55,9 @@ export function useTokenFromActiveNetwork(
   );
 
   // Yo
-  const { data, isLoading } = useContractReads({
-    watch: false,
-    cacheTime: 60 * 60 * 24 * 1000, // 24 hours,
+  const { data, isLoading } = useReadContracts({
     allowFailure: true,
-    keepPreviousData: true,
+    query: { gcTime: 60 * 60 * 24 * 1000 },
     contracts: [
       { ...tokenContract, functionName: "name" },
       { ...tokenContractBytes32, functionName: "name" },

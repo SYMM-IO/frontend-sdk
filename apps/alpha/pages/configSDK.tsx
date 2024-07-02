@@ -7,6 +7,7 @@ import { AbisInfo } from "constants/chains/abi";
 import { HedgerInfo } from "constants/chains/hedgers";
 import { APP_NAME } from "constants/chains/misc";
 import { MuonInfo } from "constants/chains/muon";
+import { wagmiConfig } from "pages/_app";
 
 export default function ConfigSDKComponent() {
   const setConfigCallBack = useSetSdkConfig();
@@ -20,6 +21,7 @@ export default function ConfigSDKComponent() {
       hedgers: HedgerInfo,
       appName: APP_NAME,
       MuonData: MuonInfo,
+      wagmiConfig,
     });
   }, [setConfigCallBack]);
 

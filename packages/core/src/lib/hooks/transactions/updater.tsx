@@ -1,9 +1,10 @@
 import { useCallback, useEffect } from "react";
 import useBlockNumber from "../useBlockNumber";
 import useActiveWagmi from "../useActiveWagmi";
-import { Address, usePublicClient } from "wagmi";
-import { TransactionReceipt } from "viem";
-import { waitForTransaction } from "@wagmi/core";
+import { usePublicClient } from "wagmi";
+import { Address, TransactionReceipt } from "viem";
+import { waitForTransactionReceipt } from "@wagmi/core";
+import { useWagmiConfig } from "../../../state/chains";
 
 interface Transaction {
   addedTime: number;
@@ -47,12 +48,13 @@ export default function Updater({
   const { chainId } = useActiveWagmi();
   const provider = usePublicClient();
   const lastBlockNumber = useBlockNumber();
+  const wagmiConfig = useWagmiConfig();
 
   const getReceipt = useCallback(
     async (hash: string) => {
       try {
         if (!provider || !chainId) throw new Error("No provider or chainId");
-        return await waitForTransaction({
+        return await waitForTransactionReceipt(wagmiConfig, {
           hash: hash as Address,
           onReplaced: (transaction) => console.log("OnReplace", transaction),
         });
@@ -62,7 +64,7 @@ export default function Updater({
         }
       }
     },
-    [chainId, provider]
+    [chainId, provider, wagmiConfig]
   );
 
   useEffect(() => {

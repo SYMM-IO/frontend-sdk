@@ -1,9 +1,5 @@
-import { Abi, Address, Narrow } from "viem";
-import {
-  UseContractReadConfig,
-  useContractRead,
-  useContractReads,
-} from "wagmi";
+import { Abi, Address } from "viem";
+import { useReadContract, useReadContracts } from "wagmi";
 import { useContract } from "./contract";
 
 /**
@@ -20,54 +16,81 @@ export type ContractType = {
 export function useSingleContractMultipleData(
   contract: ReturnType<typeof useContract>,
   functionName: string,
-  callsData: Narrow<UseContractReadConfig["args"]>[],
-  option?: UseContractReadConfig
+  callsData: any,
+  option?: any
 ) {
   const configs = callsData.map((args) => ({
     ...contract,
     functionName,
     args,
   }));
-  return useContractReads({ contracts: configs, watch: true, ...{ option } });
+  return useReadContracts({
+    contracts: configs,
+    ...{ option },
+    query: { refetchInterval: 2000 },
+  });
+}
+
+interface CallData {
+  functionName: string;
+  callInputs: any[];
 }
 
 export function useSingleContractMultipleMethods(
   contract: ReturnType<typeof useContract>,
-  callsData?: {
-    functionName: string;
-    callInputs: Narrow<UseContractReadConfig["args"]>;
-  }[],
-  option?: UseContractReadConfig
+  callsData?: CallData[],
+  option?: any
 ) {
-  const configs = callsData?.map(({ callInputs: args, functionName }) => ({
-    ...contract,
-    functionName,
-    args,
-  }));
-  return useContractReads({ contracts: configs, watch: true, ...{ option } });
+  const configs =
+    (contract &&
+      callsData
+        ?.map(({ callInputs: args, functionName }) => {
+          if (!functionName || !args) {
+            console.error("Invalid call data:", { functionName, args });
+            return null;
+          }
+
+          return {
+            address: contract.address,
+            abi: contract.abi,
+            functionName,
+            args,
+          };
+        })
+        .filter(Boolean)) ||
+    [];
+
+  const readContractsConfig = {
+    contracts: configs,
+    ...option,
+    query: { refetchInterval: 2000 },
+  };
+  const result = useReadContracts(readContractsConfig);
+
+  return result;
 }
 
 export function useSingleCallResult(
   contract: ReturnType<typeof useContract>,
   functionName: string,
-  callInputs?: Narrow<UseContractReadConfig["args"]>,
-  option?: UseContractReadConfig
+  callInputs?: any,
+  option?: any
 ) {
-  return useContractRead({
+  return useReadContract({
     ...{ contract },
     functionName,
     args: [...[callInputs]],
-    watch: true,
     ...{ option },
+    query: { refetchInterval: 2000 },
   });
 }
 
 export function useMultipleContractSingleData(
   addresses: string[],
-  abi: UseContractReadConfig["abi"],
+  abi: Abi,
   functionName: string,
-  callInputs: Narrow<UseContractReadConfig["args"]>,
-  option?: UseContractReadConfig
+  callInputs: any,
+  option?: any
 ) {
   // TODO: fix any type
   const configs = addresses.map((address, i) => ({
@@ -77,5 +100,9 @@ export function useMultipleContractSingleData(
     args: (callInputs && callInputs[i] ? callInputs[i] : []) as any,
   }));
 
-  return useContractReads({ contracts: configs, watch: true, ...{ option } });
+  return useReadContracts({
+    contracts: configs,
+    ...{ option },
+    query: { refetchInterval: 2000 },
+  });
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { WagmiConfig } from "wagmi";
+import { WagmiProvider } from "wagmi";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // import dynamic from "next/dynamic";
 import type { AppProps } from "next/app";
 import store, { ReduxProvider } from "@symmio/frontend-sdk/state/declaration";
@@ -21,13 +22,14 @@ import ErrorBoundary from "components/App/ErrorBoundaries";
 //   ssr: false,
 // });
 
-const { wagmiConfig, chains, initialChain } = getWagmiConfig();
+const { wagmiConfig, initialChain } = getWagmiConfig();
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   if (process.env.NODE_ENV === "development") {
     setUseWhatChange(true);
   }
   const [showChild, setShowChild] = useState(false);
+  const queryClient = new QueryClient();
   useEffect(() => {
     setShowChild(true);
   }, []);
@@ -41,36 +43,39 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ErrorBoundary>
       <ReduxProvider store={store}>
-        <WagmiConfig config={wagmiConfig}>
-          <RainbowKitProvider
-            chains={chains}
-            initialChain={initialChain}
-            showRecentTransactions={true}
-            theme={darkTheme({
-              accentColor: "#AEE3FA",
-              accentColorForeground: "#151A1F",
-              borderRadius: "small",
-              fontStack: "system",
-              overlayBlur: "small",
-            })}
-          >
-            <ThemeProvider>
-              <ThemedGlobalStyle />
-              <ModalProvider backgroundComponent={ModalBackground}>
-                <Toaster position="bottom-center" />
-                <BlockNumberProvider>
-                  <Popups />
-                  <Updaters />
-                  <ConfigSDKComponent />
-                  <Layout>
-                    <Component {...pageProps} />
-                  </Layout>
-                </BlockNumberProvider>
-              </ModalProvider>
-            </ThemeProvider>
-          </RainbowKitProvider>
-        </WagmiConfig>
+        <WagmiProvider config={wagmiConfig}>
+          <QueryClientProvider client={queryClient}>
+            <RainbowKitProvider
+              initialChain={initialChain}
+              showRecentTransactions={true}
+              theme={darkTheme({
+                accentColor: "#AEE3FA",
+                accentColorForeground: "#151A1F",
+                borderRadius: "small",
+                fontStack: "system",
+                overlayBlur: "small",
+              })}
+            >
+              <ThemeProvider>
+                <ThemedGlobalStyle />
+                <ModalProvider backgroundComponent={ModalBackground}>
+                  <Toaster position="bottom-center" />
+                  <BlockNumberProvider wagmiConfig={wagmiConfig}>
+                    <Popups />
+                    <Updaters />
+                    <ConfigSDKComponent />
+                    <Layout>
+                      <Component {...pageProps} />
+                    </Layout>
+                  </BlockNumberProvider>
+                </ModalProvider>
+              </ThemeProvider>
+            </RainbowKitProvider>
+          </QueryClientProvider>
+        </WagmiProvider>
       </ReduxProvider>
     </ErrorBoundary>
   );
 }
+
+export { wagmiConfig };

@@ -3,17 +3,6 @@ const { createAction } = ((toolkitRaw as any).default ??
   toolkitRaw) as typeof toolkitRaw;
 import { ApplicationModal, PopupContent } from "./reducer";
 
-export const updateBlockNumber = createAction<{
-  chainId: number;
-  blockNumber: number;
-}>("application/updateBlockNumber");
-export const updateBlockTimestamp = createAction<{
-  chainId: number;
-  blockTimestamp: number;
-}>("application/updateBlockTimestamp");
-export const updateChainId = createAction<{ chainId: number }>(
-  "application/updateChainId"
-);
 export const setChainConnectivityWarning = createAction<{
   chainConnectivityWarning: boolean;
 }>("application/setChainConnectivityWarning");

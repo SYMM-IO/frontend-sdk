@@ -24,15 +24,15 @@ import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
 import { ConstructCallReturnType } from "../types/web3";
 import { encodeFunctionData } from "viem";
 import useActiveWagmi from "../lib/hooks/useActiveWagmi";
-import { SendTransactionResult } from "@wagmi/core";
 import { useExpertMode } from "../state/user/hooks";
+import { useWagmiConfig } from "../state/chains";
 
 export function useCancelQuote(
   quote: Quote | null,
   closeQuote: CloseQuote | null
 ): {
   state: TransactionCallbackState;
-  callback: null | (() => Promise<SendTransactionResult | undefined>);
+  callback: null | (() => Promise<any>);
   error: string | null;
 } {
   const { account, chainId } = useActiveWagmi();
@@ -40,6 +40,7 @@ export function useCancelQuote(
   const addRecentTransaction = useAddRecentTransaction();
   const isSupportedChainId = useSupportedChainId();
   const userExpertMode = useExpertMode();
+  const wagmiConfig = useWagmiConfig();
 
   const Contract = useDiamondContract();
   const MultiAccountContract = useMultiAccountContract();
@@ -133,6 +134,7 @@ export function useCancelQuote(
           addTransaction,
           addRecentTransaction,
           txInfo,
+          wagmiConfig,
           summary,
           true,
           userExpertMode
@@ -150,6 +152,7 @@ export function useCancelQuote(
     constructCall,
     addTransaction,
     addRecentTransaction,
+    wagmiConfig,
     userExpertMode,
   ]);
 }

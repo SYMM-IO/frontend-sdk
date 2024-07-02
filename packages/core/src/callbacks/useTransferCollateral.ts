@@ -27,15 +27,14 @@ import {
 import { ConstructCallReturnType } from "../types/web3";
 import { Address, encodeFunctionData } from "viem";
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
-import { SendTransactionResult } from "@wagmi/core";
-import { useMuonData } from "../state/chains";
+import { useMuonData, useWagmiConfig } from "../state/chains";
 
 export function useTransferCollateral(
   typedAmount: string,
   activeTab: TransferTab
 ): {
   state: TransactionCallbackState;
-  callback: null | (() => Promise<SendTransactionResult | undefined>);
+  callback: null | (() => Promise<any>);
   error: string | null;
 } {
   const { account, chainId } = useActiveWagmi();
@@ -45,6 +44,7 @@ export function useTransferCollateral(
   const isSupportedChainId = useSupportedChainId();
   const COLLATERAL_TOKEN = useCollateralToken();
   const userExpertMode = useExpertMode();
+  const wagmiConfig = useWagmiConfig();
 
   const collateralCurrency = useGetTokenWithFallbackChainId(
     COLLATERAL_TOKEN,
@@ -288,6 +288,7 @@ export function useTransferCollateral(
           addTransaction,
           addRecentTransaction,
           txInfo,
+          wagmiConfig,
           summary,
           undefined,
           userExpertMode
@@ -306,6 +307,7 @@ export function useTransferCollateral(
     constructCall,
     addTransaction,
     addRecentTransaction,
+    wagmiConfig,
     userExpertMode,
   ]);
 }

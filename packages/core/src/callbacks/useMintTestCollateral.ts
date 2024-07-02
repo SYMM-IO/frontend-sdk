@@ -18,6 +18,7 @@ import { useCollateralContract } from "../hooks/useContract";
 import { Address, encodeFunctionData } from "viem";
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
 import { useCollateralToken } from "../constants/tokens";
+import { useWagmiConfig } from "../state/chains";
 
 export function useMintCollateral(): {
   state: TransactionCallbackState;
@@ -29,6 +30,7 @@ export function useMintCollateral(): {
   const isSupportedChainId = useSupportedChainId();
   const addRecentTransaction = useAddRecentTransaction();
   const COLLATERAL_TOKEN = useCollateralToken();
+  const wagmiConfig = useWagmiConfig();
 
   const addTransaction = useTransactionAdder();
 
@@ -93,6 +95,7 @@ export function useMintCollateral(): {
           addTransaction,
           addRecentTransaction,
           txInfo,
+          wagmiConfig,
           summary
         ),
     };
@@ -104,5 +107,6 @@ export function useMintCollateral(): {
     constructCall,
     addTransaction,
     addRecentTransaction,
+    wagmiConfig,
   ]);
 }

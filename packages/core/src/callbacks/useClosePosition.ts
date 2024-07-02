@@ -42,7 +42,7 @@ import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
 import { ConstructCallReturnType } from "../types/web3";
 import { encodeFunctionData } from "viem";
 import useActiveWagmi from "../lib/hooks/useActiveWagmi";
-import { SendTransactionResult } from "@wagmi/core";
+import { useWagmiConfig } from "../state/chains";
 
 export function useClosePosition(
   quote: Quote | null,
@@ -51,7 +51,7 @@ export function useClosePosition(
   quantityToClose: string
 ): {
   state: TransactionCallbackState;
-  callback: null | (() => Promise<SendTransactionResult | undefined>);
+  callback: null | (() => Promise<any>);
   error: string | null;
 } {
   const { account, chainId } = useActiveWagmi();
@@ -59,6 +59,7 @@ export function useClosePosition(
   const addRecentTransaction = useAddRecentTransaction();
   const isSupportedChainId = useSupportedChainId();
   const userExpertMode = useExpertMode();
+  const wagmiConfig = useWagmiConfig();
 
   const Contract = useDiamondContract();
   const MultiAccountContract = useMultiAccountContract();
@@ -232,6 +233,7 @@ export function useClosePosition(
           addTransaction,
           addRecentTransaction,
           txInfo,
+          wagmiConfig,
           summary,
           true,
           userExpertMode
@@ -251,6 +253,7 @@ export function useClosePosition(
     constructCall,
     addTransaction,
     addRecentTransaction,
+    wagmiConfig,
     userExpertMode,
   ]);
 }

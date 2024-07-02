@@ -18,11 +18,11 @@ import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
 import { encodeFunctionData } from "viem";
 import { ConstructCallReturnType } from "../types/web3";
 import { useWalletClient } from "wagmi";
-import { SendTransactionResult } from "@wagmi/core";
+import { useWagmiConfig } from "../state/chains";
 
 export function useAddAccountToContract(accountName: string): {
   state: TransactionCallbackState;
-  callback: null | (() => Promise<SendTransactionResult | undefined>);
+  callback: null | (() => Promise<any>);
   error: string | null;
 } {
   const { account, chainId } = useActiveWagmi();
@@ -30,6 +30,7 @@ export function useAddAccountToContract(accountName: string): {
   const isSupportedChainId = useSupportedChainId();
   const Contract = useMultiAccountContract();
   const addRecentTransaction = useAddRecentTransaction();
+  const wagmiConfig = useWagmiConfig();
 
   const functionName = "addAccount";
 
@@ -88,6 +89,7 @@ export function useAddAccountToContract(accountName: string): {
           addTransaction,
           addRecentTransaction,
           txInfo,
+          wagmiConfig,
           summary
         ),
     };
@@ -99,6 +101,7 @@ export function useAddAccountToContract(accountName: string): {
     constructCall,
     addTransaction,
     addRecentTransaction,
+    wagmiConfig,
   ]);
 }
 

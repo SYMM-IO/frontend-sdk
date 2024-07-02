@@ -1,11 +1,13 @@
 import { useCallback, useMemo } from "react";
+import { Address } from "viem";
+import { useReadContract } from "wagmi";
 import { Currency, Token } from "@uniswap/sdk-core";
+
 import { useERC20Contract } from "../../hooks/useContract";
 import { useERC20Allowance } from "./useERC20Allowance";
 import { calculateGasMargin } from "../../utils/web3";
 import BigNumber from "bignumber.js";
 import { BN_TEN } from "../../utils/numbers";
-import { Address, useContractRead } from "wagmi";
 import { MAX_UINT256 } from "../../constants/misc";
 import useWagmi from "./useWagmi";
 
@@ -22,7 +24,7 @@ export function useApprovalStateForSpender(
   owner: Address | undefined,
   spender: string | undefined,
   useIsPendingApproval: (token?: Token, spender?: string) => boolean
-): [ApprovalState, ReturnType<typeof useContractRead>["refetch"]] {
+): [ApprovalState, ReturnType<typeof useReadContract>["refetch"]] {
   const token = currency?.isToken ? currency.wrapped : undefined;
 
   const { tokenAllowance, refetch } = useERC20Allowance({

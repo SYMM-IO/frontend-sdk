@@ -11,6 +11,7 @@ import {
   useAppName,
   useFallbackChainId,
   useMuonData,
+  useWagmiConfig,
 } from "../state/chains/hooks";
 import { makeHttpRequest } from "../utils/http";
 import { OrderType, TradeState, PositionType } from "../types/trade";
@@ -68,17 +69,17 @@ import {
   useCollateralAddress,
   usePartyBWhitelistAddress,
 } from "../state/chains/hooks";
-import { SendTransactionResult } from "@wagmi/core";
 
 export function useSentQuoteCallback(): {
   state: TransactionCallbackState;
-  callback: null | (() => Promise<SendTransactionResult | undefined>);
+  callback: null | (() => Promise<any>);
   error: string | null;
 } {
   const { account, chainId } = useActiveWagmi();
   const addTransaction = useTransactionAdder();
   const userExpertMode = useExpertMode();
   const addRecentTransaction = useAddRecentTransaction();
+  const wagmiConfig = useWagmiConfig();
 
   const activeAccountAddress = useActiveAccountAddress();
   const isSupportedChainId = useSupportedChainId();
@@ -347,6 +348,7 @@ export function useSentQuoteCallback(): {
           addTransaction,
           addRecentTransaction,
           txInfo,
+          wagmiConfig,
           summary,
           true,
           userExpertMode
@@ -369,6 +371,7 @@ export function useSentQuoteCallback(): {
     constructCall,
     addTransaction,
     addRecentTransaction,
+    wagmiConfig,
     userExpertMode,
   ]);
 }

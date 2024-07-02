@@ -3,11 +3,11 @@ import { useCallback } from "react";
 import { ChainInfo } from "../../constants/chainInfo";
 import { SupportedChainId } from "../../constants/chains";
 import useWagmi from "./useWagmi";
-import { useSwitchNetwork } from "wagmi";
+import { useSwitchChain } from "wagmi";
 
 export default function useRpcChangerCallback() {
   const { chainId } = useWagmi();
-  const { switchNetworkAsync } = useSwitchNetwork();
+  const { switchChainAsync } = useSwitchChain();
 
   return useCallback(
     async (targetChainId: SupportedChainId) => {
@@ -16,7 +16,7 @@ export default function useRpcChangerCallback() {
       if (targetChainId === chainId) return true;
 
       try {
-        await switchNetworkAsync?.(targetChainId);
+        await switchChainAsync?.({ chainId: targetChainId });
         return true;
       } catch (switchError) {
         // This error code indicates that the chain has not been added to MetaMask.
@@ -42,6 +42,6 @@ export default function useRpcChangerCallback() {
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     },
-    [chainId, switchNetworkAsync]
+    [chainId, switchChainAsync]
   );
 }

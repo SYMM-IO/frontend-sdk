@@ -1,7 +1,7 @@
 import {
-  prepareSendTransaction,
   sendTransaction,
-  waitForTransaction,
+  waitForTransactionReceipt,
+  Config,
 } from "@wagmi/core";
 import { UserRejectedRequestError, parseEther } from "viem";
 import { ContractFunctionRevertedError, BaseError } from "viem";
@@ -32,6 +32,7 @@ export async function createTransactionCallback(
   addTransaction: ReturnType<typeof useTransactionAdder>,
   addRecentTransaction: ReturnType<typeof useAddRecentTransaction>,
   txInfo: TransactionInfo,
+  wagmiConfig: Config,
   summary?: string,
   isMultiAccount?: boolean,
   expertMode?: ReturnType<typeof useExpertMode>
@@ -43,26 +44,26 @@ export async function createTransactionCallback(
     }
 
     call = await constructCall();
+
     const gas: bigint = await Contract.estimateGas[
       isMultiAccount ? "_call" : functionName
     ](call.args);
-    const request = await prepareSendTransaction(call.config);
-    const data = await sendTransaction({
-      ...request,
+    let hash = await sendTransaction(wagmiConfig, {
+      ...call.config,
       gas: calculateGasMargin(gas),
     });
-    await waitForTransaction({
-      hash: data?.hash,
+    await waitForTransactionReceipt(wagmiConfig, {
+      hash,
       onReplaced: (replace) => {
-        data.hash = replace.transaction.hash;
+        hash = replace.transaction.hash;
       },
     });
-    addTransaction(data.hash, txInfo, summary);
+    addTransaction(hash, txInfo, summary);
     addRecentTransaction({
-      hash: data.hash,
+      hash,
       description: summary || "-------",
     });
-    return data;
+    return hash;
   } catch (error) {
     if (error instanceof Error) {
       console.log("Error", { error });
@@ -81,13 +82,13 @@ export async function createTransactionCallback(
               data: config.data,
               value: parseEther(config.value),
             };
-        const data = await sendTransaction(tx);
-        addTransaction(data.hash, txInfo, summary);
+        const hash = await sendTransaction(wagmiConfig, tx);
+        addTransaction(hash, txInfo, summary);
         addRecentTransaction({
-          hash: data.hash,
+          hash,
           description: summary || "-------",
         });
-        return data;
+        return hash;
       }
 
       if (error instanceof BaseError) {

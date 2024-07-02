@@ -146,4 +146,18 @@ export const ChainInfo: { [chainId: number]: Info } = {
     blockExplorerUrl: "https://mantlescan.info/",
     WRAPPED_NATIVE_ADDRESS: "0x29019c39EC418Ac4e7aFc1d88d6b962Ff172aBf6",
   },
+  [SupportedChainId.BLAST]: {
+    chainId: "0x13e31",
+    chainName: "Blast",
+    label: "Blast",
+    nativeCurrency: {
+      name: "ETH",
+      symbol: "Eth",
+      decimals: 18,
+    },
+
+    rpcUrl: "https://rpc.blast.io",
+    blockExplorerUrl: "https://blastscan.io/",
+    WRAPPED_NATIVE_ADDRESS: "0x4300000000000000000000000000000000000004",
+  },
 };

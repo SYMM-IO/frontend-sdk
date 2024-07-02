@@ -74,6 +74,10 @@ export function isBASE(chainId: number): chainId is SupportedChainId.BASE {
   return chainId === SupportedChainId.BASE;
 }
 
+export function isBLAST(chainId: number): chainId is SupportedChainId.BLAST {
+  return chainId === SupportedChainId.BLAST;
+}
+
 class BscNativeCurrency extends NativeCurrency {
   equals(other: Currency): boolean {
     return other.isNative && other.chainId === this.chainId;
@@ -164,6 +168,24 @@ class BaseNativeCurrency extends NativeCurrency {
   }
 }
 
+class BlastNativeCurrency extends NativeCurrency {
+  equals(other: Currency): boolean {
+    return other.isNative && other.chainId === this.chainId;
+  }
+
+  get wrapped(): Token {
+    if (!isBLAST(this.chainId)) throw new Error("Not Eth");
+    const wrapped = WRAPPED_NATIVE_CURRENCY[this.chainId];
+    invariant(wrapped instanceof Token);
+    return wrapped;
+  }
+
+  public constructor(chainId: number) {
+    if (!isBLAST(chainId)) throw new Error("Not Eth");
+    super(chainId, 18, "ETH", "ETH");
+  }
+}
+
 class ExtendedEther extends Ether {
   public get wrapped(): Token {
     const wrapped = WRAPPED_NATIVE_CURRENCY[this.chainId];
@@ -190,6 +212,8 @@ export function nativeOnChain(chainId: number): NativeCurrency | Token {
     nativeCurrency = new MantleNativeCurrency(chainId);
   } else if (isBASE(chainId)) {
     nativeCurrency = new BaseNativeCurrency(chainId);
+  } else if (isBLAST(chainId)) {
+    nativeCurrency = new BlastNativeCurrency(chainId);
   } else {
     nativeCurrency = ExtendedEther.onChain(chainId);
   }
