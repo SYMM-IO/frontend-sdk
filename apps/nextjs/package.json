@@ -1,0 +1,50 @@
+{
+  "name": "@symmio/clover",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "clean": "rimraf .next",
+    "dev": "next dev",
+    "start": "next start",
+    "build": "next build"
+  },
+  "dependencies": {
+    "@rainbow-me/rainbowkit": "^2.1.2",
+    "@react-spring/web": "^9.7.3",
+    "@tanstack/react-query": "^5.45.1",
+    "adblock-detect-react": "1.1.0",
+    "ethers": "^6.12.1",
+    "next": "~13.5.0",
+    "polished": "^3.7.2",
+    "rc-slider": "10.1.1",
+    "react": "~18.2.0",
+    "react-device-detect": "^2.2.2",
+    "react-dom": "~18.2.0",
+    "react-feather": "^2.0.10",
+    "react-hot-toast": "^2.4.1",
+    "react-infinite-scroll-component": "^6.1.0",
+    "react-lottie": "^1.2.3",
+    "react-paginate": "8.1.4",
+    "react-spring": "^9.7.2",
+    "react-tooltip": "^4.2.21",
+    "rebass": "^4.0.7",
+    "recharts": "2.6.2",
+    "siwe": "^2.3.2",
+    "styled-components": "^5.3.6",
+    "styled-react-modal": "^3.0.1",
+    "symbol-observable": "^4.0.0"
+  },
+  "devDependencies": {
+    "@simbathesailor/use-what-changed": "^2.0.0",
+    "@types/node": "~18.17.0",
+    "@types/react": "~18.2.0",
+    "@types/react-dom": "~18.2.0",
+    "@types/react-lottie": "^1.2.6",
+    "@types/rebass": "^4.0.10",
+    "@types/styled-components": "^5.1.20",
+    "@types/styled-react-modal": "^1.2.2",
+    "babel-plugin-styled-components": "^2.0.2",
+    "rimraf": "~5.0.0",
+    "typescript": "5.2"
+  }
+}

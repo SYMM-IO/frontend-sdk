@@ -1,0 +1,27 @@
+{
+  "short_name": "Cloverfield",
+  "name": "Cloverfield interface",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "display": "standalone",
+  "homepage_url": "https://cloverfield.exchange",
+  "providedBy": { "name": "Cloverfield", "url": "https://cloverfield.exchange" },
+  "icons": [
+    {
+      "src": "./images/192x192_App_Icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./images/512x512_App_Icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "orientation": "portrait",
+  "description": "Cloverfield",
+  "iconPath": "./images/512x512_App_Icon.png",
+  "start_url": "/"
+}

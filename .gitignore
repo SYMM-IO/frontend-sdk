@@ -1,0 +1,23 @@
+**/dist
+results
+.nyc_output
+*.tsbuildinfo
+.DS_Store
+.idea
+
+# Logs
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
+node_modules/
+
+# vscode
+.vscode/
+
+# dotenv environment variables file
+.env
+.env.development
+
+.yalc
+yalc.lock
