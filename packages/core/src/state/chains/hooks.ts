@@ -192,48 +192,6 @@ export function useV3Ids(): number[] {
   return v3_ids;
 }
 
-export function useCollateralABI() {
-  const collateral_abi = useAppSelector(
-    (state: AppState) => state.chains.contract_ABIs.COLLATERAL_ABI
-  );
-  return collateral_abi;
-}
-
-export function useDiamondABI() {
-  const diamond_abi = useAppSelector(
-    (state: AppState) => state.chains.contract_ABIs.DIAMOND_ABI
-  );
-  return diamond_abi;
-}
-
-export function useERC20BYTES20ABI() {
-  const erc20_abi = useAppSelector(
-    (state: AppState) => state.chains.contract_ABIs.ERC20_BYTES32_ABI
-  );
-  return erc20_abi;
-}
-
-export function useMulticall3ABI() {
-  const multicall3_abi = useAppSelector(
-    (state: AppState) => state.chains.contract_ABIs.MULTICALL3_ABI
-  );
-  return multicall3_abi;
-}
-
-export function useMultiAccountABI() {
-  const multiAccount_abi = useAppSelector(
-    (state: AppState) => state.chains.contract_ABIs.MULTI_ACCOUNT_ABI
-  );
-  return multiAccount_abi;
-}
-
-export function useSignatureStoreABI() {
-  const signatureStore_abi = useAppSelector(
-    (state: AppState) => state.chains.contract_ABIs.SIGNATURE_STORE_ABI
-  );
-  return signatureStore_abi;
-}
-
 export function useFallbackChainId() {
   const fallbackChainId = useAppSelector(
     (state: AppState) => state.chains.FALLBACK_CHAIN_ID
@@ -297,7 +255,6 @@ export function useWagmiConfig() {
 export function useSetSdkConfig(): ({
   chains,
   V3_CHAIN_IDS,
-  contract_ABIs,
   FALLBACK_CHAIN_ID,
   hedgers,
   appName,
@@ -309,7 +266,6 @@ export function useSetSdkConfig(): ({
     ({
       chains,
       V3_CHAIN_IDS,
-      contract_ABIs,
       FALLBACK_CHAIN_ID,
       hedgers,
       appName,
@@ -320,7 +276,6 @@ export function useSetSdkConfig(): ({
         setChains({
           chains,
           V3_CHAIN_IDS,
-          contract_ABIs,
           FALLBACK_CHAIN_ID,
           hedgers,
           appName,

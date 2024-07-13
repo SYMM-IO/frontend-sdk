@@ -14,14 +14,11 @@ import {
   createTransactionCallback,
 } from "../utils/web3";
 
-import { Address, encodeFunctionData } from "viem";
+import { Abi, Address, encodeFunctionData } from "viem";
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
 import { useCollateralToken } from "../constants/tokens";
-import {
-  useCollateralABI,
-  useCollateralAddress,
-  useWagmiConfig,
-} from "../state/chains";
+import { useCollateralAddress, useWagmiConfig } from "../state/chains";
+import { COLLATERAL_ABI } from "../constants";
 
 export function useMintCollateral(): {
   state: TransactionCallbackState;
@@ -30,7 +27,6 @@ export function useMintCollateral(): {
 } {
   const { account, chainId } = useActiveWagmi();
   const COLLATERAL_ADDRESS = useCollateralAddress();
-  const COLLATERAL_ABI = useCollateralABI();
 
   const isSupportedChainId = useSupportedChainId();
   const addRecentTransaction = useAddRecentTransaction();
@@ -46,7 +42,6 @@ export function useMintCollateral(): {
       if (
         !account ||
         !chainId ||
-        !COLLATERAL_ABI ||
         !Object.keys(COLLATERAL_ADDRESS).length ||
         !isSupportedChainId
       ) {
@@ -65,7 +60,7 @@ export function useMintCollateral(): {
           account,
           to: COLLATERAL_ADDRESS[chainId] as Address,
           data: encodeFunctionData({
-            abi: COLLATERAL_ABI,
+            abi: COLLATERAL_ABI as Abi,
             functionName,
             args,
           }),
@@ -76,20 +71,13 @@ export function useMintCollateral(): {
       if (error && typeof error === "string") throw new Error(error);
       throw new Error("error3");
     }
-  }, [
-    account,
-    chainId,
-    COLLATERAL_ADDRESS,
-    isSupportedChainId,
-    COLLATERAL_ABI,
-  ]);
+  }, [account, chainId, COLLATERAL_ADDRESS, isSupportedChainId]);
 
   return useMemo(() => {
     if (
       !account ||
       !chainId ||
       !chainId ||
-      !COLLATERAL_ABI ||
       !Object.keys(COLLATERAL_ADDRESS).length
     ) {
       return {
@@ -124,7 +112,6 @@ export function useMintCollateral(): {
   }, [
     account,
     chainId,
-    COLLATERAL_ABI,
     COLLATERAL_ADDRESS,
     COLLATERAL_TOKEN,
     constructCall,

@@ -7,15 +7,15 @@ import useActiveWagmi from "../lib/hooks/useActiveWagmi";
 import { BalanceInfosType } from "../state/user/types";
 import { ApiState } from "../types/api";
 import { useHedgerInfo } from "../state/hedger/hooks";
-import { useMultiAccountABI, useMultiAccountAddress } from "../state/chains";
+import { useMultiAccountAddress } from "../state/chains";
 import { useSupportedChainId } from "../lib/hooks/useSupportedChainId";
 import { AppThunkDispatch, useAppDispatch } from "../state";
 import { getBalanceInfo } from "../state/user/thunks";
+import { MULTI_ACCOUNT_ABI } from "../constants";
 
 export function useUserAccounts() {
   const { account, chainId } = useActiveWagmi();
   const MULTI_ACCOUNT_ADDRESS = useMultiAccountAddress();
-  const MULTI_ACCOUNT_ABI = useMultiAccountABI();
   const isSupportedChainId = useSupportedChainId();
   const { accountLength } = useAccountsLength();
 
@@ -26,7 +26,7 @@ export function useUserAccounts() {
     isError,
     isSuccess,
   } = useReadContract({
-    address: chainId ? (MULTI_ACCOUNT_ADDRESS[chainId] as Address) : "",
+    address: chainId ? (MULTI_ACCOUNT_ADDRESS[chainId] as Address) : undefined,
     abi: MULTI_ACCOUNT_ABI,
     functionName: "getAccounts",
     args: [account as Address, BigInt(0), BigInt(accountLength)],
@@ -71,10 +71,9 @@ export function useAccountsLength(): {
 
   const { account, chainId } = useActiveWagmi();
   const MULTI_ACCOUNT_ADDRESS = useMultiAccountAddress();
-  const MULTI_ACCOUNT_ABI = useMultiAccountABI();
 
   const { data, isLoading, isSuccess, isError } = useReadContract({
-    address: chainId ? (MULTI_ACCOUNT_ADDRESS[chainId] as Address) : "",
+    address: chainId ? (MULTI_ACCOUNT_ADDRESS[chainId] as Address) : undefined,
     abi: MULTI_ACCOUNT_ABI,
     functionName: "getAccountsLength",
     args: [account as Address],

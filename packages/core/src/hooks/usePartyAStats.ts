@@ -9,14 +9,13 @@ import { getMultipleBN, getSingleWagmiResult } from "../utils/multicall";
 
 import { UserPartyAStatDetail } from "../types/user";
 import {
-  useCollateralABI,
   useCollateralAddress,
   useCollateralDecimal,
-  useDiamondABI,
   useDiamondAddress,
   useFallbackChainId,
 } from "../state/chains";
 import useActiveWagmi from "../lib/hooks/useActiveWagmi";
+import { COLLATERAL_ABI, DIAMOND_ABI } from "../constants";
 
 //TODO why its not covered by useMemo
 //we converted all BigNumbers to string to avoid spurious rerenders
@@ -27,10 +26,8 @@ export function usePartyAStats(
   const isSupportedChainId = useSupportedChainId();
 
   const DIAMOND_ADDRESS = useDiamondAddress();
-  const DIAMOND_ABI = useDiamondABI();
 
   const COLLATERAL_ADDRESS = useCollateralAddress();
-  const COLLATERAL_ABI = useCollateralABI();
 
   const collateralDecimal = useCollateralDecimal();
   const fallBackChainId = useFallbackChainId();

@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { Address, encodeFunctionData } from "viem";
+import { Abi, Address, encodeFunctionData } from "viem";
 
 import { Quote } from "../types/quote";
 import { CloseQuote, CloseQuoteMessages } from "../types/trade";
@@ -21,11 +21,8 @@ import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
 import { ConstructCallReturnType } from "../types/web3";
 import useActiveWagmi from "../lib/hooks/useActiveWagmi";
 import { useExpertMode } from "../state/user/hooks";
-import {
-  useDiamondABI,
-  useDiamondAddress,
-  useWagmiConfig,
-} from "../state/chains";
+import { useDiamondAddress, useWagmiConfig } from "../state/chains";
+import { DIAMOND_ABI } from "../constants";
 
 export function useCancelQuote(
   quote: Quote | null,
@@ -43,7 +40,6 @@ export function useCancelQuote(
   const wagmiConfig = useWagmiConfig();
 
   const DIAMOND_ADDRESS = useDiamondAddress();
-  const DIAMOND_ABI = useDiamondABI();
 
   const functionName = useMemo(() => {
     return closeQuote === CloseQuote.CANCEL_CLOSE_REQUEST
@@ -62,7 +58,6 @@ export function useCancelQuote(
       if (
         !chainId ||
         !account ||
-        !DIAMOND_ABI ||
         !Object.keys(DIAMOND_ADDRESS).length ||
         !quote ||
         !functionName ||
@@ -79,7 +74,7 @@ export function useCancelQuote(
           account,
           to: DIAMOND_ADDRESS[chainId] as Address,
           data: encodeFunctionData({
-            abi: DIAMOND_ABI,
+            abi: DIAMOND_ABI as Abi,
             functionName,
             args,
           }),
@@ -93,7 +88,6 @@ export function useCancelQuote(
   }, [
     chainId,
     account,
-    DIAMOND_ABI,
     DIAMOND_ADDRESS,
     quote,
     functionName,
@@ -106,7 +100,6 @@ export function useCancelQuote(
     if (
       !account ||
       !chainId ||
-      !DIAMOND_ABI ||
       !Object.keys(DIAMOND_ADDRESS).length ||
       !market ||
       !functionName ||
@@ -151,7 +144,6 @@ export function useCancelQuote(
   }, [
     account,
     chainId,
-    DIAMOND_ABI,
     DIAMOND_ADDRESS,
     market,
     functionName,

@@ -13,7 +13,8 @@ import { erc20Abi } from "viem";
 import useWagmi from "./useWagmi";
 import { getSingleWagmiResult } from "../../utils/multicall";
 import { nativeOnChain } from "../../utils/token";
-import { useMulticall3ABI, useMultiCallAddress } from "../../state/chains";
+import { useMultiCallAddress } from "../../state/chains";
+import { MULTICALL3_ABI } from "../../constants";
 
 /**
  * Returns a map of the given addresses to their eventually consistent ETH balances.
@@ -26,7 +27,6 @@ export function useNativeCurrencyBalances(
   const { chainId } = useWagmi();
 
   const MULTICALL3_ADDRESS = useMultiCallAddress();
-  const MULTICALL3_ABI = useMulticall3ABI();
 
   const validAddressInputs: [string][] = useMemo(
     () =>

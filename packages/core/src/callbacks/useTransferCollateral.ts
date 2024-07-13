@@ -21,16 +21,15 @@ import { DeallocateCollateralClient } from "../lib/muon";
 import useActiveWagmi from "../lib/hooks/useActiveWagmi";
 import { useSupportedChainId } from "../lib/hooks/useSupportedChainId";
 import { ConstructCallReturnType } from "../types/web3";
-import { Address, encodeFunctionData } from "viem";
+import { Abi, Address, encodeFunctionData } from "viem";
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
 import {
-  useDiamondABI,
   useDiamondAddress,
-  useMultiAccountABI,
   useMultiAccountAddress,
   useMuonData,
   useWagmiConfig,
 } from "../state/chains";
+import { DIAMOND_ABI, MULTI_ACCOUNT_ABI } from "../constants";
 
 export function useTransferCollateral(
   typedAmount: string,
@@ -43,10 +42,7 @@ export function useTransferCollateral(
   const { account, chainId } = useActiveWagmi();
 
   const DIAMOND_ADDRESS = useDiamondAddress();
-  const DIAMOND_ABI = useDiamondABI();
-
   const MULTI_ACCOUNT_ADDRESS = useMultiAccountAddress();
-  const MULTI_ACCOUNT_ABI = useMultiAccountABI();
 
   const activeAccount = useActiveAccount();
   const isSupportedChainId = useSupportedChainId();
@@ -106,9 +102,7 @@ export function useTransferCollateral(
         !chainId ||
         !account ||
         !activeAccount ||
-        !DIAMOND_ABI ||
         !Object.keys(DIAMOND_ADDRESS).length ||
-        !MULTI_ACCOUNT_ABI ||
         !Object.keys(MULTI_ACCOUNT_ADDRESS).length ||
         !collateralCurrency ||
         !typedAmount ||
@@ -132,7 +126,7 @@ export function useTransferCollateral(
             account,
             to: MULTI_ACCOUNT_ADDRESS[chainId] as Address,
             data: encodeFunctionData({
-              abi: MULTI_ACCOUNT_ABI,
+              abi: MULTI_ACCOUNT_ABI as Abi,
               functionName,
               args,
             }),
@@ -155,7 +149,7 @@ export function useTransferCollateral(
         const diamondArgs = [BigInt(amount), signature] as const;
 
         const calldata = encodeFunctionData({
-          abi: DIAMOND_ABI,
+          abi: DIAMOND_ABI as Abi,
           functionName: "deallocate",
           args: [...diamondArgs],
         });
@@ -171,7 +165,7 @@ export function useTransferCollateral(
             value: BigInt(0),
             to: MULTI_ACCOUNT_ADDRESS[chainId] as Address,
             data: encodeFunctionData({
-              abi: MULTI_ACCOUNT_ABI,
+              abi: MULTI_ACCOUNT_ABI as Abi,
               functionName,
               args,
             }),
@@ -194,7 +188,7 @@ export function useTransferCollateral(
             account,
             to: MULTI_ACCOUNT_ADDRESS[chainId] as Address,
             data: encodeFunctionData({
-              abi: MULTI_ACCOUNT_ABI,
+              abi: MULTI_ACCOUNT_ABI as Abi,
               functionName,
               args,
             }),
@@ -210,7 +204,7 @@ export function useTransferCollateral(
         const diamondArgs = [BigInt(amount)] as const;
 
         const calldata = encodeFunctionData({
-          abi: DIAMOND_ABI,
+          abi: DIAMOND_ABI as Abi,
           functionName: "allocate",
           args: [...diamondArgs],
         });
@@ -226,7 +220,7 @@ export function useTransferCollateral(
             value: BigInt(0),
             to: MULTI_ACCOUNT_ADDRESS[chainId] as Address,
             data: encodeFunctionData({
-              abi: MULTI_ACCOUNT_ABI,
+              abi: MULTI_ACCOUNT_ABI as Abi,
               functionName,
               args,
             }),
@@ -252,9 +246,7 @@ export function useTransferCollateral(
     chainId,
     account,
     activeAccount,
-    DIAMOND_ABI,
     DIAMOND_ADDRESS,
-    MULTI_ACCOUNT_ABI,
     MULTI_ACCOUNT_ADDRESS,
     collateralCurrency,
     typedAmount,
@@ -269,9 +261,7 @@ export function useTransferCollateral(
       !activeAccount ||
       !chainId ||
       !collateralCurrency ||
-      !DIAMOND_ABI ||
       !Object.keys(DIAMOND_ADDRESS).length ||
-      !MULTI_ACCOUNT_ABI ||
       !Object.keys(MULTI_ACCOUNT_ADDRESS).length
     ) {
       return {
@@ -312,9 +302,7 @@ export function useTransferCollateral(
     account,
     activeAccount,
     chainId,
-    DIAMOND_ABI,
     DIAMOND_ADDRESS,
-    MULTI_ACCOUNT_ABI,
     MULTI_ACCOUNT_ADDRESS,
     collateralCurrency,
     activeTab,

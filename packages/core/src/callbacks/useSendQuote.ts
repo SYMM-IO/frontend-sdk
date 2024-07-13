@@ -9,7 +9,6 @@ import {
 } from "../constants/misc";
 import {
   useAppName,
-  useDiamondABI,
   useDiamondAddress,
   useMuonData,
   useWagmiConfig,
@@ -61,9 +60,10 @@ import useTradePage, {
   usePartyBLockedMM,
 } from "../hooks/useTradePage";
 import { SendQuoteClient } from "../lib/muon";
-import { Address, encodeFunctionData } from "viem";
+import { Abi, Address, encodeFunctionData } from "viem";
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
 import { useCollateralAddress } from "../state/chains/hooks";
+import { DIAMOND_ABI } from "../constants";
 
 export function useSentQuoteCallback(): {
   state: TransactionCallbackState;
@@ -80,7 +80,6 @@ export function useSentQuoteCallback(): {
   const isSupportedChainId = useSupportedChainId();
 
   const DIAMOND_ADDRESS = useDiamondAddress();
-  const DIAMOND_ABI = useDiamondABI();
 
   const functionName = "sendQuote";
   const COLLATERAL_ADDRESS = useCollateralAddress();
@@ -198,7 +197,6 @@ export function useSentQuoteCallback(): {
       if (
         !chainId ||
         !account ||
-        !DIAMOND_ABI ||
         !Object.keys(DIAMOND_ADDRESS).length ||
         !marketId ||
         !collateralCurrency ||
@@ -248,7 +246,7 @@ export function useSentQuoteCallback(): {
           account,
           to: DIAMOND_ADDRESS[chainId] as Address,
           data: encodeFunctionData({
-            abi: DIAMOND_ABI,
+            abi: DIAMOND_ABI as Abi,
             functionName,
             args,
           }),
@@ -262,7 +260,6 @@ export function useSentQuoteCallback(): {
   }, [
     chainId,
     account,
-    DIAMOND_ABI,
     DIAMOND_ADDRESS,
     marketId,
     collateralCurrency,
@@ -291,7 +288,6 @@ export function useSentQuoteCallback(): {
     if (
       !account ||
       !chainId ||
-      !DIAMOND_ABI ||
       !Object.keys(DIAMOND_ADDRESS).length ||
       !market ||
       !orderType ||
@@ -351,7 +347,6 @@ export function useSentQuoteCallback(): {
   }, [
     account,
     chainId,
-    DIAMOND_ABI,
     DIAMOND_ADDRESS,
     market,
     orderType,

@@ -17,13 +17,10 @@ import {
 } from "../state/transactions/types";
 
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
-import { Address, encodeFunctionData } from "viem";
+import { Abi, Address, encodeFunctionData } from "viem";
 import { ConstructCallReturnType } from "../types/web3";
-import {
-  useSignatureStoreABI,
-  useSignatureStoreAddress,
-  useWagmiConfig,
-} from "../state/chains";
+import { useSignatureStoreAddress, useWagmiConfig } from "../state/chains";
+import { SIGNATURE_STORE_ABI } from "../constants";
 
 export function useWriteSign(): {
   state: TransactionCallbackState;
@@ -38,7 +35,6 @@ export function useWriteSign(): {
 
   const isSupportedChainId = useSupportedChainId();
   const SIGNATURE_STORE_ADDRESS = useSignatureStoreAddress();
-  const SIGNATURE_STORE_ABI = useSignatureStoreABI();
 
   const functionName = "storeSignatureForCurrentVersion";
 
@@ -47,7 +43,6 @@ export function useWriteSign(): {
       try {
         if (
           !chainId ||
-          !SIGNATURE_STORE_ABI ||
           !Object.keys(SIGNATURE_STORE_ADDRESS).length ||
           !sign ||
           !isSupportedChainId
@@ -64,7 +59,7 @@ export function useWriteSign(): {
             account: account as Address,
             to: SIGNATURE_STORE_ADDRESS[chainId] as Address,
             data: encodeFunctionData({
-              abi: SIGNATURE_STORE_ABI,
+              abi: SIGNATURE_STORE_ABI as Abi,
               functionName,
               args,
             }),
@@ -76,13 +71,7 @@ export function useWriteSign(): {
         throw new Error("error3");
       }
     },
-    [
-      SIGNATURE_STORE_ABI,
-      SIGNATURE_STORE_ADDRESS,
-      account,
-      chainId,
-      isSupportedChainId,
-    ]
+    [SIGNATURE_STORE_ADDRESS, account, chainId, isSupportedChainId]
   );
 
   return useMemo(() => {
@@ -90,7 +79,6 @@ export function useWriteSign(): {
       !account ||
       !chainId ||
       !provider ||
-      !SIGNATURE_STORE_ABI ||
       !Object.keys(SIGNATURE_STORE_ADDRESS).length
     ) {
       return {
@@ -125,7 +113,6 @@ export function useWriteSign(): {
     account,
     chainId,
     provider,
-    SIGNATURE_STORE_ABI,
     SIGNATURE_STORE_ADDRESS,
     addTransaction,
     addRecentTransaction,

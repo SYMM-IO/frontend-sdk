@@ -19,7 +19,7 @@ import {
   useVisibleNotifications,
 } from "../state/notifications/hooks";
 
-import { useDiamondABI, useDiamondAddress } from "../state/chains";
+import { useDiamondAddress } from "../state/chains";
 import { useMarket } from "./useMarkets";
 import { useSupportedChainId } from "../lib/hooks/useSupportedChainId";
 import useBidAskPrice from "./useBidAskPrice";
@@ -30,6 +30,7 @@ import {
 } from "../state/quotes/hooks";
 import { InstantCloseStatus } from "../state/quotes/types";
 import useActiveWagmi from "../lib/hooks/useActiveWagmi";
+import { DIAMOND_ABI } from "../constants";
 
 export function getPositionTypeByIndex(x: number): PositionType {
   return PositionType[
@@ -62,7 +63,6 @@ export function useGetPositions(): {
   const { positionsCount } = useAccountPartyAStat(activeAccountAddress);
 
   const DIAMOND_ADDRESS = useDiamondAddress();
-  const DIAMOND_ABI = useDiamondABI();
 
   const [start, size] = [0, positionsCount + 1];
   const calls = useMemo(
@@ -126,7 +126,6 @@ export function useGetQuoteByIds(ids: number[]): {
   const isSupportedChainId = useSupportedChainId();
 
   const DIAMOND_ADDRESS = useDiamondAddress();
-  const DIAMOND_ABI = useDiamondABI();
 
   const calls = useMemo(
     () =>
@@ -189,7 +188,6 @@ export function useGetPendingIds(): {
   const activeAccountAddress = useActiveAccountAddress();
 
   const DIAMOND_ADDRESS = useDiamondAddress();
-  const DIAMOND_ABI = useDiamondABI();
 
   const calls = useMemo(
     () =>

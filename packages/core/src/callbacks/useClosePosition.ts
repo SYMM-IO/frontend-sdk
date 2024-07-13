@@ -38,11 +38,8 @@ import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
 import { ConstructCallReturnType } from "../types/web3";
 import { Address, encodeFunctionData } from "viem";
 import useActiveWagmi from "../lib/hooks/useActiveWagmi";
-import {
-  useDiamondABI,
-  useDiamondAddress,
-  useWagmiConfig,
-} from "../state/chains";
+import { useDiamondAddress, useWagmiConfig } from "../state/chains";
+import { DIAMOND_ABI } from "../constants";
 
 export function useClosePosition(
   quote: Quote | null,
@@ -62,7 +59,6 @@ export function useClosePosition(
   const wagmiConfig = useWagmiConfig();
 
   const DIAMOND_ADDRESS = useDiamondAddress();
-  const DIAMOND_ABI = useDiamondABI();
 
   const functionName = "requestToClosePosition";
 
@@ -121,7 +117,6 @@ export function useClosePosition(
       if (
         !chainId ||
         !account ||
-        !DIAMOND_ABI ||
         !Object.keys(DIAMOND_ADDRESS).length ||
         !quote ||
         !quantityToClose ||
@@ -170,7 +165,6 @@ export function useClosePosition(
   }, [
     chainId,
     account,
-    DIAMOND_ABI,
     DIAMOND_ADDRESS,
     quote,
     quantityToClose,
@@ -185,7 +179,6 @@ export function useClosePosition(
     if (
       !account ||
       !chainId ||
-      !DIAMOND_ABI ||
       !Object.keys(DIAMOND_ADDRESS).length ||
       !market ||
       !quote ||
@@ -244,7 +237,6 @@ export function useClosePosition(
   }, [
     account,
     chainId,
-    DIAMOND_ABI,
     DIAMOND_ADDRESS,
     market,
     quote,

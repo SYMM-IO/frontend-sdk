@@ -1,18 +1,17 @@
 import { useCallback } from "react";
 import { useActiveAccountAddress } from "../state/user/hooks";
 import { GLOBAL_MULTI_ACCOUNTABLE_PAUSED } from "../constants/misc";
-import { Address, encodeFunctionData } from "viem";
+import { Abi, Address, encodeFunctionData } from "viem";
 import { ConstructCallReturnType } from "../types/web3";
 import useWagmi from "../lib/hooks/useWagmi";
 import { ContractFunctionRevertedError, BaseError } from "viem";
 import {
-  useDiamondABI,
   useDiamondAddress,
-  useMultiAccountABI,
   useMultiAccountAddress,
   useWagmiConfig,
 } from "../state/chains";
 import { simulateContract } from "@wagmi/core";
+import { DIAMOND_ABI, MULTI_ACCOUNT_ABI } from "../constants";
 
 export function useMultiAccountable(
   constructCall: () => ConstructCallReturnType,
@@ -22,10 +21,7 @@ export function useMultiAccountable(
   const { account, chainId } = useWagmi();
 
   const MULTI_ACCOUNT_ADDRESS = useMultiAccountAddress();
-  const MULTI_ACCOUNT_ABI = useMultiAccountABI();
-
   const DIAMOND_ADDRESS = useDiamondAddress();
-  const DIAMOND_ABI = useDiamondABI();
 
   const wagmiConfig = useWagmiConfig();
 
@@ -39,9 +35,7 @@ export function useMultiAccountable(
         !chainId ||
         !constructCall ||
         !activeAccountAddress ||
-        !DIAMOND_ABI ||
         !Object.keys(DIAMOND_ADDRESS).length ||
-        !MULTI_ACCOUNT_ABI ||
         !Object.keys(MULTI_ACCOUNT_ADDRESS).length ||
         !account
       ) {
@@ -57,7 +51,7 @@ export function useMultiAccountable(
         // @ts-ignore
         await simulateContract(wagmiConfig, {
           args: preArgs,
-          abi: DIAMOND_ABI,
+          abi: DIAMOND_ABI as Abi,
           address: DIAMOND_ADDRESS[chainId] as Address,
           functionName,
           account: activeAccountAddress as Address,
@@ -73,7 +67,7 @@ export function useMultiAccountable(
           account,
           to: MULTI_ACCOUNT_ADDRESS[chainId] as Address,
           data: encodeFunctionData({
-            abi: MULTI_ACCOUNT_ABI,
+            abi: MULTI_ACCOUNT_ABI as Abi,
             functionName: "_call",
             args,
           }),
@@ -97,9 +91,7 @@ export function useMultiAccountable(
       throw new Error("error3");
     }
   }, [
-    DIAMOND_ABI,
     DIAMOND_ADDRESS,
-    MULTI_ACCOUNT_ABI,
     MULTI_ACCOUNT_ADDRESS,
     account,
     activeAccountAddress,

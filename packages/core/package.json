@@ -169,6 +169,10 @@
       "types": "./dist/constants/abi/MultiAccount.d.ts",
       "default": "./dist/constants/abi/MultiAccount.js"
     },
+    "./constants/abi/SIGNATURE_STORE": {
+      "types": "./dist/constants/abi/SIGNATURE_STORE.d.ts",
+      "default": "./dist/constants/abi/SIGNATURE_STORE.js"
+    },
     "./constants/abi": {
       "types": "./dist/constants/abi/index.d.ts",
       "default": "./dist/constants/abi/index.js"

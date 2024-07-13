@@ -19,11 +19,11 @@ import useActiveWagmi from "../lib/hooks/useActiveWagmi";
 import { useActiveAccountAddress } from "../state/user/hooks";
 import {
   useFallbackChainId,
-  useMultiAccountABI,
   useMultiAccountAddress,
   usePartyBWhitelistAddress,
   useWagmiConfig,
 } from "../state/chains";
+import { MULTI_ACCOUNT_ABI } from "../constants";
 
 export function useDelegateAccess(): {
   state: TransactionCallbackState;
@@ -37,7 +37,6 @@ export function useDelegateAccess(): {
   const wagmiConfig = useWagmiConfig();
 
   const MULTI_ACCOUNT_ADDRESS = useMultiAccountAddress();
-  const MULTI_ACCOUNT_ABI = useMultiAccountABI();
 
   const activeAccountAddress = useActiveAccountAddress();
 
@@ -55,7 +54,6 @@ export function useDelegateAccess(): {
       if (
         !chainId ||
         !account ||
-        !MULTI_ACCOUNT_ABI ||
         !Object.keys(MULTI_ACCOUNT_ADDRESS).length ||
         !activeAccountAddress ||
         !isSupportedChainId ||
@@ -97,7 +95,6 @@ export function useDelegateAccess(): {
   }, [
     chainId,
     account,
-    MULTI_ACCOUNT_ABI,
     MULTI_ACCOUNT_ADDRESS,
     activeAccountAddress,
     isSupportedChainId,
@@ -105,12 +102,7 @@ export function useDelegateAccess(): {
   ]);
 
   return useMemo(() => {
-    if (
-      !account ||
-      !chainId ||
-      !MULTI_ACCOUNT_ABI ||
-      !Object.keys(MULTI_ACCOUNT_ADDRESS).length
-    ) {
+    if (!account || !chainId || !Object.keys(MULTI_ACCOUNT_ADDRESS).length) {
       return {
         state: TransactionCallbackState.INVALID,
         callback: null,
@@ -139,7 +131,6 @@ export function useDelegateAccess(): {
   }, [
     account,
     chainId,
-    MULTI_ACCOUNT_ABI,
     MULTI_ACCOUNT_ADDRESS,
     constructCall,
     addTransaction,

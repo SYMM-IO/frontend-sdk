@@ -3,6 +3,7 @@ import MULTICALL3_ABI from "./MULTICALL3_ABI";
 import DIAMOND_ABI from "./Diamond";
 import MULTI_ACCOUNT_ABI from "./MultiAccount";
 import COLLATERAL_ABI from "./Collateral";
+import SIGNATURE_STORE_ABI from "./SIGNATURE_STORE";
 
 export {
   ERC20_BYTES32_ABI,
@@ -10,4 +11,5 @@ export {
   DIAMOND_ABI,
   MULTI_ACCOUNT_ABI,
   COLLATERAL_ABI,
+  SIGNATURE_STORE_ABI,
 };

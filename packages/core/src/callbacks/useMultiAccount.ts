@@ -14,14 +14,11 @@ import {
 } from "../state/transactions/types";
 
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
-import { Address, encodeFunctionData } from "viem";
+import { Abi, Address, encodeFunctionData } from "viem";
 import { ConstructCallReturnType } from "../types/web3";
 import { useWalletClient } from "wagmi";
-import {
-  useMultiAccountABI,
-  useMultiAccountAddress,
-  useWagmiConfig,
-} from "../state/chains";
+import { useMultiAccountAddress, useWagmiConfig } from "../state/chains";
+import { MULTI_ACCOUNT_ABI } from "../constants";
 
 export function useAddAccountToContract(accountName: string): {
   state: TransactionCallbackState;
@@ -32,7 +29,6 @@ export function useAddAccountToContract(accountName: string): {
   const addTransaction = useTransactionAdder();
   const isSupportedChainId = useSupportedChainId();
   const MULTI_ACCOUNT_ADDRESS = useMultiAccountAddress();
-  const MULTI_ACCOUNT_ABI = useMultiAccountABI();
   const addRecentTransaction = useAddRecentTransaction();
   const wagmiConfig = useWagmiConfig();
 
@@ -42,7 +38,6 @@ export function useAddAccountToContract(accountName: string): {
     try {
       if (
         !chainId ||
-        !MULTI_ACCOUNT_ABI ||
         !Object.keys(MULTI_ACCOUNT_ADDRESS).length ||
         !accountName ||
         !isSupportedChainId ||
@@ -60,7 +55,7 @@ export function useAddAccountToContract(accountName: string): {
           account,
           to: MULTI_ACCOUNT_ADDRESS[chainId] as Address,
           data: encodeFunctionData({
-            abi: MULTI_ACCOUNT_ABI,
+            abi: MULTI_ACCOUNT_ABI as Abi,
             functionName,
             args,
           }),
@@ -72,7 +67,6 @@ export function useAddAccountToContract(accountName: string): {
       throw new Error("error3");
     }
   }, [
-    MULTI_ACCOUNT_ABI,
     MULTI_ACCOUNT_ADDRESS,
     account,
     accountName,
@@ -84,7 +78,6 @@ export function useAddAccountToContract(accountName: string): {
     if (
       !account ||
       !chainId ||
-      !MULTI_ACCOUNT_ABI ||
       !Object.keys(MULTI_ACCOUNT_ADDRESS).length ||
       !accountName
     ) {
@@ -119,7 +112,6 @@ export function useAddAccountToContract(accountName: string): {
   }, [
     account,
     chainId,
-    MULTI_ACCOUNT_ABI,
     MULTI_ACCOUNT_ADDRESS,
     accountName,
     constructCall,
@@ -137,13 +129,11 @@ export function useSignMessage(): {
   const { account, chainId } = useActiveWagmi();
   const { data: provider } = useWalletClient();
   const MULTI_ACCOUNT_ADDRESS = useMultiAccountAddress();
-  const MULTI_ACCOUNT_ABI = useMultiAccountABI();
 
   return useMemo(() => {
     if (
       !account ||
       !chainId ||
-      !MULTI_ACCOUNT_ABI ||
       !Object.keys(MULTI_ACCOUNT_ADDRESS).length ||
       !provider
     ) {
@@ -178,5 +168,5 @@ export function useSignMessage(): {
           });
       },
     };
-  }, [account, chainId, MULTI_ACCOUNT_ABI, MULTI_ACCOUNT_ADDRESS, provider]);
+  }, [account, chainId, MULTI_ACCOUNT_ADDRESS, provider]);
 }

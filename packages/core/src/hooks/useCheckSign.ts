@@ -5,11 +5,9 @@ import { useSupportedChainId } from "../lib/hooks/useSupportedChainId";
 import { useSingleContractMultipleMethods } from "../lib/hooks/multicall";
 import { WEB_SETTING } from "../config";
 import { getSingleWagmiResult } from "../utils/multicall";
-import {
-  useSignatureStoreABI,
-  useSignatureStoreAddress,
-} from "../state/chains";
+import { useSignatureStoreAddress } from "../state/chains";
 import useActiveWagmi from "../lib/hooks/useActiveWagmi";
+import { SIGNATURE_STORE_ABI } from "../constants";
 
 export function useCheckSignedMessage(account: string | undefined): {
   isTermsAccepted: TermsStatus;
@@ -17,7 +15,6 @@ export function useCheckSignedMessage(account: string | undefined): {
   const { chainId } = useActiveWagmi();
   const isSupportedChainId = useSupportedChainId();
   const SIGNATURE_STORE_ADDRESS = useSignatureStoreAddress();
-  const SIGNATURE_STORE_ABI = useSignatureStoreABI();
 
   const calls =
     isSupportedChainId && WEB_SETTING.showSignModal
@@ -59,7 +56,6 @@ export function useCheckSignedMessage(account: string | undefined): {
 export function useGetMessage(): string {
   const { chainId } = useActiveWagmi();
   const SIGNATURE_STORE_ADDRESS = useSignatureStoreAddress();
-  const SIGNATURE_STORE_ABI = useSignatureStoreABI();
   const isSupportedChainId = useSupportedChainId();
 
   const calls =
