@@ -2,7 +2,6 @@ import React, { ChangeEvent, useMemo } from "react";
 import styled from "styled-components";
 
 import InfoItem from "components/InfoItem";
-import ActionButton from "./ActionButton";
 import useActiveWagmi from "@symmio/frontend-sdk/lib/hooks/useActiveWagmi";
 import {
   useActiveMarket,
@@ -110,7 +109,6 @@ export default function SetStopLoss() {
         <p>3- Something about that we Lock Value exactly</p>
         <p>.....</p>
       </Info>
-      <ActionButton />
     </>
   );
 }

@@ -3,7 +3,6 @@ import styled, { useTheme } from "styled-components";
 
 import InfoItem from "components/InfoItem";
 import { DisplayLabel } from "components/InputLabel";
-import ActionButton from "./ActionButton";
 import Column from "components/Column";
 import useActiveWagmi from "@symmio/frontend-sdk/lib/hooks/useActiveWagmi";
 import {
@@ -143,8 +142,6 @@ export default function OpenPositionData() {
           />
         );
       })}
-
-      <ActionButton />
     </React.Fragment>
   );
 }

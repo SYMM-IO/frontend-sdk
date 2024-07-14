@@ -1,6 +1,5 @@
 import styled from "styled-components";
 
-import ActionButton from "./ActionButton";
 import Column from "components/Column";
 import { RowCenter } from "components/Row";
 import { AlphaLottie } from "components/Icons";
@@ -19,10 +18,6 @@ const ConfirmWrap = styled(SummaryWrap)`
   color: ${({ theme }) => theme.text2};
 `;
 
-const ButtonWrap = styled.div`
-  margin-top: 100px;
-`;
-
 export default function Loading({ summary }: { summary: React.ReactText }) {
   const { isActive } = useStopLossValues();
 
@@ -35,9 +30,6 @@ export default function Loading({ summary }: { summary: React.ReactText }) {
           once your position got opened you can start to set stop-loss
         </ConfirmWrap>
       )}
-      <ButtonWrap>
-        <ActionButton />
-      </ButtonWrap>
     </Column>
   );
 }

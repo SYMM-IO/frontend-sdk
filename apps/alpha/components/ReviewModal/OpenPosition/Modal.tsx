@@ -22,6 +22,7 @@ import SetStopLoss from "./SetStopLoss";
 import OpenPositionData from "./OpenPositionData";
 import Column from "components/Column";
 import { ModalHeader, Modal } from "components/Modal";
+import ActionButton from "./ActionButton";
 
 const Wrapper = styled(Column)`
   gap: 16px;
@@ -73,6 +74,7 @@ export default function OpenPositionModal() {
         <Wrapper>
           {isActive && <ProgressTab />}
           {content}
+          <ActionButton />
         </Wrapper>
       </StateContext.Provider>
     </Modal>
