@@ -46,8 +46,10 @@ export function useCancelQuote(
       ? "requestToCancelCloseRequest"
       : closeQuote === CloseQuote.CANCEL_QUOTE
       ? "requestToCancelQuote"
-      : closeQuote === CloseQuote.FORCE_CLOSE
+      : closeQuote === CloseQuote.FORCE_CANCEL
       ? "forceCancelQuote"
+      : closeQuote === CloseQuote.FORCE_CANCEL_CLOSE
+      ? "forceCancelCloseRequest"
       : null;
   }, [closeQuote]);
 
@@ -112,7 +114,7 @@ export function useCancelQuote(
       };
     }
 
-    const summary = ` ${name}-Q${quote.id.toString()} “${
+    const summary = ` ${market.name}-Q${quote.id.toString()} “${
       CloseQuoteMessages[closeQuote || CloseQuote.CANCEL_QUOTE]
     }” ${status}`;
 

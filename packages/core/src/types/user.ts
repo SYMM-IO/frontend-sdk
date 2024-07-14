@@ -17,6 +17,8 @@ export type UserPartyAStatDetail = {
   accountBalanceLimit: string;
   withdrawCooldown: string;
   cooldownMA: string;
+  forceCancelCooldown: string;
+  forceCancelCloseCooldown: string;
 
   allocatedBalance: string;
   lockedCVA: string;
@@ -44,6 +46,8 @@ export const initialUserPartyAStatDetail: UserPartyAStatDetail = {
   accountBalanceLimit: "0",
   withdrawCooldown: "0",
   cooldownMA: "0",
+  forceCancelCooldown: "0",
+  forceCancelCloseCooldown: "0",
 
   allocatedBalance: "0",
   lockedCVA: "0",

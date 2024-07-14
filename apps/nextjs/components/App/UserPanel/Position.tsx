@@ -66,6 +66,7 @@ import Column from "components/Column";
 import PositionDetails from "components/App/AccountData/PositionDetails";
 import { useCheckQuoteIsExpired } from "lib/hooks/useCheckQuoteIsExpired";
 import { InstantCloseStatus } from "@symmio/frontend-sdk/state/quotes/types";
+import { getRemainingTime } from "@symmio/frontend-sdk/utils/time";
 
 const TableStructure = styled(RowBetween)<{ active?: boolean }>`
   width: 100%;
@@ -226,7 +227,8 @@ function TableRow({
   const theme = useTheme();
   const { quoteStatus } = quote;
   const activeAccountAddress = useActiveAccountAddress();
-  const { liquidationStatus } = useAccountPartyAStat(activeAccountAddress);
+  const { liquidationStatus, forceCancelCooldown, forceCancelCloseCooldown } =
+    useAccountPartyAStat(activeAccountAddress);
   const { expired, expiredColor } = useCheckQuoteIsExpired(quote);
   const { handleCancelClose } = useInstantClosePosition("0", "0", quote.id);
 
@@ -254,6 +256,28 @@ function TableRow({
     }
   }, [instantCloseData]);
 
+  const [remainingTime, setRemainingTime] = useState(getRemainingTime(0));
+  useEffect(() => {
+    const cooldown =
+      quote.quoteStatus === QuoteStatus.CANCEL_PENDING
+        ? forceCancelCooldown
+        : forceCancelCloseCooldown;
+
+    const interval = setInterval(() => {
+      const updatedTime = getRemainingTime(
+        toBN(quote.statusModifyTimestamp).plus(cooldown).times(1000).toNumber()
+      );
+      setRemainingTime(updatedTime);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [
+    forceCancelCloseCooldown,
+    forceCancelCooldown,
+    quote.quoteStatus,
+    quote.statusModifyTimestamp,
+  ]);
+
   const [buttonText, disableButton] = useMemo(() => {
     if (liquidationStatus) {
       return ["Liquidation...", true];
@@ -263,13 +287,24 @@ function TableRow({
       return ["Cancel Close", false];
     } else if (
       quoteStatus === QuoteStatus.PENDING ||
-      quoteStatus === QuoteStatus.LOCKED ||
-      quoteStatus === QuoteStatus.CANCEL_PENDING
+      quoteStatus === QuoteStatus.LOCKED
     ) {
       if (expired) return ["Unlock", false];
       return ["Cancel", false];
-    } else if (quoteStatus === QuoteStatus.CANCEL_CLOSE_PENDING) {
-      return ["Close", true];
+    } else if (
+      quoteStatus === QuoteStatus.CANCEL_PENDING ||
+      quoteStatus === QuoteStatus.CANCEL_CLOSE_PENDING
+    ) {
+      const enabled = remainingTime.diff < 0;
+      const text = enabled
+        ? "Force Cancel"
+        : `Force Cancel ${remainingTime.minutes
+            .toString()
+            .padStart(2, "0")} :${remainingTime.seconds
+            .toString()
+            .padStart(2, "0")}`;
+
+      return [text, enabled];
     }
 
     return ["Close", false];
@@ -278,6 +313,9 @@ function TableRow({
     instantCloseStatusInfo.isInstantClose,
     liquidationStatus,
     quoteStatus,
+    remainingTime.diff,
+    remainingTime.minutes,
+    remainingTime.seconds,
   ]);
 
   function onClickCloseButton(event: React.MouseEvent<HTMLDivElement>) {

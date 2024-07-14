@@ -130,6 +130,10 @@ export function usePartyAStats(
     accountBalanceLimit: fromWei(getSingleWagmiResult(secondData, 0)),
     withdrawCooldown: getSingleWagmiResult(secondData, 1)?.toString() ?? "0",
     cooldownMA: getMultipleBN(secondData?.[2]?.result)[0]?.toString() ?? "0",
+    forceCancelCooldown:
+      getMultipleBN(secondData?.[2]?.result)[1]?.toString() ?? "0",
+    forceCancelCloseCooldown:
+      getMultipleBN(secondData?.[2]?.result)[2]?.toString() ?? "0",
 
     allocatedBalance: fromWei(multipleBNResult[1]),
     lockedCVA: fromWei(multipleBNResult[2]),

@@ -16,14 +16,16 @@ export enum CloseQuote {
   CANCEL_CLOSE_REQUEST,
   CANCEL_QUOTE,
   CLOSE_POSITION,
-  FORCE_CLOSE,
+  FORCE_CANCEL,
+  FORCE_CANCEL_CLOSE,
 }
 
 export const CloseQuoteMessages: { [closeQuoteType: number]: string } = {
   [CloseQuote.CANCEL_CLOSE_REQUEST]: "Cancel Close Position",
   [CloseQuote.CANCEL_QUOTE]: "Cancel Order",
   [CloseQuote.CLOSE_POSITION]: "Close Position",
-  [CloseQuote.FORCE_CLOSE]: "Force Cancel Order",
+  [CloseQuote.FORCE_CANCEL]: "Force Cancel Order",
+  [CloseQuote.FORCE_CANCEL_CLOSE]: "Force Cancel Close Order",
 };
 
 export enum CloseGuides {

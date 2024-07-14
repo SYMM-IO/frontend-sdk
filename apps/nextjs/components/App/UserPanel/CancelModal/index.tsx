@@ -110,6 +110,10 @@ export default function CloseModal({
       ? CloseQuote.CANCEL_QUOTE
       : quote?.quoteStatus === QuoteStatus.CLOSE_PENDING
       ? CloseQuote.CANCEL_CLOSE_REQUEST
+      : quote?.quoteStatus === QuoteStatus.CANCEL_PENDING
+      ? CloseQuote.FORCE_CANCEL
+      : quote?.quoteStatus === QuoteStatus.CANCEL_CLOSE_PENDING
+      ? CloseQuote.FORCE_CANCEL_CLOSE
       : null;
   }, [quote]);
 
