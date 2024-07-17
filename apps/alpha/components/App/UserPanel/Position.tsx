@@ -1,6 +1,6 @@
 import styled, { useTheme } from "styled-components";
 import { lighten } from "polished";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import useActiveWagmi from "@symmio/frontend-sdk/lib/hooks/useActiveWagmi";
 import { OrderType, PositionType } from "@symmio/frontend-sdk/types/trade";
@@ -40,7 +40,7 @@ import {
   useActiveAccountAddress,
 } from "@symmio/frontend-sdk/state/user/hooks";
 
-import { Row, RowBetween, RowStart } from "components/Row";
+import { Row, RowBetween, RowCenter, RowStart } from "components/Row";
 import {
   EmptyPosition,
   LongArrow,
@@ -297,14 +297,19 @@ function TableRow({
       quoteStatus === QuoteStatus.CANCEL_PENDING ||
       quoteStatus === QuoteStatus.CANCEL_CLOSE_PENDING
     ) {
-      const enabled = remainingTime.diff < 0;
-      const text = enabled
-        ? "Force Cancel"
-        : `Force Cancel ${remainingTime.minutes
-            .toString()
-            .padStart(2, "0")} :${remainingTime.seconds
-            .toString()
-            .padStart(2, "0")}`;
+      const enabled = remainingTime.diff > 0;
+
+      const text = enabled ? (
+        <React.Fragment>
+          <RowCenter fontSize={"11px"}>Force Cancel</RowCenter>
+          <RowCenter fontSize={"11px"}>
+            {`${remainingTime.minutes.toString().padStart(2, "0")}
+            :${remainingTime.seconds.toString().padStart(2, "0")}`}
+          </RowCenter>
+        </React.Fragment>
+      ) : (
+        "Force Cancel"
+      );
 
       return [text, enabled];
     }
@@ -425,7 +430,7 @@ function QuoteRow({
   instantCloseStatusInfo,
 }: {
   quote: Quote;
-  buttonText: string;
+  buttonText: string | JSX.Element;
   disableButton: boolean;
   expired: boolean;
   customColor: string | undefined;

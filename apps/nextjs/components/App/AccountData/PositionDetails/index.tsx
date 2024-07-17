@@ -19,7 +19,7 @@ export default function PositionDetails({
   onClickButton,
 }: {
   quote: Quote | null;
-  buttonText?: string;
+  buttonText?: string | JSX.Element;
   disableButton?: boolean;
   onClickButton?: (event: React.MouseEvent<HTMLDivElement>) => void;
 }): JSX.Element {

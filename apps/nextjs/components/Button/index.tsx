@@ -228,6 +228,7 @@ export const PositionActionButton = styled(SecondaryButton)<{
   height: 30px;
   padding: 7px 0;
   margin-left: auto;
+  flex-direction: column;
 
   color: ${({ theme }) => theme.text0};
   background: ${({ theme }) => theme.bg3};

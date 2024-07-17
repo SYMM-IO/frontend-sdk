@@ -68,7 +68,7 @@ export default function PendingQuoteDetails({
 }: {
   quote: Quote;
   platformFee: string;
-  buttonText?: string;
+  buttonText?: string | JSX.Element;
   disableButton?: boolean;
   onClickButton?: (event: React.MouseEvent<HTMLDivElement>) => void;
   mobileVersion: boolean;
