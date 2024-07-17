@@ -85,6 +85,10 @@
       "types": "./dist/apollo/client/balanceHistory.d.ts",
       "default": "./dist/apollo/client/balanceHistory.js"
     },
+    "./apollo/client/fundingRate": {
+      "types": "./dist/apollo/client/fundingRate.d.ts",
+      "default": "./dist/apollo/client/fundingRate.js"
+    },
     "./apollo/client": {
       "types": "./dist/apollo/client/index.d.ts",
       "default": "./dist/apollo/client/index.js"

@@ -29,6 +29,8 @@ export const BSCChain: ChainType = {
     "https://api.thegraph.com/subgraphs/name/symmiograph/symmioanalytics_bnb_8_2",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://api.studio.thegraph.com/query/62454/main_bnb_8_2/version/latest",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://api.studio.thegraph.com/query/62454/fundingrate_bnb_8_2/version/latest",
 };
 
 export const contractInfo: {

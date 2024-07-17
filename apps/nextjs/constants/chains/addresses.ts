@@ -32,6 +32,7 @@ export const FantomChain: ChainType = {
     "https://api.thegraph.com/subgraphs/name/navid-fkh/symmetrical_fantom",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://api.thegraph.com/subgraphs/name/navid-fkh/symmetrical_fantom",
+  FUNDING_RATE_SUBGRAPH_ADDRESS: "",
 };
 
 export const BSCChainAlphaFE: ChainType = {
@@ -53,6 +54,8 @@ export const BSCChainAlphaFE: ChainType = {
     "https://api.studio.thegraph.com/query/62454/analytics_bnb_8_2/version/latest",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://api.studio.thegraph.com/query/62454/main_bnb_8_2/version/latest",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://api.studio.thegraph.com/query/62454/fundingrate_bnb_8_2/version/latest",
 };
 
 export const BSCChainVibeFE: ChainType = {
@@ -74,6 +77,8 @@ export const BSCChainVibeFE: ChainType = {
     "https://api.studio.thegraph.com/query/62454/analytics_bnb_8_2/version/latest",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://api.studio.thegraph.com/query/62454/main_bnb_8_2/version/latest",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://api.studio.thegraph.com/query/62454/fundingrate_bnb_8_2/version/latest",
 };
 
 export const BSCChainCloverfieldFE: ChainType = {
@@ -95,6 +100,8 @@ export const BSCChainCloverfieldFE: ChainType = {
     "https://api.studio.thegraph.com/query/62454/analytics_bnb_8_2/version/latest",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://api.studio.thegraph.com/query/62454/main_bnb_8_2/version/latest",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://api.studio.thegraph.com/query/62454/fundingrate_bnb_8_2/version/latest",
 };
 
 export const PolygonChain: ChainType = {
@@ -114,6 +121,8 @@ export const PolygonChain: ChainType = {
     "https://api.studio.thegraph.com/query/62454/analytics_polygon_8_2/version/latest",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://api.studio.thegraph.com/query/62454/main_polygon_8_2/version/latest",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://api.studio.thegraph.com/query/62454/fundingrate_polygon_8_2/version/latest",
 };
 
 export const NewPolygonChain: ChainType = {
@@ -133,6 +142,8 @@ export const NewPolygonChain: ChainType = {
     "https://api.studio.thegraph.com/query/62454/analytics_polygon_8_2/version/latest",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://api.studio.thegraph.com/query/62454/main_polygon_8_2/version/latest",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://api.studio.thegraph.com/query/62454/fundingrate_polygon_8_2/version/latest",
 };
 
 export const MantleChainIntentXFE: ChainType = {
@@ -152,6 +163,8 @@ export const MantleChainIntentXFE: ChainType = {
     "https://subgraph-api.mantle.xyz/subgraphs/name/analytics_mantle_8_2",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://subgraph-api.mantle.xyz/subgraphs/name/main_mantle_8_2",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://subgraph-api.mantle.xyz/subgraphs/name/parties_mantle_8_2/graphql",
 };
 
 export const MantleChainVibeFE: ChainType = {
@@ -171,6 +184,8 @@ export const MantleChainVibeFE: ChainType = {
     "https://subgraph-api.mantle.xyz/subgraphs/name/analytics_mantle_8_2",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://subgraph-api.mantle.xyz/subgraphs/name/main_mantle_8_2",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://subgraph-api.mantle.xyz/subgraphs/name/parties_mantle_8_2/graphql",
 };
 
 export const MantleChainCloverfieldFE: ChainType = {
@@ -190,6 +205,8 @@ export const MantleChainCloverfieldFE: ChainType = {
     "https://subgraph-api.mantle.xyz/subgraphs/name/analytics_mantle_8_2",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://subgraph-api.mantle.xyz/subgraphs/name/main_mantle_8_2",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://subgraph-api.mantle.xyz/subgraphs/name/parties_mantle_8_2/graphql",
 };
 
 export const BaseChainBasedFE: ChainType = {
@@ -209,6 +226,8 @@ export const BaseChainBasedFE: ChainType = {
     "https://api.studio.thegraph.com/query/62454/analytics_base_8_2/version/latest",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://api.studio.thegraph.com/query/62454/main_base_8_2/version/latest",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://api.studio.thegraph.com/query/62454/fundingrate_base_8_2/version/latest",
 };
 
 export const BaseChainIntentXFE: ChainType = {
@@ -228,6 +247,8 @@ export const BaseChainIntentXFE: ChainType = {
     "https://api.studio.thegraph.com/query/62454/analytics_base_8_2/version/latest",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://api.studio.thegraph.com/query/62454/main_base_8_2/version/latest",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://api.studio.thegraph.com/query/62454/fundingrate_base_8_2/version/latest",
 };
 
 export const BaseChainMorphexFE: ChainType = {
@@ -247,6 +268,8 @@ export const BaseChainMorphexFE: ChainType = {
     "https://api.studio.thegraph.com/query/62454/analytics_base_8_2/version/latest",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://api.studio.thegraph.com/query/62454/main_base_8_2/version/latest",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://api.studio.thegraph.com/query/62454/fundingrate_base_8_2/version/latest",
 };
 
 export const BlastChainCoreFE: ChainType = {
@@ -266,6 +289,8 @@ export const BlastChainCoreFE: ChainType = {
     "https://api.studio.thegraph.com/query/62454/analytics_blast_8_2/version/latest",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://api.studio.thegraph.com/query/62454/main_blast_8_2/version/latest",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://subgraph-api.mantle.xyz/subgraphs/name/parties_mantle_8_2/graphql",
 };
 
 export const BlastChainIntentXFE: ChainType = {
@@ -285,6 +310,8 @@ export const BlastChainIntentXFE: ChainType = {
     "https://api.studio.thegraph.com/query/62454/analytics_blast_8_2/version/latest",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://api.studio.thegraph.com/query/62454/main_blast_8_2/version/latest",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://subgraph-api.mantle.xyz/subgraphs/name/parties_mantle_8_2/graphql",
 };
 
 export const BaseChainVibeFE: ChainType = {
@@ -304,6 +331,8 @@ export const BaseChainVibeFE: ChainType = {
     "https://api.studio.thegraph.com/query/62454/analytics_base_8_2/version/latest",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://api.studio.thegraph.com/query/62454/main_base_8_2/version/latest",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://api.studio.thegraph.com/query/62454/fundingrate_base_8_2/version/latest",
 };
 
 export const BaseChainBefiFE: ChainType = {
@@ -323,6 +352,8 @@ export const BaseChainBefiFE: ChainType = {
     "https://api.studio.thegraph.com/query/62454/analytics_base_8_2/version/latest",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://api.studio.thegraph.com/query/62454/main_base_8_2/version/latest",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://api.studio.thegraph.com/query/62454/fundingrate_base_8_2/version/latest",
 };
 
 export const BaseChainCloverfieldFE: ChainType = {
@@ -342,6 +373,8 @@ export const BaseChainCloverfieldFE: ChainType = {
     "https://api.studio.thegraph.com/query/62454/analytics_base_8_2/version/latest",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://api.studio.thegraph.com/query/62454/main_base_8_2/version/latest",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://api.studio.thegraph.com/query/62454/fundingrate_base_8_2/version/latest",
 };
 
 export const ArbitrumChainPearFE: ChainType = {
@@ -361,6 +394,8 @@ export const ArbitrumChainPearFE: ChainType = {
     "https://api.studio.thegraph.com/query/62454/analytics_arbitrum_8_2/version/latest",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://api.studio.thegraph.com/query/62454/main_arbitrum_8_2/version/latest",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://api.studio.thegraph.com/query/62454/fundingrate_arbitrum_8_2/version/latest",
 };
 
 export const ArbitrumChainVibeFE: ChainType = {
@@ -380,6 +415,8 @@ export const ArbitrumChainVibeFE: ChainType = {
     "https://api.studio.thegraph.com/query/62454/analytics_arbitrum_8_2/version/latest",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://api.studio.thegraph.com/query/62454/main_arbitrum_8_2/version/latest",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://api.studio.thegraph.com/query/62454/fundingrate_arbitrum_8_2/version/latest",
 };
 
 export const ArbitrumChainCloverfieldFE: ChainType = {
@@ -399,6 +436,8 @@ export const ArbitrumChainCloverfieldFE: ChainType = {
     "https://api.studio.thegraph.com/query/62454/analytics_arbitrum_8_2/version/latest",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://api.studio.thegraph.com/query/62454/main_arbitrum_8_2/version/latest",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://api.studio.thegraph.com/query/62454/fundingrate_arbitrum_8_2/version/latest",
 };
 
 export const contractInfo: {

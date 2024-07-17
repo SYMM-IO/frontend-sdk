@@ -12,6 +12,7 @@ import { getPaidAmount } from "../state/hedger/thunks";
 import { AppThunkDispatch, useAppDispatch } from "../state";
 import { useFundingRateData, useHedgerInfo } from "../state/hedger/hooks";
 import { FundingRateData, FundingRateMap } from "../state/hedger/types";
+import { useFundingRateApolloClient } from "../apollo/client/fundingRate";
 
 export default function useFetchFundingRate(name?: string) {
   const { webSocketFundingRateUrl } = useHedgerInfo() || {};
@@ -78,12 +79,13 @@ export default function useFetchFundingRate(name?: string) {
 export function useGetPaidAmount(quoteId: number) {
   const [paidAmount, setPaidAmount] = useState("");
   const [status, setStatus] = useState<ApiState>(ApiState.OK);
+  const client = useFundingRateApolloClient();
 
   const dispatch: AppThunkDispatch = useAppDispatch();
 
   useEffect(() => {
     setStatus(ApiState.LOADING);
-    dispatch(getPaidAmount({ quoteId }))
+    dispatch(getPaidAmount({ quoteId, client }))
       .unwrap()
       .then((res) => {
         setPaidAmount(res.fee);
@@ -93,7 +95,7 @@ export function useGetPaidAmount(quoteId: number) {
         setPaidAmount("");
         setStatus(ApiState.ERROR);
       });
-  }, [dispatch, quoteId]);
+  }, [client, dispatch, quoteId]);
 
   return { paidAmount, status };
 }

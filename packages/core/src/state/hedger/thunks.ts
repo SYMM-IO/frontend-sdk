@@ -1,4 +1,5 @@
 import * as toolkitRaw from "@reduxjs/toolkit/dist/redux-toolkit.cjs.production.min.js";
+import { ApolloClient, NormalizedCacheObject } from "@apollo/client";
 const { createAsyncThunk } = ((toolkitRaw as any).default ??
   toolkitRaw) as typeof toolkitRaw;
 import { makeHttpRequest } from "../../utils/http";
@@ -22,7 +23,6 @@ import {
   MarketsInfoRes,
   PriceRange,
 } from "./types";
-import { createApolloClient } from "../../apollo/client";
 import { GET_PAID_AMOUNT } from "../../apollo/queries";
 import { toBN } from "../../utils/numbers";
 
@@ -364,12 +364,18 @@ export const getFundingRate = createAsyncThunk(
 
 export const getPaidAmount = createAsyncThunk(
   "hedger/getPaidAmount",
-  async ({ quoteId }: { quoteId: number }) => {
-    try {
-      const client = createApolloClient(
-        "https://api.thegraph.com/subgraphs/name/symmiograph/funding-rate-calculator"
-      );
+  async ({
+    quoteId,
+    client,
+  }: {
+    quoteId: number;
+    client: ApolloClient<NormalizedCacheObject>;
+  }) => {
+    if (!client) {
+      throw new Error("Apollo client is not provided");
+    }
 
+    try {
       const {
         data: { resultEntities },
       } = await client.query<{

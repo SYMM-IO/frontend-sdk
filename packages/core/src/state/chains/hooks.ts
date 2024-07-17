@@ -240,6 +240,22 @@ export function useAnalyticsSubgraphAddress() {
   return address;
 }
 
+export function useFundingRateSubgraphAddress() {
+  const { chainId } = useActiveWagmi();
+  const frontEndName = useFEName();
+  const chainsData = useAppSelector((state: AppState) => state.chains.chains);
+
+  let address = "";
+  if (chainId && frontEndName && chainsData && chainsData[chainId]) {
+    const frontEndData = chainsData[chainId][frontEndName];
+    if (frontEndData && frontEndData.FUNDING_RATE_SUBGRAPH_ADDRESS) {
+      address = frontEndData.FUNDING_RATE_SUBGRAPH_ADDRESS;
+    }
+  }
+
+  return address;
+}
+
 export function useMuonData(): { [chainId: number]: MuonDataType } {
   const MuonData = useAppSelector((state: AppState) => state.chains.MuonData);
   return MuonData;

@@ -19,6 +19,7 @@ export interface ChainType {
   readonly WRAPPED_NATIVE_ADDRESS: string;
   readonly ANALYTICS_SUBGRAPH_ADDRESS: string;
   readonly ORDER_HISTORY_SUBGRAPH_ADDRESS: string;
+  readonly FUNDING_RATE_SUBGRAPH_ADDRESS: string;
 }
 
 export interface MuonDataType {
