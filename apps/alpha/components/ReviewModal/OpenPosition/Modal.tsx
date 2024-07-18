@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
-import {
-  usePositionType,
-  useStopLossValues,
-} from "@symmio/frontend-sdk/state/trade/hooks";
+import { usePositionType } from "@symmio/frontend-sdk/state/trade/hooks";
 import { ApplicationModal } from "@symmio/frontend-sdk/state/application/reducer";
 import { useActiveMarket } from "@symmio/frontend-sdk/state/trade/hooks";
 import { TransactionType } from "@symmio/frontend-sdk/state/transactions/types";
@@ -17,8 +14,6 @@ import {
 import { ModalState, StateContext } from "./ModalData";
 
 import Loading from "./Loading";
-import ProgressTab from "./ProgressTab";
-import SetStopLoss from "./SetStopLoss";
 import OpenPositionData from "./OpenPositionData";
 import Column from "components/Column";
 import { ModalHeader, Modal } from "components/Modal";
@@ -32,7 +27,6 @@ const Wrapper = styled(Column)`
 `;
 
 export default function OpenPositionModal() {
-  const { isActive } = useStopLossValues();
   const [state, setState] = useState<ModalState>(ModalState.START);
   const [txHash, setTxHash] = useState("");
   const isPendingTxs = useIsHavePendingTransaction(TransactionType.TRADE);
@@ -44,8 +38,7 @@ export default function OpenPositionModal() {
 
   useEffect(() => {
     if (txHash !== "" && !isPendingTxs) {
-      if (isActive) setState(ModalState.END);
-      else toggleModal();
+      toggleModal();
     }
   }, [isPendingTxs, txHash]);
 
@@ -55,7 +48,7 @@ export default function OpenPositionModal() {
     ) : state === ModalState.LOADING ? (
       <Loading summary={"Transaction Pending..."} />
     ) : (
-      <SetStopLoss />
+      <div />
     );
 
   return (
@@ -70,10 +63,7 @@ export default function OpenPositionModal() {
         positionType={positionType}
       />
       <StateContext.Provider value={{ state, setState, setTxHash }}>
-        <Wrapper>
-          {isActive && <ProgressTab />}
-          {content}
-        </Wrapper>
+        <Wrapper>{content}</Wrapper>
       </StateContext.Provider>
     </Modal>
   );

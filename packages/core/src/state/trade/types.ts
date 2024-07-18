@@ -11,8 +11,6 @@ export interface TradeState {
   partyAmm: string | undefined;
   partyBmm: string | undefined;
   lf: string | undefined;
-  isActiveStopLoss: boolean;
-  stopLossPrice: string;
 }
 
 export interface GetLockedParamUrlResponse {

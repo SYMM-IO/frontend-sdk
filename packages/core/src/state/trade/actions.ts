@@ -23,9 +23,3 @@ export const updateLockedPercentages = createAction<{
   partyBmm: string;
   lf: string;
 }>("trade/updateLockedPercentages");
-export const updateIsActiveStopLoss = createAction<boolean>(
-  "trade/updateIsActiveStopLoss"
-);
-export const updateStopLossPrice = createAction<string>(
-  "trade/updateStopLossPrice"
-);

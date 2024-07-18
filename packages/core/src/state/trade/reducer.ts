@@ -11,8 +11,6 @@ import {
   updateTypedValue,
   updatePositionType,
   updateLockedPercentages,
-  updateIsActiveStopLoss,
-  updateStopLossPrice,
 } from "./actions";
 import { TradeState } from "./types";
 
@@ -27,8 +25,6 @@ export const initialState: TradeState = {
   partyAmm: undefined,
   partyBmm: undefined,
   lf: undefined,
-  isActiveStopLoss: false,
-  stopLossPrice: "",
 };
 
 export default createReducer(initialState, (builder) =>
@@ -53,12 +49,6 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updatePositionType, (state, action) => {
       state.positionType = action.payload;
-    })
-    .addCase(updateIsActiveStopLoss, (state, action) => {
-      state.isActiveStopLoss = action.payload;
-    })
-    .addCase(updateStopLossPrice, (state, action) => {
-      state.stopLossPrice = action.payload;
     })
 
     .addCase(

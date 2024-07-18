@@ -12,8 +12,6 @@ import {
   updateTypedValue,
   updatePositionType,
   updateLockedPercentages,
-  updateStopLossPrice,
-  updateIsActiveStopLoss,
 } from "./actions";
 import { useMarket } from "../../hooks/useMarkets";
 import { makeHttpRequest } from "../../utils/http";
@@ -62,15 +60,6 @@ export function useInputField() {
 export function useLimitPrice(): string {
   const limitPrice = useAppSelector((state) => state.trade.limitPrice);
   return limitPrice;
-}
-
-export function useStopLossValues(): {
-  isActive: boolean;
-  stopLossPrice: string;
-} {
-  const isActive = useAppSelector((state) => state.trade.isActiveStopLoss);
-  const stopLossPrice = useAppSelector((state) => state.trade.stopLossPrice);
-  return { stopLossPrice, isActive };
 }
 
 export function useLockedPercentages(): {
@@ -139,26 +128,6 @@ export function useSetTypedValue() {
     (value: string, inputField: InputField) => {
       dispatch(updateInputField(inputField));
       dispatch(updateTypedValue(value));
-    },
-    [dispatch]
-  );
-}
-
-export function useSetStopLossPrice() {
-  const dispatch = useAppDispatch();
-  return useCallback(
-    (value: string) => {
-      dispatch(updateStopLossPrice(value));
-    },
-    [dispatch]
-  );
-}
-
-export function useSetIsActiveStopLoss() {
-  const dispatch = useAppDispatch();
-  return useCallback(
-    (value: boolean) => {
-      dispatch(updateIsActiveStopLoss(value));
     },
     [dispatch]
   );
