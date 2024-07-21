@@ -2,7 +2,12 @@ import * as toolkitRaw from "@reduxjs/toolkit/dist/redux-toolkit.cjs.production.
 const { createAction } = ((toolkitRaw as any).default ??
   toolkitRaw) as typeof toolkitRaw;
 import { InputField, OrderType, PositionType } from "../../types/trade";
-import { TradeState } from "./types";
+import {
+  TpSlConfigParams,
+  TpSlState,
+  TpSlUpdateProcessState,
+  TradeState,
+} from "./types";
 
 export const setTradeState = createAction<TradeState>("trade/setTradeState");
 export const updateMarketId = createAction<{ id: number }>(
@@ -23,3 +28,15 @@ export const updateLockedPercentages = createAction<{
   partyBmm: string;
   lf: string;
 }>("trade/updateLockedPercentages");
+export const updateTpSl = createAction<TpSlState>("trade/setTpSl");
+export const setTpSlOpened = createAction<boolean>("trade/setTpSlOpened");
+export const setTpSlConfig = createAction<TpSlConfigParams>(
+  "trade/setTpSlConfig"
+);
+export const updateDelegateTpSl = createAction<boolean>(
+  "trade/updateDelegateTpSl"
+);
+export const updateTpSlState =
+  createAction<TpSlUpdateProcessState>("trade/setTpSlState");
+export const updateTpError = createAction<string>("trade/updateTpError");
+export const updateSlError = createAction<string>("trade/updateSlError");

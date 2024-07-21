@@ -23,6 +23,7 @@ import { useIsMobile } from "lib/hooks/useWindowSize";
 import {
   useQuoteDetail,
   useQuoteInstantCloseData,
+  useQuotesTpSlData,
   useSetQuoteDetailCallback,
 } from "@symmio/frontend-sdk/state/quotes/hooks";
 import {
@@ -43,6 +44,7 @@ import {
 import { Row, RowBetween, RowStart } from "components/Row";
 import {
   EmptyPosition,
+  Loader,
   LongArrow,
   LottieCloverfield,
   NotConnectedWallet,
@@ -65,7 +67,13 @@ import CancelModal from "./CancelModal/index";
 import Column from "components/Column";
 import PositionDetails from "components/App/AccountData/PositionDetails";
 import { useCheckQuoteIsExpired } from "lib/hooks/useCheckQuoteIsExpired";
-import { InstantCloseStatus } from "@symmio/frontend-sdk/state/quotes/types";
+import {
+  InstantCloseStatus,
+  TpSlDataState,
+} from "@symmio/frontend-sdk/state/quotes/types";
+import ManageTpSlModal from "../TPSL/manage";
+import EditPencil from "components/Icons/EditPencil";
+import { useTpSlAvailable } from "@symmio/frontend-sdk/state/chains";
 
 const TableStructure = styled(RowBetween)<{ active?: boolean }>`
   width: 100%;
@@ -74,14 +82,9 @@ const TableStructure = styled(RowBetween)<{ active?: boolean }>`
   font-weight: 400;
 
   & > * {
-    width: 12%;
-
+    width: 10%;
     &:first-child {
-      width: 25%;
-    }
-    &:nth-last-child(2) {
-      width: 15%;
-      text-align: right;
+      width: 20%;
     }
   }
 `;
@@ -93,9 +96,13 @@ const HeaderWrap = styled(TableStructure)`
 
   & > * {
     &:first-child {
-      padding-left: 28px;
+      padding-left: 25px;
     }
   }
+`;
+export const TpWrapper = styled(Row)`
+  flex-wrap: wrap;
+  gap: 6px;
 `;
 
 const QuoteWrap = styled(TableStructure)<{
@@ -161,6 +168,12 @@ const TwoColumnPnl = styled(Column)<{ color?: string }>`
   }
 `;
 
+export const SlIconWrapper = styled.div`
+  margin-left: 2px;
+  padding: 0px 0px 0px 4px;
+  text-align: center;
+`;
+
 const ExpiredStatusValue = styled.div`
   color: ${({ theme }) => theme.warning};
 `;
@@ -183,14 +196,24 @@ const InstantCloseText = styled.div`
   color: white;
 `;
 
-const HEADERS = [
+const HEADERS1 = [
   "Symbol-QID",
   "Size",
   "Position Value",
   "Market price",
   "Open Price",
   "Status/uPNL",
-  "Action",
+  "Actions",
+];
+const HEADERS2 = [
+  "Symbol-QID",
+  "Size",
+  "Position Value",
+  "Market price",
+  "Open Price",
+  "Status/uPNL",
+  "tp/sl",
+  "Actions",
 ];
 
 function TableHeader({
@@ -198,12 +221,26 @@ function TableHeader({
 }: {
   mobileVersion: boolean;
 }): JSX.Element | null {
+  const tpSlAvailable = useTpSlAvailable();
+
   if (mobileVersion) return null;
+  let HEADERS = HEADERS1;
+  if (tpSlAvailable) {
+    HEADERS = HEADERS2;
+  }
   return (
     <HeaderWrap>
-      {HEADERS.map((item, key) => (
-        <div key={key}>{item}</div>
-      ))}
+      {HEADERS.map((item, key) => {
+        if (item === "Status/uPNL") {
+          return (
+            <div style={{ width: "15%" }} key={key}>
+              {item}
+            </div>
+          );
+        } else {
+          return <div key={key}>{item}</div>;
+        }
+      })}
       <div style={{ width: "16px", height: "100%", paddingTop: "10px" }}></div>
     </HeaderWrap>
   );
@@ -417,6 +454,17 @@ function QuoteRow({
   );
   const openLastMarketPrice = useOpeningLastMarketPrice(quote, market);
   const closeLastMarketPrice = useClosingLastMarketPrice(quote, market);
+  const [showTpSlModal, setShowTpSlModal] = useState(false);
+  const tpSlQuoteData = useQuotesTpSlData();
+  const { tpSlState, tp, sl, tpOpenPrice, slOpenPrice } = tpSlQuoteData[id] || {
+    tp: "",
+    sl: "",
+    tpOpenPrice: "",
+    slOpenPrice: "",
+    tpSlState: TpSlDataState.VALID,
+  };
+  const [editIconHover, setEditIconHover] = useState(theme.text4);
+  const tpSlAvailable = useTpSlAvailable();
 
   const quoteDetail = useQuoteDetail();
   const setQuoteDetail = useSetQuoteDetailCallback();
@@ -610,7 +658,7 @@ function QuoteRow({
             liquidatePending ? (
               <LiquidatedStatusValue>Liquidation...</LiquidatedStatusValue>
             ) : quoteStatus === QuoteStatus.OPENED ? (
-              <PnlValue color={color}>
+              <PnlValue color={color} style={{ width: "15%" }}>
                 {value === "-"
                   ? value
                   : `${value} (${Math.abs(Number(upnlPercent))})%`}
@@ -649,6 +697,40 @@ function QuoteRow({
               </QuoteStatusValue>
             </TwoColumn>
           )}
+          {tpSlAvailable && (
+            <TpWrapper>
+              {tpSlState === TpSlDataState.LOADING ||
+              tpSlState === TpSlDataState.FORCE_CHECKING ? (
+                <Loader />
+              ) : (
+                <Row gap="5px">
+                  <Row width="unset">
+                    <div>{tp} /</div>
+                    <div>{sl}</div>
+                  </Row>
+                  <Row style={{ width: "unset", gap: "5px" }}>
+                    <SlIconWrapper
+                      onClick={() => {
+                        setShowTpSlModal(true);
+                      }}
+                      onMouseEnter={() => {
+                        setEditIconHover(theme.white);
+                      }}
+                      onMouseLeave={() => {
+                        setEditIconHover(theme.text4);
+                      }}
+                    >
+                      <EditPencil
+                        width={18}
+                        height={18}
+                        color={editIconHover}
+                      />
+                    </SlIconWrapper>
+                  </Row>
+                </Row>
+              )}
+            </TpWrapper>
+          )}
           <div>
             <PositionActionButton
               expired={expired}
@@ -670,6 +752,14 @@ function QuoteRow({
             {activeDetail && <Rectangle />}
           </div>
         </QuoteWrap>
+        {showTpSlModal && (
+          <ManageTpSlModal
+            quote={{ ...quote }}
+            tpSlMoreData={{ tp, sl, tpOpenPrice, slOpenPrice }}
+            modalOpen={showTpSlModal}
+            toggleModal={() => setShowTpSlModal(false)}
+          />
+        )}
       </>
     ),
     [
@@ -683,6 +773,8 @@ function QuoteRow({
       theme.green1,
       theme.red1,
       theme.warning,
+      theme.white,
+      theme.text4,
       name,
       id,
       leverage,
@@ -701,11 +793,19 @@ function QuoteRow({
       value,
       upnlPercent,
       expired,
+      tpSlAvailable,
+      tpSlState,
+      tp,
+      sl,
+      editIconHover,
       disableButton,
       onClickButton,
       buttonText,
-      setQuoteDetail,
+      showTpSlModal,
       quote,
+      tpOpenPrice,
+      slOpenPrice,
+      setQuoteDetail,
     ]
   );
 }

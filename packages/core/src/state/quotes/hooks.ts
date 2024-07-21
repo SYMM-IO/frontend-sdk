@@ -17,6 +17,7 @@ import {
   setHistory,
   setPendings,
   setQuoteDetail,
+  setTpSlData,
   updateQuoteInstantCloseStatus,
 } from "./actions";
 import { useActiveAccountAddress } from "../user/hooks";
@@ -28,6 +29,7 @@ import {
   InstantCloseItem,
   InstantCloseObject,
   InstantCloseStatus,
+  TpSlContent,
 } from "./types";
 import { useHedgerInfo } from "../hedger/hooks";
 
@@ -256,4 +258,19 @@ export function useGetOpenInstantClosesCallback() {
       })
     );
   }, [account, appName, baseUrl, thunkDispatch]);
+}
+
+export function useQuotesTpSlData(): { [quoteId: number]: TpSlContent } {
+  const tpSlDataDetail = useAppSelector((state) => state.quotes.tpSlQuoteData);
+  return tpSlDataDetail;
+}
+
+export function useSetTpSlDataCallback() {
+  const dispatch = useAppDispatch();
+  return useCallback(
+    (value: TpSlContent, quoteId: number) => {
+      dispatch(setTpSlData({ value, quoteId }));
+    },
+    [dispatch]
+  );
 }

@@ -16,6 +16,7 @@ import OrderTypeTab from "./OrderTypeTab";
 import MinPositionInfo from "./MinPositionInfo";
 import TradeActionButtons from "./TradeActionButton";
 import { BlackList, Suspend } from "./AccessControlPanel";
+import { TpSlChecker } from "../TPSL/TpSlChecker";
 
 const Wrapper = styled.div<{ showTpSl?: boolean }>`
   position: relative;
@@ -98,6 +99,7 @@ export default function TradePanel() {
         </Container>
         {showTradeInfoModal && <OpenPositionModal />}
       </React.Fragment>
+      <TpSlChecker />
     </Wrapper>
   );
 }

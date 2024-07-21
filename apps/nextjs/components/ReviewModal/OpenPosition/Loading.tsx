@@ -17,7 +17,7 @@ const ButtonWrap = styled.div`
   margin-top: 100px;
 `;
 
-export default function Loading({ summary }: { summary: React.ReactText }) {
+export default function Loading({ summary }: { summary: React.ReactNode }) {
   return (
     <Column>
       <LottieCloverfield />

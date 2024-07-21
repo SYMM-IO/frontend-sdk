@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DotFlashing } from "components/Icons";
 import { useToggleOpenPositionModal } from "@symmio/frontend-sdk/state/application/hooks";
 import {
@@ -12,6 +12,8 @@ import {
   useSetLimitPrice,
   useActiveMarket,
   useSetTypedValue,
+  useTpSlDelegate,
+  useTradeTpSl,
 } from "@symmio/frontend-sdk/state/trade/hooks";
 import { useIsHavePendingTransaction } from "@symmio/frontend-sdk/state/transactions/hooks";
 import { MainButton } from "components/Button";
@@ -27,6 +29,7 @@ import {
 } from "@symmio/frontend-sdk/state/user/hooks";
 import { WEB_SETTING } from "@symmio/frontend-sdk/config";
 import OpenPositionButton from "components/Button/OpenPositionButton";
+import { useSendDelegateAccess } from "@symmio/frontend-sdk/hooks/useTpSl";
 
 export default function TradeActionButtons(): JSX.Element | null {
   const validatedContext = useInvalidContext();
@@ -35,7 +38,9 @@ export default function TradeActionButtons(): JSX.Element | null {
 
   const toggleShowTradeInfoModal = useToggleOpenPositionModal();
   const isPendingTxs = useIsHavePendingTransaction();
-
+  const { tp, sl } = useTradeTpSl();
+  const delegateStatus = useTpSlDelegate();
+  const [delegateLoading, setDelegateLoading] = useState(false);
   const [calculationMode, setCalculationMode] = useState(false);
   const [calculationLoading, setCalculationLoading] = useState(false);
 
@@ -50,6 +55,20 @@ export default function TradeActionButtons(): JSX.Element | null {
     () => (market ? market.pricePrecision : DEFAULT_PRECISION),
     [market]
   );
+  const { callback: setDelegateAccessCallBack, error } =
+    useSendDelegateAccess();
+
+  const handleDelegateAccess = useCallback(async () => {
+    if (error) console.debug({ error });
+    if (!setDelegateAccessCallBack) return;
+    try {
+      setDelegateLoading(true);
+      const txHash = await setDelegateAccessCallBack();
+      console.log({ txHash });
+    } catch (e) {
+      console.error(e);
+    }
+  }, [error, setDelegateAccessCallBack]);
 
   function onEnterPress() {
     setCalculationLoading(true);
@@ -74,6 +93,14 @@ export default function TradeActionButtons(): JSX.Element | null {
 
   if (WEB_SETTING.showSignModal && !isAcceptTerms) {
     return <MainButton disabled>Accept Terms Please</MainButton>;
+  }
+
+  if (!delegateStatus && (tp || sl)) {
+    return (
+      <MainButton onClick={handleDelegateAccess} disabled={delegateLoading}>
+        Allow to place TP/SL orders {delegateLoading && <DotFlashing />}
+      </MainButton>
+    );
   }
 
   // Pass if it is null or undefined

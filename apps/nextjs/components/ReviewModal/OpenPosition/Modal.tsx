@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
-import { usePositionType } from "@symmio/frontend-sdk/state/trade/hooks";
+import {
+  usePositionType,
+  useTradeTpSl,
+} from "@symmio/frontend-sdk/state/trade/hooks";
 import { ApplicationModal } from "@symmio/frontend-sdk/state/application/reducer";
 import { useActiveMarket } from "@symmio/frontend-sdk/state/trade/hooks";
 import { TransactionType } from "@symmio/frontend-sdk/state/transactions/types";
@@ -26,11 +29,16 @@ const Wrapper = styled(Column)`
   height: auto;
 `;
 
+const TpSlText = styled.div`
+  margin-top: 10px;
+  font-size: 10px;
+`;
+
 export default function OpenPositionModal() {
   const [state, setState] = useState<ModalState>(ModalState.START);
   const [txHash, setTxHash] = useState("");
   const isPendingTxs = useIsHavePendingTransaction(TransactionType.TRADE);
-
+  const { tp, sl } = useTradeTpSl();
   const market = useActiveMarket();
   const positionType = usePositionType();
   const toggleModal = useToggleOpenPositionModal();
@@ -46,7 +54,19 @@ export default function OpenPositionModal() {
     state === ModalState.START ? (
       <OpenPositionData />
     ) : state === ModalState.LOADING ? (
-      <Loading summary={"Transaction Pending..."} />
+      <Loading
+        summary={
+          <div>
+            Transaction Pending...
+            {(tp || sl) && (
+              <TpSlText>
+                After sending the transaction, you should be online until you
+                sign a message to place the TP/SL.
+              </TpSlText>
+            )}
+          </div>
+        }
+      />
     ) : (
       <div />
     );
