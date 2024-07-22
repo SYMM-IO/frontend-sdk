@@ -624,6 +624,7 @@ export default function ManageTpSlModal({
   }, [
     appName,
     orderType,
+    disableLogic,
     positionType,
     prevSl,
     prevSlOpenPrice,
