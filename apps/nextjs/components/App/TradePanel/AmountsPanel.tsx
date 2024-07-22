@@ -17,6 +17,7 @@ import { formatPrice, toBN } from "@symmio/frontend-sdk/utils/numbers";
 import { InputField, OrderType } from "@symmio/frontend-sdk/types/trade";
 
 import {
+  useExpertMode,
   useLeverage,
   useSetLeverageCallback,
 } from "@symmio/frontend-sdk/state/user/hooks";
@@ -93,6 +94,7 @@ export default function AmountsPanel() {
   );
 
   const market = useActiveMarket();
+  const userExpertMode = useExpertMode();
 
   const orderType = useOrderType();
 
@@ -126,18 +128,15 @@ export default function AmountsPanel() {
   const { formattedAmounts, balance } = useTradePage();
 
   const [outputTicker, pricePrecision, quantityPrecision, maxLeverage] =
-    useMemo(
-      () =>
-        market
-          ? [
-              market.symbol,
-              market.pricePrecision,
-              market.quantityPrecision,
-              market.maxLeverage,
-            ]
-          : ["", DEFAULT_PRECISION, DEFAULT_PRECISION, MAX_LEVERAGE_VALUE],
-      [market]
-    );
+    useMemo(() => {
+      if (market) {
+        const { symbol, pricePrecision, quantityPrecision, maxLeverage } =
+          market;
+        if (userExpertMode) return [symbol, undefined, undefined, maxLeverage];
+        return [symbol, pricePrecision, quantityPrecision, maxLeverage];
+      }
+      return ["", DEFAULT_PRECISION, DEFAULT_PRECISION, MAX_LEVERAGE_VALUE];
+    }, [userExpertMode, market]);
 
   useEffect(() => {
     if (leverage > maxLeverage) setLeverage(5);

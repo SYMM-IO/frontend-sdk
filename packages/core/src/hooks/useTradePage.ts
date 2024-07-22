@@ -18,7 +18,11 @@ import {
   useMarketOpenInterest,
   useMarketPriceRange,
 } from "../state/hedger/hooks";
-import { useLeverage, useSlippageTolerance } from "../state/user/hooks";
+import {
+  useExpertMode,
+  useLeverage,
+  useSlippageTolerance,
+} from "../state/user/hooks";
 import {
   useActiveMarket,
   useActiveMarketPrice,
@@ -60,14 +64,15 @@ export default function useTradePage(): {
   const leverage = useLeverage();
   const slippage = useSlippageTolerance();
   const autoSlippage = market ? market.autoSlippage : MARKET_PRICE_COEFFICIENT;
+  const userExpertMode = useExpertMode();
 
-  const [pricePrecision, quantityPrecision] = useMemo(
-    () =>
-      market
-        ? [market.pricePrecision, market.quantityPrecision]
-        : [DEFAULT_PRECISION, DEFAULT_PRECISION],
-    [market]
-  );
+  const [pricePrecision, quantityPrecision] = useMemo(() => {
+    if (market) {
+      if (userExpertMode) return [15, 15];
+      return [market.pricePrecision, market.quantityPrecision];
+    }
+    return [DEFAULT_PRECISION, DEFAULT_PRECISION];
+  }, [market, userExpertMode]);
 
   const price: string = useMemo(() => {
     const marketPriceBN = toBN(marketPrice);

@@ -64,7 +64,7 @@ export async function createTransactionCallback(
     if (error instanceof Error) {
       console.log("Error", { error });
 
-      if (expertMode && error) {
+      if (expertMode && !error.message.includes("User rejected the request")) {
         console.log(
           "Proceeding with transaction despite the error due to expert mode"
         );

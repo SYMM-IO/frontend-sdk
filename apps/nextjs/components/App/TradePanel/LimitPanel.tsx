@@ -14,11 +14,14 @@ import {
 } from "@symmio/frontend-sdk/state/trade/hooks";
 
 import { CustomInputBox2 } from "components/InputBox";
+import { useExpertMode } from "@symmio/frontend-sdk/state/user/hooks";
+import { useMemo } from "react";
 
 export default function LimitPricePanel(): JSX.Element | null {
   const { chainId } = useActiveWagmi();
   const { price } = useTradePage();
   const market = useActiveMarket();
+  const userExpertMode = useExpertMode();
   const positionType = usePositionType();
   const setLimitPrice = useSetLimitPrice();
   const COLLATERAL_TOKEN = useCollateralToken();
@@ -44,12 +47,17 @@ export default function LimitPricePanel(): JSX.Element | null {
     }
   })();
 
+  const precision = useMemo(
+    () => (userExpertMode ? undefined : market?.pricePrecision),
+    [userExpertMode, market?.pricePrecision]
+  );
+
   return (
     <>
       <CustomInputBox2
         value={price}
         onChange={setLimitPrice}
-        precision={market?.pricePrecision}
+        precision={precision}
         title="Price"
         symbol={collateralCurrency?.symbol}
         balanceDisplay={toBN(lastMarketPrice).toFormat()}

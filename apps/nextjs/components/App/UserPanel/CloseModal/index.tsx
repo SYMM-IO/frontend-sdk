@@ -23,7 +23,10 @@ import { useCollateralToken } from "@symmio/frontend-sdk/constants/tokens";
 import { useGetTokenWithFallbackChainId } from "@symmio/frontend-sdk/utils/token";
 import { calculateString, calculationPattern } from "utils/calculationalString";
 
-import { useActiveAccount } from "@symmio/frontend-sdk/state/user/hooks";
+import {
+  useActiveAccount,
+  useExpertMode,
+} from "@symmio/frontend-sdk/state/user/hooks";
 import { useMarketData } from "@symmio/frontend-sdk/state/hedger/hooks";
 
 import { useMarket } from "@symmio/frontend-sdk/hooks/useMarkets";
@@ -126,6 +129,8 @@ export default function CloseModal({
     pricePrecision,
     minAcceptableQuoteValue,
   } = market || {};
+  const userExpertMode = useExpertMode();
+  const qPrecision = userExpertMode ? undefined : quantityPrecision;
   const availableAmount = useMemo(
     () =>
       quote && quantityPrecision !== null && quantityPrecision !== undefined
@@ -470,7 +475,7 @@ export default function CloseModal({
             <CustomInputBox2
               title={"Amount"}
               symbol={symbol}
-              precision={quantityPrecision}
+              precision={qPrecision}
               placeholder="0"
               balanceTitle={"Balance:"}
               balanceDisplay={formatAmount(availableAmount)}
@@ -492,7 +497,7 @@ export default function CloseModal({
             <CustomInputBox2
               title={"Amount"}
               symbol={symbol}
-              precision={quantityPrecision}
+              precision={qPrecision}
               placeholder="0"
               balanceTitle={"Balance:"}
               balanceDisplay={formatAmount(availableAmount)}

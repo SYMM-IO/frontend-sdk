@@ -6,6 +6,7 @@ import { toBN } from "@symmio/frontend-sdk/utils/numbers";
 import { Quote } from "@symmio/frontend-sdk/types/quote";
 import { useMarket } from "@symmio/frontend-sdk/hooks/useMarkets";
 import { CustomInputBox2 } from "components/InputBox";
+import { useExpertMode } from "@symmio/frontend-sdk/state/user/hooks";
 
 export const InputAmount = styled.input.attrs({ type: "number" })<{
   active?: boolean;
@@ -51,14 +52,16 @@ export default function LimitClose({
   symbol?: string;
   balanceTitle?: string;
 }) {
+  const userExpertMode = useExpertMode();
   const { pricePrecision } = useMarket(quote?.marketId) || {};
+  const precision = userExpertMode ? undefined : pricePrecision;
 
   return (
     <CustomInputBox2
       title={"Price"}
       symbol={symbol}
       placeholder="0"
-      precision={pricePrecision}
+      precision={precision}
       balanceTitle={balanceTitle ?? "Offer Price:"}
       balanceDisplay={
         marketPrice && pricePrecision

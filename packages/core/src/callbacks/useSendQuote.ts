@@ -95,8 +95,9 @@ export function useSentQuoteCallback(): {
   const market = useMarket(marketId);
   const slippage = useSlippageTolerance();
   const pricePrecision = useMemo(
-    () => market?.pricePrecision ?? DEFAULT_PRECISION,
-    [market]
+    () =>
+      userExpertMode ? undefined : market?.pricePrecision ?? DEFAULT_PRECISION,
+    [market?.pricePrecision, userExpertMode]
   );
   const openPrice = useMemo(() => (price ? price : "0"), [price]);
   const autoSlippage = market ? market.autoSlippage : MARKET_PRICE_COEFFICIENT;
@@ -118,9 +119,11 @@ export function useSentQuoteCallback(): {
   }, [orderType, openPrice, slippage, positionType, autoSlippage]);
 
   const openPriceWied = useMemo(
-    () => toWei(formatPrice(openPriceFinal, pricePrecision)),
+    () => toWei(formatPrice(openPriceFinal, pricePrecision ?? 20)),
     [openPriceFinal, pricePrecision]
   );
+
+  // console.log({ openPrice, openPriceFinal, openPriceWied, pricePrecision });
 
   const quantityAsset = useMemo(
     () => (toBN(formattedAmounts[1]).isNaN() ? "0" : formattedAmounts[1]),
@@ -238,6 +241,7 @@ export function useSentQuoteCallback(): {
         BigInt(deadline),
         signature,
       ];
+      console.log(args);
 
       return {
         args,
