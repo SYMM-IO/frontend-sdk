@@ -8,6 +8,7 @@ import useActiveWagmi from "@symmio/frontend-sdk/lib/hooks/useActiveWagmi";
 import {
   useActiveMarket,
   useOrderType,
+  useTradeTpSl,
 } from "@symmio/frontend-sdk/state/trade/hooks";
 import { useLeverage } from "@symmio/frontend-sdk/state/user/hooks";
 import { useCollateralToken } from "@symmio/frontend-sdk/constants/tokens";
@@ -22,6 +23,7 @@ import {
 } from "@symmio/frontend-sdk/constants/misc";
 import { formatAmount, toBN } from "@symmio/frontend-sdk/utils/numbers";
 import { OrderType } from "@symmio/frontend-sdk/types/trade";
+import ActionButton from "./ActionButton";
 
 const LabelsWrapper = styled(Column)`
   gap: 12px;
@@ -51,7 +53,7 @@ export default function OpenPositionData() {
     () => (toBN(formattedAmounts[1]).isNaN() ? "0" : formattedAmounts[1]),
     [formattedAmounts]
   );
-
+  const { tp, sl } = useTradeTpSl();
   const notionalValue = useNotionalValue(quantityAsset, price);
 
   const { total: lockedValue } = useLockedValues(notionalValue);
@@ -66,7 +68,7 @@ export default function OpenPositionData() {
 
   const info = useMemo(() => {
     const lockedValueBN = toBN(lockedValue);
-    return [
+    const basedInfo = [
       {
         title: "Locked Value:",
         value: `${
@@ -104,6 +106,10 @@ export default function OpenPositionData() {
         }`,
       },
     ];
+    if (tp || sl) {
+      basedInfo.push({ title: "TP/SL:", value: `${tp}/${sl}` });
+    }
+    return basedInfo;
   }, [
     lockedValue,
     pricePrecision,
@@ -113,6 +119,8 @@ export default function OpenPositionData() {
     orderType,
     theme.primaryBlue,
     tradingFee,
+    tp,
+    sl,
   ]);
 
   return (
@@ -142,6 +150,7 @@ export default function OpenPositionData() {
           />
         );
       })}
+      <ActionButton />
     </React.Fragment>
   );
 }

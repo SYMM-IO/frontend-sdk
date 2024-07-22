@@ -22,6 +22,7 @@ import {
 } from "@symmio/frontend-sdk/constants/misc";
 import { formatAmount, toBN } from "@symmio/frontend-sdk/utils/numbers";
 import { OrderType } from "@symmio/frontend-sdk/types/trade";
+import ActionButton from "./ActionButton";
 
 const LabelsWrapper = styled(Column)`
   gap: 12px;
@@ -142,6 +143,7 @@ export default function OpenPositionData() {
           />
         );
       })}
+      <ActionButton />
     </React.Fragment>
   );
 }

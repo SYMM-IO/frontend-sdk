@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import {
   usePositionType,
-  useStopLossValues,
+  useTradeTpSl,
 } from "@symmio/frontend-sdk/state/trade/hooks";
 import { ApplicationModal } from "@symmio/frontend-sdk/state/application/reducer";
 import { useActiveMarket } from "@symmio/frontend-sdk/state/trade/hooks";
@@ -17,12 +17,9 @@ import {
 import { ModalState, StateContext } from "./ModalData";
 
 import Loading from "./Loading";
-import ProgressTab from "./ProgressTab";
-import SetStopLoss from "./SetStopLoss";
 import OpenPositionData from "./OpenPositionData";
 import Column from "components/Column";
 import { ModalHeader, Modal } from "components/Modal";
-import ActionButton from "./ActionButton";
 
 const Wrapper = styled(Column)`
   gap: 16px;
@@ -32,12 +29,16 @@ const Wrapper = styled(Column)`
   height: auto;
 `;
 
+const TpSlText = styled.div`
+  margin-top: 10px;
+  font-size: 10px;
+`;
+
 export default function OpenPositionModal() {
-  const { isActive } = useStopLossValues();
   const [state, setState] = useState<ModalState>(ModalState.START);
   const [txHash, setTxHash] = useState("");
   const isPendingTxs = useIsHavePendingTransaction(TransactionType.TRADE);
-
+  const { tp, sl } = useTradeTpSl();
   const market = useActiveMarket();
   const positionType = usePositionType();
   const toggleModal = useToggleOpenPositionModal();
@@ -45,8 +46,7 @@ export default function OpenPositionModal() {
 
   useEffect(() => {
     if (txHash !== "" && !isPendingTxs) {
-      if (isActive) setState(ModalState.END);
-      else toggleModal();
+      toggleModal();
     }
   }, [isPendingTxs, txHash]);
 
@@ -54,9 +54,21 @@ export default function OpenPositionModal() {
     state === ModalState.START ? (
       <OpenPositionData />
     ) : state === ModalState.LOADING ? (
-      <Loading summary={"Transaction Pending..."} />
+      <Loading
+        summary={
+          <div>
+            Transaction Pending...
+            {(tp || sl) && (
+              <TpSlText>
+                After sending the transaction, you should be online until you
+                sign a message to place the TP/SL.
+              </TpSlText>
+            )}
+          </div>
+        }
+      />
     ) : (
-      <SetStopLoss />
+      <div />
     );
 
   return (
@@ -71,11 +83,7 @@ export default function OpenPositionModal() {
         positionType={positionType}
       />
       <StateContext.Provider value={{ state, setState, setTxHash }}>
-        <Wrapper>
-          {isActive && <ProgressTab />}
-          {content}
-          <ActionButton />
-        </Wrapper>
+        <Wrapper>{content}</Wrapper>
       </StateContext.Provider>
     </Modal>
   );

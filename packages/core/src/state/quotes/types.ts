@@ -11,6 +11,7 @@ export interface QuotesState {
   hasMoreHistory?: boolean;
   instantClosesStates: InstantCloseObject;
   openInstantClosesState: ApiState;
+  tpSlQuoteData: { [quoteId: number]: TpSlContent };
 }
 
 export interface SubGraphData {
@@ -75,3 +76,35 @@ export interface InstantCloseResponse {
 }
 
 export type InstantCloseResponseType = InstantCloseResponse[];
+
+export enum TpSlDataState {
+  VALID = "Valid",
+  LOADING = "Loading",
+  FORCE_CHECKING = "ForceChecking",
+  NOT_FOUND = "NotFount",
+  NEED_ACCEPT = "NeedAccept",
+}
+
+export enum TpSlDataStateParam {
+  CHECK_TP = "CheckTp",
+  CHECK_SL = "CheckSl",
+  CHECK_TP_SL = "CheckTpSl",
+  CHECK_ANY_TP_SL = "CheckAnyTpSl",
+  NONE = "None",
+}
+
+export interface TpSlContent {
+  tp: string;
+  sl: string;
+  tpOpenPrice: string;
+  slOpenPrice: string;
+  tpSlState: TpSlDataState;
+  tpSlStateParam?: TpSlDataStateParam;
+  quoteId: number;
+}
+
+export interface TpSlEditContent {
+  tp: string;
+  sl: string;
+  tpSlState: TpSlDataState;
+}

@@ -16,5 +16,5 @@ export const WEB_SETTING = {
   showSignModal: true,
 
   notAllowedMethods: [] as string[],
-  showStopLoss: false,
+  showTpSl: true,
 };

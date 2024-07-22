@@ -14,6 +14,7 @@ export interface ChainType {
   readonly MULTI_ACCOUNT_ADDRESS: string;
   readonly PARTY_B_WHITELIST: string;
   readonly SIGNATURE_STORE_ADDRESS: string;
+  readonly TP_SL_WALLET_ADDRESS: string;
   readonly MULTICALL3_ADDRESS: string;
   readonly USDC_ADDRESS: string;
   readonly WRAPPED_NATIVE_ADDRESS: string;

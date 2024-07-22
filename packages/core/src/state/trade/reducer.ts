@@ -11,10 +11,16 @@ import {
   updateTypedValue,
   updatePositionType,
   updateLockedPercentages,
-  updateIsActiveStopLoss,
-  updateStopLossPrice,
+  updateTpSl,
+  setTpSlOpened,
+  updateDelegateTpSl,
+  updateTpError,
+  updateSlError,
+  setTpSlConfig,
+  updateTpSlState,
 } from "./actions";
-import { TradeState } from "./types";
+import { TpSlConfigState, TpSlProcessState, TradeState } from "./types";
+import { DEFAULT_SLIPPAGE } from "../../constants";
 
 export const initialState: TradeState = {
   marketId: undefined,
@@ -27,8 +33,28 @@ export const initialState: TradeState = {
   partyAmm: undefined,
   partyBmm: undefined,
   lf: undefined,
-  isActiveStopLoss: false,
-  stopLossPrice: "",
+  tpSlOpened: false,
+  tpSl: {
+    tp: "",
+    sl: "",
+    state: TpSlProcessState.INITIALIZE,
+    quoteId: -1,
+    lastTimeUpdated: 0,
+    tpSlippage: DEFAULT_SLIPPAGE,
+    slSlippage: DEFAULT_SLIPPAGE,
+  },
+  tpSlError: {
+    tpError: "",
+    slError: "",
+  },
+  tpSlDelegateChecker: false,
+  tpSlConfig: {
+    state: TpSlConfigState.NOT_VALID,
+    MaxRequestTimeDeltaSeconds: 0,
+    MinPriceDistancePercent: 5,
+    MinProfitStopLossSpreadPercent: 10,
+    MaxActiveOrdersPerUser: 0,
+  },
 };
 
 export default createReducer(initialState, (builder) =>
@@ -54,13 +80,32 @@ export default createReducer(initialState, (builder) =>
     .addCase(updatePositionType, (state, action) => {
       state.positionType = action.payload;
     })
-    .addCase(updateIsActiveStopLoss, (state, action) => {
-      state.isActiveStopLoss = action.payload;
+    .addCase(updateTpSl, (state, action) => {
+      state.tpSl = { ...state.tpSl, ...action.payload };
     })
-    .addCase(updateStopLossPrice, (state, action) => {
-      state.stopLossPrice = action.payload;
+    .addCase(setTpSlOpened, (state, action) => {
+      state.tpSlOpened = action.payload;
     })
-
+    .addCase(updateDelegateTpSl, (state, action) => {
+      state.tpSlDelegateChecker = action.payload;
+    })
+    .addCase(updateTpError, (state, action) => {
+      state.tpSlError.tpError = action.payload;
+    })
+    .addCase(updateSlError, (state, action) => {
+      state.tpSlError.slError = action.payload;
+    })
+    .addCase(setTpSlConfig, (state, action) => {
+      state.tpSlConfig = action.payload;
+    })
+    .addCase(updateTpSlState, (state, action) => {
+      const preTpSl = state.tpSl;
+      state.tpSl = {
+        ...preTpSl,
+        state: action.payload.state,
+        lastTimeUpdated: action.payload.lastTimeUpdated,
+      };
+    })
     .addCase(
       updateLockedPercentages,
       (state, { payload: { cva, partyAmm, partyBmm, lf } }) => {

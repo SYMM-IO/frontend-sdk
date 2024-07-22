@@ -29,3 +29,6 @@ export function getRemainingTime(timeStamp: number): {
 export function formatTimestamp(timeLength: number, format?: string): string {
   return dayjs(timeLength).format(format ?? "YYYY /MMMM /DD - HH:mm");
 }
+export function getCurrentTimeInSecond() {
+  return Math.ceil(new Date().getTime() / 1000);
+}
