@@ -5,11 +5,14 @@ import useTradePage from "@symmio/frontend-sdk/hooks/useTradePage";
 import { ModalState, StateContext } from "./ModalData";
 import ErrorButton from "components/Button/ErrorButton";
 import OpenPositionButton from "components/Button/OpenPositionButton";
+import { useSetTpSlState } from "@symmio/frontend-sdk/state/trade/hooks";
+import { TpSlProcessState } from "@symmio/frontend-sdk/state/trade/types";
+import { getCurrentTimeInSecond } from "@symmio/frontend-sdk/utils/time";
 
 export default function ActionButton() {
   const { state } = useTradePage();
   const { setState, state: modalState, setTxHash } = useContext(StateContext);
-
+  const setTradeTpSl = useSetTpSlState();
   const { callback: tradeCallback, error: tradeCallbackError } =
     useSentQuoteCallback();
 
@@ -21,11 +24,23 @@ export default function ActionButton() {
     if (modalState === ModalState.LOADING) return;
 
     setState(ModalState.LOADING);
+    setTradeTpSl({
+      state: TpSlProcessState.WAIT_FOR_QUOTE_RECEIVE,
+      lastTimeUpdated: getCurrentTimeInSecond(),
+    });
     const tx = await tradeCallback();
+
     console.log("tx", tx);
     if (tx) setTxHash(tx.hash);
     else setState(ModalState.START);
-  }, [modalState, setState, setTxHash, tradeCallback, tradeCallbackError]);
+  }, [
+    modalState,
+    setState,
+    setTradeTpSl,
+    setTxHash,
+    tradeCallback,
+    tradeCallbackError,
+  ]);
 
   if (state) {
     return <ErrorButton state={state} disabled={true} exclamationMark={true} />;

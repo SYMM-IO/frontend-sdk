@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import isEmpty from "lodash/isEmpty.js";
 import { AppDispatch, AppThunkDispatch, useAppDispatch } from "../declaration";
 import { useWebSocket } from "react-use-websocket/dist/lib/use-websocket.js";
@@ -32,6 +32,14 @@ import {
 } from "../chains/hooks";
 import { ConnectionStatus } from "../../types/api";
 import { useAnalyticsApolloClient } from "../../apollo/client/balanceHistory";
+import { useContractDelegateTpSl } from "../../hooks/useTpSl";
+import {
+  useSetDelegateTpSl,
+  useSetTpSlConfig,
+  useTpSlDelegate,
+} from "../trade/hooks";
+import { autoRefresh } from "../../utils/retry";
+import { makeHttpRequestV2 } from "../../utils/http";
 
 export function UserUpdater(): null {
   const dispatch = useAppDispatch();
@@ -42,9 +50,45 @@ export function UserUpdater(): null {
   const client = useAnalyticsApolloClient();
   const subgraphAddress = useAnalyticsSubgraphAddress();
   const appName = useAppName();
+  const delegateChecker = useContractDelegateTpSl();
+  const prevDelegate = useTpSlDelegate();
+  const setDelegateTpSl = useSetDelegateTpSl();
+  const setTpSlConfig = useSetTpSlConfig();
+  const configRequestRef = useRef<() => void>();
+  const { baseUrl, fetchData, tpslUrl } = useHedgerInfo() || {};
 
-  const { baseUrl, fetchData } = useHedgerInfo() || {};
   useUpnlWebSocket(dispatch);
+
+  useEffect(() => {
+    if (delegateChecker && delegateChecker.length > 1) {
+      if ((delegateChecker[0] && delegateChecker[1]) !== prevDelegate) {
+        setDelegateTpSl(delegateChecker[0] && delegateChecker[1]);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [delegateChecker, setDelegateTpSl]);
+
+  useEffect(() => {
+    async function getConfig() {
+      const res = await getTpSlConfigRequest(tpslUrl, appName);
+      if (res) {
+        setTpSlConfig(res);
+        if (configRequestRef.current) {
+          configRequestRef.current();
+        }
+      }
+    }
+    if (tpslUrl?.length > 0 && appName?.length > 0) {
+      const intervalFunc = autoRefresh(getConfig, 5);
+      configRequestRef.current = intervalFunc;
+    }
+
+    return () => {
+      if (configRequestRef?.current) {
+        configRequestRef?.current();
+      }
+    };
+  }, [tpslUrl, appName]);
 
   useEffect(() => {
     if (
@@ -108,6 +152,27 @@ export function UserUpdater(): null {
   }, [dispatch]);
 
   return null;
+}
+async function getTpSlConfigRequest(TP_SL_URL: string, APP_NAME: string) {
+  console.log("--22", TP_SL_URL);
+  const { href: tpSlUrl } = new URL(
+    `conditional-order/dev/configs/`,
+    TP_SL_URL
+  );
+  const options = {
+    headers: [["App-Name", APP_NAME]],
+  };
+  try {
+    const { result, status }: { result: any; status: number } =
+      await makeHttpRequestV2(tpSlUrl, options);
+    if (status !== 200 && result?.error_message) {
+      return null;
+    }
+    return result;
+  } catch (e) {
+    console.log("error", e);
+    return null;
+  }
 }
 
 function useUpnlWebSocket(dispatch: AppDispatch) {

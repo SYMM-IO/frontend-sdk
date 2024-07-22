@@ -15,16 +15,16 @@ import AmountsPanel from "./AmountsPanel";
 import OrderTypeTab from "./OrderTypeTab";
 import MinPositionInfo from "./MinPositionInfo";
 import TradeActionButtons from "./TradeActionButton";
-import StopLoss from "./StopLoss";
 import { BlackList, Suspend } from "./AccessControlPanel";
+import { TpSlChecker } from "../TPSL/TpSlChecker";
 
-const Wrapper = styled.div<{ showStopLoss?: boolean }>`
+const Wrapper = styled.div<{ showTpSl?: boolean }>`
   position: relative;
 
   width: 100%;
   max-width: 480px;
   border-radius: 4px;
-  height: ${({ showStopLoss }) => (showStopLoss ? "735px" : "635px")};
+  height: ${({ showTpSl }) => (showTpSl ? "735px" : "635px")};
   overflow: scroll;
   background: ${({ theme }) => theme.bg0};
   & > * {
@@ -74,7 +74,7 @@ const TabWrapper = styled.div`
 `;
 
 export default function TradePanel() {
-  const showStopLoss = WEB_SETTING.showStopLoss;
+  const showTpSl = WEB_SETTING.showTpSl;
   const showTradeInfoModal = useModalOpen(ApplicationModal.OPEN_POSITION);
 
   // TODO: add this two variables in trade action buttons
@@ -82,7 +82,7 @@ export default function TradePanel() {
   const isBlacklisted = false;
 
   return (
-    <Wrapper showStopLoss={showStopLoss}>
+    <Wrapper showTpSl={showTpSl}>
       <React.Fragment>
         {isBlacklisted && <BlackList />}
         {isSuspended && <Suspend />}
@@ -93,12 +93,13 @@ export default function TradePanel() {
           <PositionTypeTab />
           <AmountsPanel />
           <MinPositionInfo />
-          {showStopLoss && <StopLoss />}
+
           <TradeActionButtons />
           <TradeOverview />
         </Container>
         {showTradeInfoModal && <OpenPositionModal />}
       </React.Fragment>
+      <TpSlChecker />
     </Wrapper>
   );
 }

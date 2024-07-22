@@ -1,6 +1,6 @@
 import { Quote } from "../../types/quote";
 import * as toolkitRaw from "@reduxjs/toolkit/dist/redux-toolkit.cjs.production.min.js";
-import { InstantCloseStatus } from "./types";
+import { InstantCloseStatus, TpSlContent } from "./types";
 const { createAction } = ((toolkitRaw as any).default ??
   toolkitRaw) as typeof toolkitRaw;
 
@@ -24,6 +24,11 @@ export const addPosition = createAction<{ quote: Quote }>("quotes/addPosition");
 export const setHistory = createAction<{ quotes: Quote[]; chainId: number }>(
   "quotes/setHistory"
 );
+export const setTpSlData = createAction<{
+  quoteId: number;
+  value: TpSlContent;
+}>("quotes/setTpSlData");
+
 export const setQuoteDetail = createAction<{ quote: Quote | null }>(
   "quotes/setQuoteDetail"
 );

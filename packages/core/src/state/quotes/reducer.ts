@@ -20,6 +20,7 @@ import {
   setPendings,
   setPositions,
   setQuoteDetail,
+  setTpSlData,
   updateQuoteInstantCloseStatus,
 } from "./actions";
 import { getHistory, getInstantCloses } from "./thunks";
@@ -29,6 +30,7 @@ export const initialState: QuotesState = {
   pendings: [],
   positions: [],
   listeners: [],
+  tpSlQuoteData: {},
   quoteDetail: null,
   historyState: ApiState.LOADING,
   hasMoreHistory: false,
@@ -92,6 +94,11 @@ export default createReducer(initialState, (builder) =>
       }
 
       state.positions = positions.filter((q) => q.id !== quote.id);
+    })
+    .addCase(setTpSlData, (state, { payload: { quoteId, value } }) => {
+      const prevTpsSlData = state.tpSlQuoteData;
+      prevTpsSlData[quoteId] = value;
+      state.tpSlQuoteData = prevTpsSlData;
     })
     .addCase(removeQuote, (state, { payload: { id } }) => {
       if (!state.listeners.includes(id)) {

@@ -10,6 +10,7 @@ export type Hedger = {
   id: string;
   apiUrl: string;
   baseUrl: string;
+  tpslUrl: string;
   webSocketUrl: string;
   webSocketUpnlUrl: string;
   webSocketNotificationUrl: string;

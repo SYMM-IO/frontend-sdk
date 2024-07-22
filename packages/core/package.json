@@ -237,6 +237,10 @@
       "types": "./dist/hooks/useQuotes.d.ts",
       "default": "./dist/hooks/useQuotes.js"
     },
+    "./hooks/useTpSl": {
+      "types": "./dist/hooks/useTpSl.d.ts",
+      "default": "./dist/hooks/useTpSl.js"
+    },
     "./hooks/useTradePage": {
       "types": "./dist/hooks/useTradePage.d.ts",
       "default": "./dist/hooks/useTradePage.js"

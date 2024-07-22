@@ -12,12 +12,18 @@ import {
   updateTypedValue,
   updatePositionType,
   updateLockedPercentages,
-  updateStopLossPrice,
-  updateIsActiveStopLoss,
+  updateTpSl,
+  updateTpError,
+  updateSlError,
+  updateTpSlState,
+  updateDelegateTpSl,
+  setTpSlOpened,
+  setTpSlConfig,
 } from "./actions";
 import { useMarket } from "../../hooks/useMarkets";
 import { makeHttpRequest } from "../../utils/http";
 import { GetLockedParamUrlResponse } from "./types";
+import { TpSlUpdateProcessState, TpSlState, TpSlConfigParams } from "./types";
 
 export function useActiveMarketId(): number | undefined {
   const marketId = useAppSelector((state) => state.trade.marketId);
@@ -63,14 +69,95 @@ export function useLimitPrice(): string {
   const limitPrice = useAppSelector((state) => state.trade.limitPrice);
   return limitPrice;
 }
+export function useTradeTpSl(): TpSlState {
+  const tpSlValue = useAppSelector((state) => state.trade.tpSl);
+  return tpSlValue;
+}
+export function useTradeTpSlError() {
+  const tpSlErrorValue = useAppSelector((state) => state.trade.tpSlError);
+  return tpSlErrorValue;
+}
+export function useTpSlDelegate(): boolean {
+  const delegateStatus = useAppSelector(
+    (state) => state.trade.tpSlDelegateChecker
+  );
+  return delegateStatus;
+}
 
-export function useStopLossValues(): {
-  isActive: boolean;
-  stopLossPrice: string;
-} {
-  const isActive = useAppSelector((state) => state.trade.isActiveStopLoss);
-  const stopLossPrice = useAppSelector((state) => state.trade.stopLossPrice);
-  return { stopLossPrice, isActive };
+export function useTpSlOpened(): boolean {
+  const tpSlOpenedStatus = useAppSelector((state) => state.trade.tpSlOpened);
+  return tpSlOpenedStatus;
+}
+export function useTpSlConfigParams(): TpSlConfigParams {
+  const tpSlConfig = useAppSelector((state) => state.trade.tpSlConfig);
+  return tpSlConfig;
+}
+export function useSetTpSlConfig(): (tpSlValue: TpSlConfigParams) => void {
+  const dispatch = useAppDispatch();
+  return useCallback(
+    (tpSlValue: TpSlConfigParams) => {
+      dispatch(setTpSlConfig(tpSlValue));
+    },
+    [dispatch]
+  );
+}
+
+export function useSetTpSl(): (tpSlValue: TpSlState) => void {
+  const dispatch = useAppDispatch();
+  return useCallback(
+    (tpSlValue: TpSlState) => {
+      dispatch(updateTpSl(tpSlValue));
+    },
+    [dispatch]
+  );
+}
+export function useSetTpSlState(): (
+  tpSlStateValue: TpSlUpdateProcessState
+) => void {
+  const dispatch = useAppDispatch();
+  return useCallback(
+    (tpSlStateValue: TpSlUpdateProcessState) => {
+      dispatch(updateTpSlState(tpSlStateValue));
+    },
+    [dispatch]
+  );
+}
+export function useSetDelegateTpSl() {
+  const dispatch = useAppDispatch();
+  return useCallback(
+    (delegateStatus: boolean) => {
+      dispatch(updateDelegateTpSl(delegateStatus));
+    },
+    [dispatch]
+  );
+}
+
+export function useSetTpSlOpened() {
+  const dispatch = useAppDispatch();
+  return useCallback(
+    (tpSlOpened: boolean) => {
+      dispatch(setTpSlOpened(tpSlOpened));
+    },
+    [dispatch]
+  );
+}
+export function useSetTpError(): (tpValue: string) => void {
+  const dispatch = useAppDispatch();
+  return useCallback(
+    (tpValue: string) => {
+      dispatch(updateTpError(tpValue));
+    },
+    [dispatch]
+  );
+}
+export function useSetSlError(): (slValue: string) => void {
+  const dispatch = useAppDispatch();
+  return useCallback(
+    (slValue: string) => {
+      dispatch(updateSlError(slValue));
+    },
+    [dispatch]
+  );
 }
 
 export function useLockedPercentages(): {
@@ -139,26 +226,6 @@ export function useSetTypedValue() {
     (value: string, inputField: InputField) => {
       dispatch(updateInputField(inputField));
       dispatch(updateTypedValue(value));
-    },
-    [dispatch]
-  );
-}
-
-export function useSetStopLossPrice() {
-  const dispatch = useAppDispatch();
-  return useCallback(
-    (value: string) => {
-      dispatch(updateStopLossPrice(value));
-    },
-    [dispatch]
-  );
-}
-
-export function useSetIsActiveStopLoss() {
-  const dispatch = useAppDispatch();
-  return useCallback(
-    (value: boolean) => {
-      dispatch(updateIsActiveStopLoss(value));
     },
     [dispatch]
   );

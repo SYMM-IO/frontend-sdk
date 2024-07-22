@@ -4,6 +4,7 @@ import { setChains } from "./actions";
 import { ChainsState, MuonDataType } from "./reducer";
 import useActiveWagmi from "../../lib/hooks/useActiveWagmi";
 import { useFEName } from "../user/hooks";
+import { useHedgerInfo } from "../hedger/hooks";
 
 type InputObject = {
   [chainId: number]: { [name: string]: any };
@@ -116,6 +117,33 @@ export function useMultiAccountAddress() {
     );
     return getValuesByName(data, FE_NAME);
   }, [FE_NAME, chains, v3_ids]);
+}
+
+export function useTpSlWalletAddress() {
+  const FE_NAME = useFEName();
+  const chains = useAppSelector((state: AppState) => state.chains.chains);
+  const v3_ids = useAppSelector((state: AppState) => state.chains.V3_CHAIN_IDS);
+
+  return useMemo(() => {
+    const data = compatibleWithLegacyStructure(
+      chains,
+      v3_ids,
+      "TP_SL_WALLET_ADDRESS"
+    );
+    return getValuesByName(data, FE_NAME);
+  }, [FE_NAME, chains, v3_ids]);
+}
+
+export function useTpSlAvailable() {
+  const FE_NAME = useFEName();
+  const chains = useAppSelector((state: AppState) => state.chains.chains);
+  const { chainId } = useActiveWagmi();
+  const { tpslUrl } = useHedgerInfo() || {};
+  const isEnableTpSl = chains?.[chainId ?? 1]?.[FE_NAME]?.TP_SL_WALLET_ADDRESS;
+
+  return (
+    isEnableTpSl && isEnableTpSl.length > 0 && tpslUrl && tpslUrl.length > 0
+  );
 }
 
 export function useAllMultiAccountAddresses() {
