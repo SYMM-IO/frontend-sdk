@@ -15,10 +15,9 @@ type useWagmiReturnType = {
 };
 
 export default function useWagmi(): useWagmiReturnType {
-  const { chain } = useAccount();
-  const { address, isConnected, isConnecting } = useAccount();
+  const { address, isConnected, isConnecting, chain, chainId } = useAccount();
   return {
-    chainId: chain?.id,
+    chainId: chain?.id ?? chainId,
     account: address,
 
     chain,
