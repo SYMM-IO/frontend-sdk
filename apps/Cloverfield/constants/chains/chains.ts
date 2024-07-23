@@ -35,6 +35,8 @@ export const ClientChain = [
   SupportedChainId.BLAST,
 ];
 
+export const ALL_CHAINS = Object.values(supportedWagmiChain);
+
 export const APP_CHAINS = getWagmiChain(ClientChain);
 
 export const FALLBACK_CHAIN_ID = SupportedChainId.POLYGON;

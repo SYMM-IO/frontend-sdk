@@ -11,7 +11,7 @@ import {
   safeWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 
-import { APP_CHAINS } from "constants/chains/chains";
+import { ALL_CHAINS } from "constants/chains/chains";
 import { APP_NAME } from "constants/chains/misc";
 
 export const getWagmiConfig = () => {
@@ -26,7 +26,7 @@ export const getWagmiConfig = () => {
   const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
 
   const chains: readonly [Chain, ...Chain[]] =
-    APP_CHAINS as unknown as readonly [Chain, ...Chain[]];
+    ALL_CHAINS as unknown as readonly [Chain, ...Chain[]];
 
   const transports = chains.reduce((acc, chain) => {
     acc[chain.id] = http();
