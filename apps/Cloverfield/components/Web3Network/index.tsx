@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 
 import { ChainInfo } from "@symmio/frontend-sdk/constants/chainInfo";
@@ -11,7 +11,11 @@ import { isMobile } from "react-device-detect";
 import { NetworksModal } from "./NetworksModal";
 import useOnOutsideClick from "lib/hooks/useOnOutsideClick";
 import { getChainLogo } from "utils/chainLogo";
-import { useV3Ids } from "@symmio/frontend-sdk/state/chains/hooks";
+import {
+  useAllMultiAccountAddresses,
+  useV3Ids,
+} from "@symmio/frontend-sdk/state/chains/hooks";
+import { useSetFEName } from "@symmio/frontend-sdk/state/user/hooks";
 
 const Container = styled.div`
   display: inline-flex;
@@ -25,14 +29,6 @@ const Button = styled(NavButton)`
   font-size: 12px;
   padding: 0px 3px;
   cursor: default;
-
-  /* ${({ theme }) => theme.mediaWidth.upToMedium`
-    & > * {
-      &:nth-child(2) {
-        display: none;
-      }
-    }
-  `}; */
 `;
 
 const Chevron = styled(ChevronDown)<{ open: boolean }>`
@@ -43,10 +39,31 @@ const Chevron = styled(ChevronDown)<{ open: boolean }>`
 export default function Web3Network() {
   const ref = useRef(null);
   const v3_ids = useV3Ids();
-  const isMultiChain = v3_ids.length > 1;
+  const MULTI_ACCOUNT_ADDRESS = useAllMultiAccountAddresses();
   const { account, chainId } = useActiveWagmi();
   const [networksModal, toggleNetworksModal] = useState(false);
+  const setFrontEndName = useSetFEName();
   useOnOutsideClick(ref, () => toggleNetworksModal(false));
+
+  const isMultiChain = useMemo(() => {
+    if (chainId && Object.keys(MULTI_ACCOUNT_ADDRESS).length > 0) {
+      return (
+        MULTI_ACCOUNT_ADDRESS[chainId] &&
+        Object.keys(MULTI_ACCOUNT_ADDRESS[chainId]).length > 1
+      );
+    }
+    return false;
+  }, [MULTI_ACCOUNT_ADDRESS, chainId]);
+
+  useEffect(() => {
+    if (
+      chainId &&
+      MULTI_ACCOUNT_ADDRESS[chainId] &&
+      Object.keys(MULTI_ACCOUNT_ADDRESS[chainId]).length === 1
+    ) {
+      setFrontEndName(Object.keys(MULTI_ACCOUNT_ADDRESS[chainId])[0]);
+    }
+  }, [MULTI_ACCOUNT_ADDRESS, chainId, setFrontEndName]);
 
   const onClickButton = () => {
     if (isMultiChain) toggleNetworksModal(!networksModal);

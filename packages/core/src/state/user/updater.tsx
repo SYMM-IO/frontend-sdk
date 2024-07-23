@@ -154,7 +154,6 @@ export function UserUpdater(): null {
   return null;
 }
 async function getTpSlConfigRequest(TP_SL_URL: string, APP_NAME: string) {
-  console.log("--22", TP_SL_URL);
   const { href: tpSlUrl } = new URL(
     `conditional-order/dev/configs/`,
     TP_SL_URL

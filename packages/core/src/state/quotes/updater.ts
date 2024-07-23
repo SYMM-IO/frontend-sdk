@@ -63,7 +63,6 @@ export function QuotesUpdater(): null {
   }, [account, chainId, getHistory]);
 
   useEffect(() => {
-    console.log("--", prevPositions.quotes, positions);
     if (!isEqual(prevPositions.quotes, positions ?? [])) {
       dispatch(setPositions({ quotes: positions ?? [] }));
       if (positions === undefined) return;
