@@ -91,8 +91,7 @@ export function useTokenBalancesWithLoadingIndicator(
       validatedTokenAddresses,
       erc20Abi,
       "balanceOf",
-      useMemo(() => (address ? [address] : []), [address]),
-      { watch: true, cacheTime: 4_000 }
+      useMemo(() => (address ? [address] : []), [address])
     );
 
   return useMemo(

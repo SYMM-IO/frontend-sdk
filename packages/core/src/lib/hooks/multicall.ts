@@ -98,10 +98,10 @@ export function useMultipleContractSingleData(
 ) {
   // TODO: fix any type
   const configs = addresses.map((address, i) => ({
-    address: address as `0x{string}`,
+    address: address as Address,
     abi,
     functionName,
-    args: (callInputs && callInputs[i] ? callInputs[i] : []) as any,
+    args: (callInputs && callInputs[i] ? [callInputs[i]] : []) as any,
   }));
 
   return useReadContracts({
