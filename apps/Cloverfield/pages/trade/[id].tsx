@@ -12,8 +12,6 @@ import FavoriteBar from "components/App/FavoriteBar";
 import AccountOverview from "components/App/AccountData";
 import { UpdaterRoot } from "components/EmptyComponent";
 import WrapperBanner from "components/Banner";
-import TermsAndServices from "components/TermsAndServices";
-import { WEB_SETTING } from "@symmio/frontend-sdk/config";
 
 export const Container = styled(Column)`
   background: ${({ theme }) => theme.bg};
@@ -58,7 +56,6 @@ export const LeftColumn = styled(Column)<{ gap?: string }>`
 export default function ID() {
   return (
     <Container>
-      {WEB_SETTING.showSignModal && <TermsAndServices />}
       <WrapperBanner />
       <UpdaterRoot />
       <WhitelistUpdater />

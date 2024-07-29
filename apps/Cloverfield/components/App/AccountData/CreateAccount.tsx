@@ -25,6 +25,7 @@ import {
 } from "components/Icons";
 import { WEB_SETTING } from "@symmio/frontend-sdk/config";
 import GradientButton from "components/Button/GradientButton";
+import TermsAndServices from "components/TermsAndServices";
 
 const Wrapper = styled.div<{ modal?: boolean }>`
   border: none;
@@ -119,6 +120,7 @@ export default function CreateAccount({ onClose }: { onClose?: () => void }) {
   const { account, chainId } = useActiveWagmi();
   const [name, setName] = useState("");
   const [, setTxHash] = useState("");
+  const [showTerms, setShowTerms] = useState(false);
   const userWhitelisted = useUserWhitelist();
   const isTermsAccepted = useIsTermsAccepted();
 
@@ -160,7 +162,12 @@ export default function CreateAccount({ onClose }: { onClose?: () => void }) {
     }
 
     if (WEB_SETTING.showSignModal && !isTermsAccepted) {
-      return <GradientButton label={"Accept Terms Please"} disabled={true} />;
+      return (
+        <GradientButton
+          onClick={() => setShowTerms(true)}
+          label={"Accept Terms Please"}
+        />
+      );
     }
 
     if (userWhitelisted === false) {
@@ -233,6 +240,7 @@ export default function CreateAccount({ onClose }: { onClose?: () => void }) {
           <DescriptionText>{`Create Account > Deposit ${collateralCurrency?.symbol} > Enjoy Trading`}</DescriptionText>
         )}
       </ContentWrapper>
+      {showTerms && <TermsAndServices onDismiss={() => setShowTerms(false)} />}
     </Wrapper>
   );
 }

@@ -13,7 +13,7 @@ export const WEB_SETTING = {
 
   checkWhiteList: false,
 
-  showSignModal: true,
+  showSignModal: false,
 
   notAllowedMethods: [] as string[],
   showTpSl: true,
