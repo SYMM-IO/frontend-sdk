@@ -4,9 +4,10 @@ import { Hedger, OpenInterest } from "@symmio/frontend-sdk/types/hedger";
 export const DEFAULT_HEDGER = {
   apiUrl: "https://fapi.binance.com/",
   webSocketUrl: "wss://fstream.binance.com/stream",
-  baseUrl: "https://hedger.deus.finance",
+  baseUrl: "https://polygon-hedger-test.rasa.capital",
   tpslUrl: "",
-  webSocketFundingRateUrl: "wss://hedger.deus.finance/ws/funding-rate-ws",
+  webSocketFundingRateUrl:
+    "wss://polygon-hedger-test.rasa.capital/ws/funding-rate-ws",
   webSocketUpnlUrl: "",
   webSocketNotificationUrl: "",
   defaultMarketId: 1,
