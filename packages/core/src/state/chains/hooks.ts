@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { AppState, useAppDispatch, useAppSelector } from "../declaration";
 import { setChains } from "./actions";
-import { ChainsState, MuonDataType } from "./reducer";
+import { ChainsState, ChainsType, MuonDataType } from "./reducer";
 import useActiveWagmi from "../../lib/hooks/useActiveWagmi";
 import { useFEName } from "../user/hooks";
 import { useHedgerInfo } from "../hedger/hooks";
@@ -250,6 +250,29 @@ export function useOrderHistorySubgraphAddress() {
     }
   }
   return address;
+}
+
+export function useGetUniqueElementInChains(element: string) {
+  const config: ChainsType = useAppSelector(
+    (state: AppState) => state.chains.chains
+  );
+
+  const addresses: { chainId: string; url: string }[] = [];
+
+  for (const chainId in config) {
+    for (const projectName in config[chainId]) {
+      const url = config[chainId][projectName][element];
+
+      const isDuplicate = addresses.some(
+        (address) => address.chainId === chainId && address.url === url
+      );
+      if (!isDuplicate) {
+        addresses.push({ chainId, url });
+      }
+    }
+  }
+
+  return addresses;
 }
 
 export function useAnalyticsSubgraphAddress() {

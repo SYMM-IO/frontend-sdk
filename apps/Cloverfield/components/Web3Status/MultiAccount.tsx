@@ -348,7 +348,7 @@ export default function MultiAccount() {
         return (
           <MainButton>
             <CreateAccountWrapper>
-              <AccountAddress onClick={openConnectModal}>
+              <AccountAddress onClick={openAccountModal}>
                 <StatusIcon
                   connected
                   style={{ marginRight: "12px", marginLeft: "6px" }}
