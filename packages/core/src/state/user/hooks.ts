@@ -5,7 +5,6 @@ import { makeHttpRequest } from "../../utils/http";
 import { BALANCE_HISTORY_ITEMS_NUMBER } from "../../constants/misc";
 import {
   Account,
-  AccountUpnl,
   UserPartyAStatDetail,
   initialUserPartyAStatDetail,
 } from "../../types/user";
@@ -353,12 +352,6 @@ export function usePartyBsWhiteList() {
 export function useIsTermsAccepted() {
   const isTermsAccepted = useAppSelector((state) => state.user.isTermsAccepted);
   return isTermsAccepted;
-}
-
-export function useCustomAccountUpnl(account: string): AccountUpnl | undefined {
-  return useAppSelector((state) =>
-    (state.user.allAccountsUpnl || []).find((x: any) => x.account === account)
-  )?.upnl;
 }
 
 export function useSetFEName() {

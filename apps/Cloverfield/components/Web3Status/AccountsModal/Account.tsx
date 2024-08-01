@@ -8,7 +8,6 @@ import {
 } from "@symmio/frontend-sdk/types/user";
 
 import { RowBetween, RowEnd, RowStart } from "components/Row";
-import { useCustomAccountUpnl } from "@symmio/frontend-sdk/state/user/hooks";
 import { formatAmount, toBN } from "@symmio/frontend-sdk/utils/numbers";
 import { ApiState } from "@symmio/frontend-sdk/types/api";
 import { Loader } from "components/Icons";
@@ -65,22 +64,14 @@ export default function Account({
   onClick: () => void;
 }): JSX.Element {
   const theme = useTheme();
-  const customAccount = useCustomAccountUpnl(account.accountAddress);
 
-  const [value, color] = useMemo(() => {
-    const upnlBN = toBN(customAccount?.upnl || 0);
-    if (upnlBN.isGreaterThan(0))
-      return [`+ $${formatAmount(upnlBN)}`, theme.green1];
-    else if (upnlBN.isLessThan(0))
-      return [`- $${formatAmount(Math.abs(upnlBN.toNumber()))}`, theme.red1];
-    return [`-`, undefined];
-  }, [customAccount?.upnl, theme]);
-
-  const { availableForOrder, lockedMargin } = useMemo(() => {
+  const { availableForOrder, lockedMargin, value, color } = useMemo(() => {
     if (!balanceInfo || balanceInfoStatus !== ApiState.OK)
       return { availableForOrder: undefined, lockedMargin: undefined };
 
     let availableForOrder = "0";
+    let value = "0";
+    let color: string | undefined = undefined;
     const {
       allocatedBalance,
       mm,
@@ -91,7 +82,15 @@ export default function Account({
       pendingMm,
       upnl,
     } = balanceInfo;
-    const upnlBN = value ? toBN(value) : toBN(upnl);
+    const upnlBN = toBN(upnl);
+
+    if (upnlBN.isGreaterThan(0)) {
+      value = `+ $${formatAmount(upnlBN)}`;
+      color = theme.green1;
+    } else if (upnlBN.isLessThan(0)) {
+      value = `- $${formatAmount(Math.abs(upnlBN.toNumber()))}`;
+      color = theme.red1;
+    }
 
     if (upnlBN.isGreaterThanOrEqualTo(0))
       availableForOrder = toBN(allocatedBalance)
@@ -116,8 +115,8 @@ export default function Account({
         .minus(considering_mm)
         .toString();
     }
-    return { availableForOrder, lockedMargin: mm };
-  }, [balanceInfo, balanceInfoStatus, value]);
+    return { availableForOrder, lockedMargin: mm, value, color };
+  }, [balanceInfo, balanceInfoStatus, theme.green1, theme.red1]);
 
   return (
     <AccountWrapper active={active} onClick={onClick}>

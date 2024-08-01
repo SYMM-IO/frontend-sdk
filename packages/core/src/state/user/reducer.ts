@@ -16,7 +16,6 @@ import {
   updateUpnlWebSocketStatus,
   updateAccountPartyAStat,
   updateAcceptTerms,
-  updateAllAccountsUpnl,
   setFEName,
   addHedger,
   selectOrUnselectHedger,
@@ -51,7 +50,6 @@ export const initialState: UserState = {
   upnlWebSocketStatus: ConnectionStatus.CLOSED,
   activeAccountUpnl: activeAccountUpnlInitialState,
   accountsPartyAStat: {},
-  allAccountsUpnl: [],
 
   whiteListAccount: null,
   whiteListAccountState: ApiState.LOADING,
@@ -101,20 +99,6 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateUpnlWebSocketStatus, (state, { payload }) => {
       state.upnlWebSocketStatus = payload.status;
-    })
-    .addCase(updateAllAccountsUpnl, (state, action) => {
-      if (!state.allAccountsUpnl?.length) {
-        state.allAccountsUpnl = [];
-      }
-      const item = state.allAccountsUpnl.find(
-        (x) => x.account === action.payload.account
-      );
-
-      if (item) {
-        item.upnl = action.payload.upnl;
-      } else {
-        state.allAccountsUpnl.push(action.payload);
-      }
     })
 
     .addCase(updateAccountPartyAStat, (state, action) => {

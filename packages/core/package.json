@@ -505,10 +505,6 @@
       "types": "./dist/state/user/actions.d.ts",
       "default": "./dist/state/user/actions.js"
     },
-    "./state/user/allAccountsUpdater": {
-      "types": "./dist/state/user/allAccountsUpdater.d.ts",
-      "default": "./dist/state/user/allAccountsUpdater.js"
-    },
     "./state/user/hooks": {
       "types": "./dist/state/user/hooks.d.ts",
       "default": "./dist/state/user/hooks.js"

@@ -39,10 +39,7 @@ export const updateAccountPartyAStat = createAction<{
 export const updateAcceptTerms = createAction<TermsStatus>(
   "user/updateAcceptTerms"
 );
-export const updateAllAccountsUpnl = createAction<{
-  account: string;
-  upnl: AccountUpnl;
-}>("user/updateAllAccountsUpnl");
+
 export const setFEName = createAction<string>("user/setFEName");
 
 export const setAllHedgerData = createAction<AddedHedgersData>(
