@@ -7,11 +7,9 @@ import React, {
 } from "react";
 import styled, { useTheme } from "styled-components";
 import { Activity } from "react-feather";
-import isEqual from "lodash/isEqual.js";
 import { lighten } from "polished";
 import { useConnect } from "wagmi";
 
-import { useAppDispatch } from "@symmio/frontend-sdk/state";
 import { truncateAddress } from "@symmio/frontend-sdk/utils/address";
 import { ChainInfo } from "@symmio/frontend-sdk/constants/chainInfo";
 import { FALLBACK_CHAIN_ID, FALLBACK_FE_NAME } from "constants/chains/chains";
@@ -19,13 +17,12 @@ import { WEB_SETTING } from "@symmio/frontend-sdk/config";
 
 import useRpcChangerCallback from "@symmio/frontend-sdk/lib/hooks/useRpcChangerCallback";
 import useActiveWagmi from "@symmio/frontend-sdk/lib/hooks/useActiveWagmi";
-import usePrevious from "@symmio/frontend-sdk/lib/hooks/usePrevious";
 import {
   useAccountPartyAStat,
   useActiveAccount,
   useSetFEName,
 } from "@symmio/frontend-sdk/state/user/hooks";
-import { updateAccount } from "@symmio/frontend-sdk/state/user/actions";
+import useSubAccountStorage from "@symmio/frontend-sdk/lib/hooks/useSubAccountStorage";
 
 import {
   useAccountsLength,
@@ -206,19 +203,17 @@ const SwitchIcon = styled.div`
 export default function MultiAccount() {
   const theme = useTheme();
   const { accounts } = useUserAccounts();
-  const previousAccounts = usePrevious(accounts);
   const { openConnectModal } = useConnectModal();
   const setFrontEndName = useSetFEName();
-
   const { account, chainId } = useActiveWagmi();
 
+  useSubAccountStorage();
   //TODO remove it and use rainbow
   const ENSName = undefined; //use ens from wagmi
   const activeAccount = useActiveAccount();
   const showCreateAccountModal = useModalOpen(ApplicationModal.CREATE_ACCOUNT);
   const showDepositModal = useModalOpen(ApplicationModal.DEPOSIT);
   const rpcChangerCallback = useRpcChangerCallback();
-  const dispatch = useAppDispatch();
 
   const { accountAddress, name } = activeAccount || {};
   const { loading: accountsLoading } = useAccountsLength();
@@ -241,14 +236,6 @@ export default function MultiAccount() {
     return name;
   })();
   const [accountName, setAccountName] = useState(standardAccountName);
-
-  // Choose last sub account
-  useEffect(() => {
-    if (accounts !== null && !isEqual(accounts, previousAccounts)) {
-      const lastSubAccount = accounts[accounts.length - 1];
-      dispatch(updateAccount(lastSubAccount));
-    }
-  }, [accounts, dispatch, previousAccounts]);
 
   useEffect(() => {
     standardAccountName && setAccountName(standardAccountName);

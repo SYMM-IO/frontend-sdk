@@ -309,6 +309,10 @@
       "types": "./dist/lib/hooks/useRpcChangerCallback.d.ts",
       "default": "./dist/lib/hooks/useRpcChangerCallback.js"
     },
+    "./lib/hooks/useSubAccountStorage": {
+      "types": "./dist/lib/hooks/useSubAccountStorage.d.ts",
+      "default": "./dist/lib/hooks/useSubAccountStorage.js"
+    },
     "./lib/hooks/useSupportedChainId": {
       "types": "./dist/lib/hooks/useSupportedChainId.d.ts",
       "default": "./dist/lib/hooks/useSupportedChainId.js"

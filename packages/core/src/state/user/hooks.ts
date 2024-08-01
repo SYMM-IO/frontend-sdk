@@ -37,6 +37,7 @@ import {
   setAllHedgerData,
   removeHedger,
   toggleDefaultHedger,
+  updateAccount,
 } from "./actions";
 import { useHedgerInfo } from "../hedger/hooks";
 import useDebounce from "../../lib/hooks/useDebounce";
@@ -417,4 +418,17 @@ export function useToggleDefaultHedgerCallback() {
   return useCallback(() => {
     dispatch(toggleDefaultHedger());
   }, [dispatch]);
+}
+
+export function useSetActiveSubAccount() {
+  const dispatch = useAppDispatch();
+
+  return useCallback(
+    (accountAddress?: string, name?: string) => {
+      dispatch(
+        updateAccount(accountAddress && name ? { accountAddress, name } : null)
+      );
+    },
+    [dispatch]
+  );
 }

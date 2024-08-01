@@ -1,11 +1,10 @@
 import React, { useEffect } from "react";
-import { updateAccount } from "@symmio/frontend-sdk/state/user/actions";
-// import { useActiveAccount } from "@symmio/frontend-sdk/src/state/user/hooks";
-import { useAppDispatch } from "@symmio/frontend-sdk/state";
-import { useUserAccounts } from "@symmio/frontend-sdk/hooks/useAccounts";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 import styled from "styled-components";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Box } from "rebass/styled-components";
+
+import { useUserAccounts } from "@symmio/frontend-sdk/hooks/useAccounts";
+import { useSetActiveSubAccount } from "@symmio/frontend-sdk/state/user/hooks";
 
 export const Row = styled(Box)<{
   width?: string;
@@ -61,16 +60,16 @@ export const BaseButton = styled(RowCenter)<{
 `;
 
 export default function MyFunction() {
-  // const activeAccount = useActiveAccount();
   const { openConnectModal } = useConnectModal();
-  const dispatch = useAppDispatch();
   const { accounts } = useUserAccounts();
+  const updateAccount = useSetActiveSubAccount();
+
   useEffect(() => {
     if (accounts !== null) {
       const lastSubAccount = accounts[accounts.length - 1];
-      dispatch(updateAccount(lastSubAccount));
+      updateAccount(lastSubAccount.accountAddress, lastSubAccount.name);
     }
-  }, [accounts, dispatch]);
+  }, [accounts, updateAccount]);
   return (
     <div>
       <BaseButton onClick={openConnectModal}>click me</BaseButton>

@@ -17,7 +17,11 @@ import {
   useAllMultiAccountAddresses,
   useV3Ids,
 } from "@symmio/frontend-sdk/state/chains/hooks";
-import { useFEName, useSetFEName } from "@symmio/frontend-sdk/state/user/hooks";
+import {
+  useFEName,
+  useSetActiveSubAccount,
+  useSetFEName,
+} from "@symmio/frontend-sdk/state/user/hooks";
 
 const ModalWrapper = styled(Card)`
   padding: 0.6rem;
@@ -105,10 +109,12 @@ export function NetworksModal({
   const MULTI_ACCOUNT_ADDRESS = useAllMultiAccountAddresses();
   const frontEndName = useFEName();
   const setFrontEndName = useSetFEName();
+  const updateAccount = useSetActiveSubAccount();
 
   const handleClick = (chainId: SupportedChainId, name: string) => {
     rpcChangerCallback(chainId);
     setFrontEndName(name);
+    updateAccount();
     callBackFlag.current = true;
   };
 
