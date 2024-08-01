@@ -63,10 +63,7 @@ import {
   DEFAULT_PRECISION,
   MARKET_PRICE_COEFFICIENT,
 } from "@symmio/frontend-sdk/constants/misc";
-import {
-  useInstantCloseDataCallback,
-  useInstantClosesData,
-} from "@symmio/frontend-sdk/state/quotes/hooks";
+import { useInstantClosesData } from "@symmio/frontend-sdk/state/quotes/hooks";
 import { InstantCloseStatus } from "@symmio/frontend-sdk/state/quotes/types";
 
 const Wrapper = styled(Column)`
@@ -576,7 +573,6 @@ export function useInstantClosePosition(
   const { callback: delegateAccessCallback, error } = useDelegateAccess();
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
-  const addInstantCloseData = useInstantCloseDataCallback();
 
   useEffect(() => {
     if (isAccessDelegated) setText("Instant Close");
@@ -605,14 +601,6 @@ export function useInstantClosePosition(
       setLoading(true);
       await instantClose();
       setLoading(false);
-      const timestamp = Math.floor(new Date().getTime() / 1000);
-      id &&
-        addInstantCloseData({
-          id,
-          timestamp,
-          amount: size,
-          status: InstantCloseStatus.STARTED,
-        });
       closeModal && closeModal();
       toast.success("close sent to hedger");
     } catch (e) {
@@ -625,9 +613,6 @@ export function useInstantClosePosition(
     isAccessDelegated,
     delegateAccessCallback,
     error,
-    id,
-    addInstantCloseData,
-    size,
     closeModal,
   ]);
 

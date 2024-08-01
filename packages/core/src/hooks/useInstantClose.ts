@@ -14,6 +14,7 @@ import { useSignMessage } from "../callbacks/useMultiAccount";
 import { useIsAccessDelegated } from "./useIsAccessDelegated";
 import {
   useGetOpenInstantClosesCallback,
+  useInstantCloseDataCallback,
   useUpdateInstantCloseDataCallback,
 } from "../state/quotes/hooks";
 import { InstantCloseStatus } from "../state/quotes/types";
@@ -52,6 +53,7 @@ export default function useInstantClose(
   const { callback: signMessageCallback } = useSignMessage();
   const GetOpenInstantCloses = useGetOpenInstantClosesCallback();
   const updateInstantCloseData = useUpdateInstantCloseDataCallback();
+  const addInstantCloseData = useInstantCloseDataCallback();
 
   const PARTY_B_WHITELIST = usePartyBWhitelistAddress();
   const FALLBACK_CHAIN_ID = useFallbackChainId();
@@ -247,7 +249,14 @@ export default function useInstantClose(
           },
         }
       );
-      if (res.status === 200) GetOpenInstantCloses();
+      if (res.status === 200) {
+        addInstantCloseData({
+          id: quoteId,
+          timestamp: Math.floor(new Date().getTime() / 1000),
+          amount: quantityToClose,
+          status: InstantCloseStatus.STARTED,
+        });
+      }
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
         console.error("Axios error:", error.response?.data);
@@ -260,7 +269,7 @@ export default function useInstantClose(
       }
     }
   }, [
-    GetOpenInstantCloses,
+    addInstantCloseData,
     baseUrl,
     checkAccessToken,
     closePrice,
