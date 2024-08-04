@@ -18,6 +18,24 @@ import {
   useUpdateInstantCloseDataCallback,
 } from "../state/quotes/hooks";
 import { InstantCloseStatus } from "../state/quotes/types";
+import { useContractDelegateInstantOpen } from "./useContractDelegateInstantOpen";
+import {
+  useActiveMarketId,
+  useOrderType,
+  usePositionType,
+} from "../state/trade/hooks";
+import useTradePage, {
+  useLockedCVA,
+  useLockedLF,
+  useMaxFundingRate,
+  useNotionalValue,
+  usePartyALockedMM,
+  usePartyBLockedMM,
+} from "./useTradePage";
+import { OrderType, PositionType } from "../types/trade";
+import { formatPrice, toBN } from "../utils/numbers";
+import { useMarket } from "./useMarkets";
+import { LIMIT_ORDER_DEADLINE, MARKET_ORDER_DEADLINE } from "../constants";
 
 type NonceResponseType = {
   nonce: string;
@@ -35,18 +53,14 @@ type LoginResponseType =
     }
   | ErrorResponse;
 
-type InstantCloseResponseType =
+type InstantActionResponseType =
   | {
       successful: string;
       message: string;
     }
   | ErrorResponse;
 
-export default function useInstantClose(
-  quantityToClose: string,
-  closePrice: string | undefined,
-  quoteId: number | undefined
-) {
+export default function useInstantActions() {
   const { account, chainId } = useActiveWagmi();
   const activeAddress = useActiveAccountAddress();
   const { baseUrl } = useHedgerInfo() || {};
@@ -66,6 +80,14 @@ export default function useInstantClose(
     partyBWhiteList[0],
     "0x501e891f"
   );
+
+  const instantOpenDelegateAccesses = useContractDelegateInstantOpen();
+  const isSendQuoteDelegated = useMemo(() => {
+    if (instantOpenDelegateAccesses && instantOpenDelegateAccesses.length > 1) {
+      return instantOpenDelegateAccesses[0] && instantOpenDelegateAccesses[1];
+    }
+    return false;
+  }, [instantOpenDelegateAccesses]);
 
   const onSignMessage = useCallback(
     async (message: string) => {
@@ -186,61 +208,135 @@ export default function useInstantClose(
     onSignMessage,
   ]);
 
-  const cancelClose = useCallback(async () => {
-    if (!quoteId) throw new Error("quote id is required");
+  const cancelClose = useCallback(
+    async (quoteId: number) => {
+      if (!quoteId) throw new Error("quote id is required");
 
-    const cancelCloseUrl = new URL(`instant_close/${quoteId}`, baseUrl).href;
-    try {
-      await checkAccessToken();
-      const token = localStorage.getItem("access_token");
-      const res = await axios.delete(cancelCloseUrl, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (res.status === 200) {
-        GetOpenInstantCloses();
-        updateInstantCloseData({
-          id: quoteId,
-          status: InstantCloseStatus.FINISHED,
+      const cancelCloseUrl = new URL(`instant_close/${quoteId}`, baseUrl).href;
+      try {
+        await checkAccessToken();
+        const token = localStorage.getItem("access_token");
+        const res = await axios.delete(cancelCloseUrl, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         });
+        if (res.status === 200) {
+          GetOpenInstantCloses();
+          updateInstantCloseData({
+            id: quoteId,
+            status: InstantCloseStatus.FINISHED,
+          });
+        }
+      } catch (error: any) {
+        if (axios.isAxiosError(error)) {
+          console.error("Axios error:", error.response?.data);
+          throw new Error(
+            error.response?.data.error_message || "An unknown error occurred"
+          );
+        } else {
+          console.error("Unexpected error:", error);
+          throw new Error(error?.message || "An unexpected error occurred");
+        }
       }
-    } catch (error: any) {
-      if (axios.isAxiosError(error)) {
-        console.error("Axios error:", error.response?.data);
-        throw new Error(
-          error.response?.data.error_message || "An unknown error occurred"
-        );
-      } else {
-        console.error("Unexpected error:", error);
-        throw new Error(error?.message || "An unexpected error occurred");
-      }
-    }
-  }, [
-    GetOpenInstantCloses,
-    baseUrl,
-    checkAccessToken,
-    quoteId,
-    updateInstantCloseData,
-  ]);
+    },
+    [GetOpenInstantCloses, baseUrl, checkAccessToken, updateInstantCloseData]
+  );
 
-  const instantClose = useCallback(async () => {
-    if (!quoteId || !closePrice) throw new Error("missing props");
-    if (!quantityToClose) throw new Error("Amount is too low");
-    const instantCloseUrl = new URL("instant_close", baseUrl).href;
+  const instantClose = useCallback(
+    async (quoteId: number, closePrice: string, quantityToClose: string) => {
+      const instantCloseUrl = new URL("instant_close", baseUrl).href;
+
+      const body = {
+        quote_id: quoteId,
+        quantity_to_close: quantityToClose,
+        close_price: closePrice,
+      };
+
+      try {
+        await checkAccessToken();
+        const token = localStorage.getItem("access_token");
+        const res = await axios.post<InstantActionResponseType>(
+          instantCloseUrl,
+          body,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (res.status === 200) {
+          addInstantCloseData({
+            id: quoteId,
+            timestamp: Math.floor(new Date().getTime() / 1000),
+            amount: quantityToClose,
+            status: InstantCloseStatus.STARTED,
+          });
+        }
+      } catch (error: any) {
+        if (axios.isAxiosError(error)) {
+          console.error("Axios error:", error.response?.data);
+          throw new Error(
+            error.response?.data.error_message || "An unknown error occurred"
+          );
+        } else {
+          console.error("Unexpected error:", error);
+          throw new Error(error?.message || "An unexpected error occurred");
+        }
+      }
+    },
+    [addInstantCloseData, baseUrl, checkAccessToken]
+  );
+
+  const marketId = useActiveMarketId();
+  const market = useMarket(marketId);
+  const orderType = useOrderType();
+  const positionType = usePositionType();
+  const { price, formattedAmounts } = useTradePage();
+  const quantityAsset = useMemo(
+    () => (toBN(formattedAmounts[1]).isNaN() ? "0" : formattedAmounts[1]),
+    [formattedAmounts]
+  );
+  const notionalValue = useNotionalValue(
+    quantityAsset,
+    formatPrice(price, market?.pricePrecision)
+  );
+  const lockedCVA = useLockedCVA(notionalValue);
+  const lockedLF = useLockedLF(notionalValue);
+  const lockedPartyAMM = usePartyALockedMM(notionalValue);
+  const lockedPartyBMM = usePartyBLockedMM(notionalValue);
+  const getDeadline = (orderType: OrderType) =>
+    orderType === OrderType.MARKET
+      ? Math.floor(Date.now() / 1000) + MARKET_ORDER_DEADLINE
+      : Math.floor(Date.now() / 1000) + LIMIT_ORDER_DEADLINE;
+  const maxFundingRate = useMaxFundingRate();
+
+  const instantOpen = useCallback(async () => {
+    if (!market) throw new Error("missing props");
+
+    const instantOpenUrl = new URL("instant_open", baseUrl).href;
 
     const body = {
-      quote_id: quoteId,
-      quantity_to_close: quantityToClose,
-      close_price: closePrice,
+      symbolId: marketId,
+      positionType: positionType === PositionType.SHORT ? 1 : 0,
+      orderType: orderType === OrderType.MARKET ? 1 : 0,
+      price: formatPrice(price, market?.pricePrecision),
+      quantity: quantityAsset,
+      cva: lockedCVA,
+      lf: lockedLF,
+      partyAmm: lockedPartyAMM,
+      partyBmm: lockedPartyBMM,
+      maxFundingRate,
+      deadline: getDeadline(orderType),
     };
-
     try {
       await checkAccessToken();
+
       const token = localStorage.getItem("access_token");
-      const res = await axios.post<InstantCloseResponseType>(
-        instantCloseUrl,
+      const res = await axios.post<InstantActionResponseType>(
+        instantOpenUrl,
         body,
         {
           headers: {
@@ -249,13 +345,8 @@ export default function useInstantClose(
           },
         }
       );
+
       if (res.status === 200) {
-        addInstantCloseData({
-          id: quoteId,
-          timestamp: Math.floor(new Date().getTime() / 1000),
-          amount: quantityToClose,
-          status: InstantCloseStatus.STARTED,
-        });
       }
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
@@ -269,15 +360,28 @@ export default function useInstantClose(
       }
     }
   }, [
-    addInstantCloseData,
     baseUrl,
     checkAccessToken,
-    closePrice,
-    quantityToClose,
-    quoteId,
+    lockedCVA,
+    lockedLF,
+    lockedPartyAMM,
+    lockedPartyBMM,
+    market,
+    marketId,
+    maxFundingRate,
+    orderType,
+    positionType,
+    price,
+    quantityAsset,
   ]);
 
-  return { instantClose, cancelClose, isAccessDelegated };
+  return {
+    instantClose,
+    cancelClose,
+    isAccessDelegated,
+    isSendQuoteDelegated,
+    instantOpen,
+  };
 }
 
 function createSiweMessage(

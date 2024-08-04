@@ -38,10 +38,12 @@ const Button = styled(PrimaryButton)<{
 
 export default function OpenPositionButton({
   onClick,
+  customText,
   loading,
   disabled,
 }: {
   onClick: () => void;
+  customText?: string;
   loading?: boolean;
   disabled?: boolean;
 }) {
@@ -58,7 +60,7 @@ export default function OpenPositionButton({
       longOrShort={positionType === PositionType.LONG}
       disabled={loading || disabled}
     >
-      {`${titleCase(positionType)} ${market?.symbol}`}
+      {customText ? customText : `${titleCase(positionType)} ${market?.symbol}`}
       {loading && <DotFlashing />}
       <IconWrap>
         {positionType === PositionType.LONG ? (

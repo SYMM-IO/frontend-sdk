@@ -5,7 +5,6 @@ import {
   DEFAULT_PRECISION,
   LIMIT_ORDER_DEADLINE,
   MARKET_ORDER_DEADLINE,
-  MARKET_PRICE_COEFFICIENT,
 } from "../constants/misc";
 import {
   useAppName,
@@ -100,30 +99,12 @@ export function useSentQuoteCallback(): {
     [market?.pricePrecision, userExpertMode]
   );
   const openPrice = useMemo(() => (price ? price : "0"), [price]);
-  const autoSlippage = market ? market.autoSlippage : MARKET_PRICE_COEFFICIENT;
   const MuonData = useMuonData();
 
-  const openPriceFinal = useMemo(() => {
-    if (orderType === OrderType.LIMIT) return openPrice;
-
-    if (slippage === "auto") {
-      return positionType === PositionType.SHORT
-        ? toBN(openPrice).div(autoSlippage).toString()
-        : toBN(openPrice).times(autoSlippage).toString();
-    }
-
-    const spSigned =
-      positionType === PositionType.SHORT ? slippage : slippage * -1;
-    const slippageFactored = toBN(100 - spSigned).div(100);
-    return toBN(openPrice).times(slippageFactored).toString();
-  }, [orderType, openPrice, slippage, positionType, autoSlippage]);
-
   const openPriceWied = useMemo(
-    () => toWei(formatPrice(openPriceFinal, pricePrecision ?? 20)),
-    [openPriceFinal, pricePrecision]
+    () => toWei(formatPrice(openPrice, pricePrecision ?? 20)),
+    [openPrice, pricePrecision]
   );
-
-  // console.log({ openPrice, openPriceFinal, openPriceWied, pricePrecision });
 
   const quantityAsset = useMemo(
     () => (toBN(formattedAmounts[1]).isNaN() ? "0" : formattedAmounts[1]),
@@ -132,7 +113,7 @@ export function useSentQuoteCallback(): {
 
   const notionalValue = useNotionalValue(
     quantityAsset,
-    formatPrice(openPriceFinal, pricePrecision)
+    formatPrice(openPrice, pricePrecision)
   );
   const lockedCVA = useLockedCVA(notionalValue);
   const lockedLF = useLockedLF(notionalValue);

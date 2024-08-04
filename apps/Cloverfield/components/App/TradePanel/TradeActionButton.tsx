@@ -29,7 +29,7 @@ import {
 } from "@symmio/frontend-sdk/state/user/hooks";
 import { WEB_SETTING } from "@symmio/frontend-sdk/config";
 import OpenPositionButton from "components/Button/OpenPositionButton";
-import { useSendDelegateAccess } from "@symmio/frontend-sdk/hooks/useTpSl";
+import { useTpSlDelegateAccesses } from "@symmio/frontend-sdk/callbacks/useDelegateAccesses";
 
 export default function TradeActionButtons(): JSX.Element | null {
   const validatedContext = useInvalidContext();
@@ -55,8 +55,7 @@ export default function TradeActionButtons(): JSX.Element | null {
     () => (market ? market.pricePrecision : DEFAULT_PRECISION),
     [market]
   );
-  const { callback: setDelegateAccessCallBack, error } =
-    useSendDelegateAccess();
+  const { setDelegateAccessCallBack, error } = useTpSlDelegateAccesses();
 
   const handleDelegateAccess = useCallback(async () => {
     if (error) console.debug({ error });

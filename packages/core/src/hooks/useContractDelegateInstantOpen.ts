@@ -1,27 +1,32 @@
 import { useMemo } from "react";
-
 import useActiveWagmi from "../lib/hooks/useActiveWagmi";
-import { useActiveAccountAddress } from "../state/user/hooks";
-import { useSingleContractMultipleMethods } from "../lib/hooks/multicall";
-import { useMultiAccountAddress, useTpSlWalletAddress } from "../state/chains";
 import {
-  CANCEL_CLOSE_QUOTE_HASH_CONTRACT,
-  CLOSE_QUOTE_HASH_CONTRACT,
+  useFallbackChainId,
+  useMultiAccountAddress,
+  usePartyBWhitelistAddress,
+} from "../state/chains";
+import { useActiveAccountAddress } from "../state/user/hooks";
+import {
   MULTI_ACCOUNT_ABI,
+  SEND_QUOTE_HASH_CONTRACT,
+  SEND_QUOTE_WITH_AFFILIATE_HASH_CONTRACT,
 } from "../constants";
+import { useSingleContractMultipleMethods } from "../lib/hooks/multicall";
 
-export function useContractDelegateTpSl(): [boolean, boolean] {
+export function useContractDelegateInstantOpen(): [boolean, boolean] {
   const activeAccountAddress = useActiveAccountAddress();
   const { chainId } = useActiveWagmi();
+
   const MULTI_ACCOUNT_ADDRESS_CHAIN = useMultiAccountAddress();
   const MULTI_ACCOUNT_ADDRESS = useMemo(
     () => (chainId ? MULTI_ACCOUNT_ADDRESS_CHAIN[chainId] : ""),
     [MULTI_ACCOUNT_ADDRESS_CHAIN, chainId]
   );
-  const TPSL_WALLET_ADDRESS_CHAIN = useTpSlWalletAddress();
-  const TPSL_WALLET_ADDRESS = useMemo(
-    () => (chainId ? TPSL_WALLET_ADDRESS_CHAIN[chainId] : ""),
-    [TPSL_WALLET_ADDRESS_CHAIN, chainId]
+  const PARTY_B_WHITELIST = usePartyBWhitelistAddress();
+  const FALLBACK_CHAIN_ID = useFallbackChainId();
+  const partyBWhiteList = useMemo(
+    () => [PARTY_B_WHITELIST[chainId ?? FALLBACK_CHAIN_ID]],
+    [FALLBACK_CHAIN_ID, PARTY_B_WHITELIST, chainId]
   );
 
   const calls =
@@ -31,16 +36,16 @@ export function useContractDelegateTpSl(): [boolean, boolean] {
             functionName: "delegatedAccesses",
             callInputs: [
               activeAccountAddress,
-              TPSL_WALLET_ADDRESS,
-              CLOSE_QUOTE_HASH_CONTRACT,
+              partyBWhiteList[0],
+              SEND_QUOTE_HASH_CONTRACT,
             ],
           },
           {
             functionName: "delegatedAccesses",
             callInputs: [
               activeAccountAddress,
-              TPSL_WALLET_ADDRESS,
-              CANCEL_CLOSE_QUOTE_HASH_CONTRACT,
+              partyBWhiteList[0],
+              SEND_QUOTE_WITH_AFFILIATE_HASH_CONTRACT,
             ],
           },
         ]
