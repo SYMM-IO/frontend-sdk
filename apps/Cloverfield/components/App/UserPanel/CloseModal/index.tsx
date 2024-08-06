@@ -65,6 +65,7 @@ import {
 } from "@symmio/frontend-sdk/constants/misc";
 import { useInstantClosesData } from "@symmio/frontend-sdk/state/quotes/hooks";
 import { InstantCloseStatus } from "@symmio/frontend-sdk/state/quotes/types";
+import { TransactionStatus } from "@symmio/frontend-sdk/utils/web3";
 
 const Wrapper = styled(Column)`
   padding: 12px;
@@ -324,16 +325,13 @@ export default function CloseModal({
       toast.error(error);
       return;
     }
-    try {
-      setAwaitingCloseConfirmation(true);
-      await closeCallback();
-      setAwaitingCloseConfirmation(false);
-      closeModal();
-    } catch (e) {
-      setAwaitingCloseConfirmation(false);
-      closeModal();
-      console.error(e);
+    setAwaitingCloseConfirmation(true);
+    const { status, message } = await closeCallback();
+    if (status !== TransactionStatus.SUCCESS) {
+      toast.error(message);
     }
+    setAwaitingCloseConfirmation(false);
+    closeModal();
   }, [closeCallback, error, closeModal]);
 
   const autoSlippage = market ? market.autoSlippage : MARKET_PRICE_COEFFICIENT;
@@ -577,17 +575,15 @@ export function useInstantClosePosition(
   }, [isAccessDelegated]);
 
   const handleInstantClose = useCallback(async () => {
-    try {
-      if (!isAccessDelegated && delegateAccessCallback) {
-        setLoading(true);
-        setText("Delegating ...");
-        await delegateAccessCallback();
-        setLoading(false);
+    if (!isAccessDelegated && delegateAccessCallback) {
+      setLoading(true);
+      setText("Delegating ...");
+      const { status, message } = await delegateAccessCallback();
+      if (status !== TransactionStatus.SUCCESS) {
+        setText("Delegate Access");
+        toast.error(message);
       }
-    } catch (error) {
       setLoading(false);
-      setText("Delegate Access");
-      console.error(error);
     }
 
     if (!instantClose) {

@@ -25,6 +25,7 @@ import { useTransferCollateral } from "@symmio/frontend-sdk/callbacks/useTransfe
 
 import { RowCenter, RowBetween } from "components/Row";
 import { DotFlashing } from "components/Icons";
+import { TransactionStatus } from "@symmio/frontend-sdk/utils/web3";
 
 const RemainingWrap = styled(RowCenter)<{ cursor?: string }>`
   position: relative;
@@ -142,18 +143,13 @@ export default function WithdrawCooldown({
       return;
     }
 
-    try {
-      setAwaitingConfirmation(true);
-      await transferBalanceCallback();
-      setAwaitingConfirmation(false);
-    } catch (e) {
-      setAwaitingConfirmation(false);
-      if (e instanceof Error) {
-        console.log("awaitingConfirmation Error", e.message);
-      } else {
-        console.error(e);
-      }
+    setAwaitingConfirmation(true);
+    const { status, message } = await transferBalanceCallback();
+
+    if (status !== TransactionStatus.SUCCESS) {
+      toast.error(message);
     }
+    setAwaitingConfirmation(false);
   }, [
     showWithdrawBarModal,
     showWithdrawModal,

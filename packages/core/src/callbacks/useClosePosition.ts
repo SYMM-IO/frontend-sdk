@@ -48,7 +48,7 @@ export function useClosePosition(
   quantityToClose: string
 ): {
   state: TransactionCallbackState;
-  callback: null | (() => Promise<any>);
+  callback: null | (() => ReturnType<typeof createTransactionCallback>);
   error: string | null;
 } {
   const { account, chainId } = useActiveWagmi();

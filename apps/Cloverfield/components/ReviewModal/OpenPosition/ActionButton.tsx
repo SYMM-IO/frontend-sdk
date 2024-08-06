@@ -33,11 +33,15 @@ export default function ActionButton() {
       state: TpSlProcessState.WAIT_FOR_QUOTE_RECEIVE,
       lastTimeUpdated: getCurrentTimeInSecond(),
     });
-    const tx = await tradeCallback();
 
-    console.log("tx", tx);
-    if (tx) setTxHash(tx.hash);
-    else setState(ModalState.START);
+    const { status, message } = await tradeCallback();
+    if (status === TransactionStatus.SUCCESS) {
+      console.log("tx", message);
+      setTxHash(message);
+    } else {
+      setState(ModalState.START);
+      toast.error(message);
+    }
   }, [
     modalState,
     setState,
@@ -90,13 +94,13 @@ function useInstantOpenPosition() {
     if (!isSendQuoteDelegated && delegateAccessCallback) {
       setLoading(true);
       setText("Delegating");
-      const res = await delegateAccessCallback();
+      const { status, message } = await delegateAccessCallback();
 
-      if (res.status !== TransactionStatus.SUCCESS) {
-        toast.error(res.message);
+      if (status !== TransactionStatus.SUCCESS) {
+        toast.error(message);
         setLoading(false);
         setText("Delegate Access for Instant Open");
-        console.error(res);
+        console.error(message);
         return;
       }
     }

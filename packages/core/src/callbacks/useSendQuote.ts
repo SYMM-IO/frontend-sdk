@@ -66,7 +66,7 @@ import { DIAMOND_ABI } from "../constants";
 
 export function useSentQuoteCallback(): {
   state: TransactionCallbackState;
-  callback: null | (() => Promise<any>);
+  callback: null | (() => ReturnType<typeof createTransactionCallback>);
   error: string | null;
 } {
   const { account, chainId } = useActiveWagmi();

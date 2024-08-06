@@ -22,7 +22,7 @@ import { COLLATERAL_ABI } from "../constants";
 
 export function useMintCollateral(): {
   state: TransactionCallbackState;
-  callback: null | (() => Promise<any>);
+  callback: null | (() => ReturnType<typeof createTransactionCallback>);
   error: string | null;
 } {
   const { account, chainId } = useActiveWagmi();

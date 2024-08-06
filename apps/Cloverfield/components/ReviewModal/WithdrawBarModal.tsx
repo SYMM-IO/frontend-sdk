@@ -22,6 +22,7 @@ import { TransferTab } from "@symmio/frontend-sdk/types/transfer";
 import { useCollateralToken } from "@symmio/frontend-sdk/constants/tokens";
 import { useGetTokenWithFallbackChainId } from "@symmio/frontend-sdk/utils/token";
 import { useTransferCollateral } from "@symmio/frontend-sdk/callbacks/useTransferCollateral";
+import { TransactionStatus } from "@symmio/frontend-sdk/utils/web3";
 
 const Wrapper = styled.div`
   display: flex;
@@ -191,18 +192,12 @@ function CancelWithdraw() {
       return;
     }
 
-    try {
-      setAwaitingConfirmation(true);
-      await transferBalanceCallback();
-      setAwaitingConfirmation(false);
-    } catch (e) {
-      setAwaitingConfirmation(false);
-      if (e instanceof Error) {
-        console.log("setAwaitingConfirmation", e.message);
-      } else {
-        console.error(e);
-      }
+    setAwaitingConfirmation(true);
+    const { status, message } = await transferBalanceCallback();
+    if (status !== TransactionStatus.SUCCESS) {
+      toast.error(message);
     }
+    setAwaitingConfirmation(false);
   }, [transferBalanceCallback, transferBalanceError]);
 
   if (awaitingConfirmation) {

@@ -27,7 +27,7 @@ import { CLOSE_QUOTE_HASH_CONTRACT, MULTI_ACCOUNT_ABI } from "../constants";
 
 export function useDelegateAccess(): {
   state: TransactionCallbackState;
-  callback: null | (() => Promise<any>);
+  callback: null | (() => ReturnType<typeof createTransactionCallback>);
   error: string | null;
 } {
   const { account, chainId } = useActiveWagmi();
