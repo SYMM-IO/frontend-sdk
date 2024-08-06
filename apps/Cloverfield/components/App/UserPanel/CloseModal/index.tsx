@@ -565,7 +565,8 @@ export function useInstantClosePosition(
   id: number | undefined,
   closeModal?: () => void
 ) {
-  const { instantClose, isAccessDelegated, cancelClose } = useInstantActions();
+  const { instantClose, isAccessDelegated, cancelInstantAction } =
+    useInstantActions();
   const { callback: delegateAccessCallback, error } = useDelegateAccess();
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
@@ -622,7 +623,7 @@ export function useInstantClosePosition(
   ]);
 
   const handleCancelClose = useCallback(async () => {
-    if (!cancelClose) {
+    if (!cancelInstantAction) {
       toast.error(error);
       return;
     }
@@ -631,13 +632,13 @@ export function useInstantClosePosition(
       return;
     }
     try {
-      await cancelClose(id);
+      await cancelInstantAction(id);
     } catch (e) {
       setLoading(false);
       toast.error(e.message);
       console.error(e);
     }
-  }, [cancelClose, error, id]);
+  }, [cancelInstantAction, error, id]);
 
   return {
     handleInstantClose,

@@ -10,6 +10,7 @@ import { TpSlProcessState } from "@symmio/frontend-sdk/state/trade/types";
 import { getCurrentTimeInSecond } from "@symmio/frontend-sdk/utils/time";
 import useInstantActions from "@symmio/frontend-sdk/hooks/useInstantActions";
 import { useInstantOpenDelegateAccesses } from "@symmio/frontend-sdk/callbacks/useDelegateAccesses";
+import { TransactionStatus } from "@symmio/frontend-sdk/utils/web3";
 
 export default function ActionButton() {
   const { state } = useTradePage();
@@ -83,20 +84,22 @@ function useInstantOpenPosition() {
       toast.error(error);
       return;
     }
-    try {
-      if (!isSendQuoteDelegated && delegateAccessCallback) {
-        setLoading(true);
-        setText("Delegating");
-        await delegateAccessCallback();
-        setLoading(false);
-      }
-    } catch (error) {
-      setLoading(false);
-      setText("Delegate Access for Instant Open");
-      console.error(error);
-    }
 
-    if (modalState === ModalState.LOADING) return;
+    if (modalState === ModalState.LOADING || loading) return;
+
+    if (!isSendQuoteDelegated && delegateAccessCallback) {
+      setLoading(true);
+      setText("Delegating");
+      const res = await delegateAccessCallback();
+
+      if (res.status !== TransactionStatus.SUCCESS) {
+        toast.error(res.message);
+        setLoading(false);
+        setText("Delegate Access for Instant Open");
+        console.error(res);
+        return;
+      }
+    }
 
     try {
       setLoading(true);
@@ -113,6 +116,7 @@ function useInstantOpenPosition() {
     error,
     instantOpen,
     isSendQuoteDelegated,
+    loading,
     modalState,
   ]);
 

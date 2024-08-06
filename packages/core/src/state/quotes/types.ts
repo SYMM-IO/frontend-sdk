@@ -1,5 +1,6 @@
 import { ApiState } from "../../types/api";
 import { Quote } from "../../types/quote";
+import { OrderType, PositionType } from "../../types/trade";
 
 export interface QuotesState {
   history: { [chainId: number]: Quote[] };
@@ -10,6 +11,7 @@ export interface QuotesState {
   historyState: ApiState;
   hasMoreHistory?: boolean;
   instantClosesStates: InstantCloseObject;
+  instantOpensStates: InstantCloseObject;
   openInstantClosesState: ApiState;
   tpSlQuoteData: { [quoteId: number]: TpSlContent };
 }
@@ -65,8 +67,28 @@ export interface InstantCloseItem {
   status: InstantCloseStatus;
 }
 
+export interface InstantOpenItem {
+  positionType: PositionType;
+  orderType: OrderType;
+  id: number;
+  marketId: number;
+  requestedOpenPrice: string;
+  quantity: string;
+  partyAAddress: string;
+  CVA: string;
+  LF: string;
+  partyAMM: string;
+  partyBMM: string;
+  createTimestamp: number;
+  statusModifyTimestamp: number;
+  version: number;
+}
+
 export interface InstantCloseObject {
   [id: number]: InstantCloseItem;
+}
+export interface InstantOpenObject {
+  [id: number]: InstantOpenItem;
 }
 
 export interface InstantCloseResponse {
@@ -75,7 +97,26 @@ export interface InstantCloseResponse {
   close_price: number;
 }
 
+export interface InstantOpenResponse {
+  position_type: number;
+  order_type: number;
+  temp_quote_id: number;
+  symbol_id: number;
+  requested_open_price: number;
+  quantity: number;
+  party_a_address: string;
+  cva: number;
+  partyAmm: number;
+  partyBmm: number;
+  lf: number;
+  id: string;
+  create_time: number;
+  modify_time: number;
+  version: number;
+}
+
 export type InstantCloseResponseType = InstantCloseResponse[];
+export type InstantOpenResponseType = InstantOpenResponse[];
 
 export enum TpSlDataState {
   VALID = "Valid",

@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import styled from "styled-components";
+import toast from "react-hot-toast";
 
 import useActiveWagmi from "@symmio/frontend-sdk/lib/hooks/useActiveWagmi";
 import { Quote, QuoteStatus } from "@symmio/frontend-sdk/types/quote";
@@ -9,6 +10,7 @@ import { useMarket } from "@symmio/frontend-sdk/hooks/useMarkets";
 import { useQuoteFillAmount } from "@symmio/frontend-sdk/hooks/useQuotes";
 import { useCancelQuote } from "@symmio/frontend-sdk/callbacks/useCancelQuote";
 import { useIsHavePendingTransaction } from "@symmio/frontend-sdk/state/transactions/hooks";
+import useInstantActions from "@symmio/frontend-sdk/hooks/useInstantActions";
 
 import ConnectWallet from "components/ConnectWallet";
 import { Modal, ModalHeader } from "components/Modal";
@@ -69,6 +71,7 @@ export default function CloseModal({
   const [awaitingCancelConfirmation, setAwaitingCancelConfirmation] =
     useState(false);
   const fillAmount = useQuoteFillAmount(quote ?? ({} as Quote));
+  const { cancelInstantAction } = useInstantActions();
 
   const [notFilledAmount, filledAmount, notFilledPercent, filledPercent] =
     useMemo(() => {
@@ -125,16 +128,22 @@ export default function CloseModal({
     if (!closeCallback) return;
     try {
       setAwaitingCancelConfirmation(true);
-      const txHash = await closeCallback();
+      if (quote && quote.id < 0) {
+        await cancelInstantAction(quote.id);
+        toast.success("cancel sent to hedger");
+      } else {
+        await closeCallback();
+      }
       setAwaitingCancelConfirmation(false);
       toggleModal();
-      console.log("Transaction Hash:", { txHash });
     } catch (e) {
       toggleModal();
+      if (quote && quote.id < 0) toast.error(e.message);
+
       setAwaitingCancelConfirmation(false);
       console.error(e);
     }
-  }, [closeCallback, toggleModal, error]);
+  }, [error, closeCallback, quote, toggleModal, cancelInstantAction]);
 
   const buttonText = useMemo(
     () =>

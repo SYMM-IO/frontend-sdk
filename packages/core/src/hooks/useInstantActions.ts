@@ -13,7 +13,7 @@ import { useFallbackChainId, usePartyBWhitelistAddress } from "../state/chains";
 import { useSignMessage } from "../callbacks/useMultiAccount";
 import { useIsAccessDelegated } from "./useIsAccessDelegated";
 import {
-  useGetOpenInstantClosesCallback,
+  useGetOpenInstantOrdersCallback,
   useInstantCloseDataCallback,
   useUpdateInstantCloseDataCallback,
 } from "../state/quotes/hooks";
@@ -65,7 +65,7 @@ export default function useInstantActions() {
   const activeAddress = useActiveAccountAddress();
   const { baseUrl } = useHedgerInfo() || {};
   const { callback: signMessageCallback } = useSignMessage();
-  const GetOpenInstantCloses = useGetOpenInstantClosesCallback();
+  const GetOpenInstantOrders = useGetOpenInstantOrdersCallback();
   const updateInstantCloseData = useUpdateInstantCloseDataCallback();
   const addInstantCloseData = useInstantCloseDataCallback();
 
@@ -88,6 +88,29 @@ export default function useInstantActions() {
     }
     return false;
   }, [instantOpenDelegateAccesses]);
+
+  const marketId = useActiveMarketId();
+  const { pricePrecision } = useMarket(marketId) || {};
+  const orderType = useOrderType();
+  const positionType = usePositionType();
+  const { price, formattedAmounts } = useTradePage();
+  const quantityAsset = useMemo(
+    () => (toBN(formattedAmounts[1]).isNaN() ? "0" : formattedAmounts[1]),
+    [formattedAmounts]
+  );
+  const notionalValue = useNotionalValue(
+    quantityAsset,
+    formatPrice(price, pricePrecision)
+  );
+  const lockedCVA = useLockedCVA(notionalValue);
+  const lockedLF = useLockedLF(notionalValue);
+  const lockedPartyAMM = usePartyALockedMM(notionalValue);
+  const lockedPartyBMM = usePartyBLockedMM(notionalValue);
+  const getDeadline = (orderType: OrderType) =>
+    orderType === OrderType.MARKET
+      ? Math.floor(Date.now() / 1000) + MARKET_ORDER_DEADLINE
+      : Math.floor(Date.now() / 1000) + LIMIT_ORDER_DEADLINE;
+  const maxFundingRate = useMaxFundingRate();
 
   const onSignMessage = useCallback(
     async (message: string) => {
@@ -208,26 +231,33 @@ export default function useInstantActions() {
     onSignMessage,
   ]);
 
-  const cancelClose = useCallback(
+  const cancelInstantAction = useCallback(
     async (quoteId: number) => {
       if (!quoteId) throw new Error("quote id is required");
 
       const cancelCloseUrl = new URL(`instant_close/${quoteId}`, baseUrl).href;
+      const cancelOpenUrl = new URL(`instant_open/${quoteId}`, baseUrl).href;
+      const isCancelClose = quoteId > 0;
+
       try {
         await checkAccessToken();
         const token = localStorage.getItem("access_token");
-        const res = await axios.delete(cancelCloseUrl, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await axios.delete(
+          isCancelClose ? cancelCloseUrl : cancelOpenUrl,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         if (res.status === 200) {
-          GetOpenInstantCloses();
-          updateInstantCloseData({
-            id: quoteId,
-            status: InstantCloseStatus.FINISHED,
-          });
+          GetOpenInstantOrders();
+          isCancelClose &&
+            updateInstantCloseData({
+              id: quoteId,
+              status: InstantCloseStatus.FINISHED,
+            });
         }
       } catch (error: any) {
         if (axios.isAxiosError(error)) {
@@ -241,7 +271,7 @@ export default function useInstantActions() {
         }
       }
     },
-    [GetOpenInstantCloses, baseUrl, checkAccessToken, updateInstantCloseData]
+    [GetOpenInstantOrders, baseUrl, checkAccessToken, updateInstantCloseData]
   );
 
   const instantClose = useCallback(
@@ -290,31 +320,8 @@ export default function useInstantActions() {
     [addInstantCloseData, baseUrl, checkAccessToken]
   );
 
-  const marketId = useActiveMarketId();
-  const market = useMarket(marketId);
-  const orderType = useOrderType();
-  const positionType = usePositionType();
-  const { price, formattedAmounts } = useTradePage();
-  const quantityAsset = useMemo(
-    () => (toBN(formattedAmounts[1]).isNaN() ? "0" : formattedAmounts[1]),
-    [formattedAmounts]
-  );
-  const notionalValue = useNotionalValue(
-    quantityAsset,
-    formatPrice(price, market?.pricePrecision)
-  );
-  const lockedCVA = useLockedCVA(notionalValue);
-  const lockedLF = useLockedLF(notionalValue);
-  const lockedPartyAMM = usePartyALockedMM(notionalValue);
-  const lockedPartyBMM = usePartyBLockedMM(notionalValue);
-  const getDeadline = (orderType: OrderType) =>
-    orderType === OrderType.MARKET
-      ? Math.floor(Date.now() / 1000) + MARKET_ORDER_DEADLINE
-      : Math.floor(Date.now() / 1000) + LIMIT_ORDER_DEADLINE;
-  const maxFundingRate = useMaxFundingRate();
-
   const instantOpen = useCallback(async () => {
-    if (!market) throw new Error("missing props");
+    if (!pricePrecision) throw new Error("missing market props");
 
     const instantOpenUrl = new URL("instant_open", baseUrl).href;
 
@@ -322,7 +329,7 @@ export default function useInstantActions() {
       symbolId: marketId,
       positionType: positionType === PositionType.SHORT ? 1 : 0,
       orderType: orderType === OrderType.MARKET ? 1 : 0,
-      price: formatPrice(price, market?.pricePrecision),
+      price: formatPrice(price, pricePrecision),
       quantity: quantityAsset,
       cva: lockedCVA,
       lf: lockedLF,
@@ -347,6 +354,7 @@ export default function useInstantActions() {
       );
 
       if (res.status === 200) {
+        GetOpenInstantOrders();
       }
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
@@ -360,13 +368,14 @@ export default function useInstantActions() {
       }
     }
   }, [
+    GetOpenInstantOrders,
     baseUrl,
     checkAccessToken,
     lockedCVA,
     lockedLF,
     lockedPartyAMM,
     lockedPartyBMM,
-    market,
+    pricePrecision,
     marketId,
     maxFundingRate,
     orderType,
@@ -377,7 +386,7 @@ export default function useInstantActions() {
 
   return {
     instantClose,
-    cancelClose,
+    cancelInstantAction,
     isAccessDelegated,
     isSendQuoteDelegated,
     instantOpen,

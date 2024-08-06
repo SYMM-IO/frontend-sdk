@@ -23,12 +23,13 @@ import {
 import { useActiveAccountAddress } from "../user/hooks";
 import { sortQuotesByModifyTimestamp } from "../../hooks/useQuotes";
 import { useOrderHistoryApolloClient } from "../../apollo/client/orderHistory";
-import { getHistory, getInstantCloses } from "./thunks";
+import { getHistory, getInstantActions } from "./thunks";
 import { useAppName, useOrderHistorySubgraphAddress } from "../chains";
 import {
   InstantCloseItem,
   InstantCloseObject,
   InstantCloseStatus,
+  InstantOpenObject,
   TpSlContent,
 } from "./types";
 import { useHedgerInfo } from "../hedger/hooks";
@@ -100,6 +101,11 @@ export function useListenersQuotes(): number[] {
 
 export function useInstantClosesData(): InstantCloseObject {
   const data = useAppSelector((state) => state.quotes.instantClosesStates);
+  return data;
+}
+
+export function useInstantOpensData(): InstantOpenObject {
+  const data = useAppSelector((state) => state.quotes.instantOpensStates);
   return data;
 }
 
@@ -242,7 +248,7 @@ export function useGetOrderHistoryCallback() {
   );
 }
 
-export function useGetOpenInstantClosesCallback() {
+export function useGetOpenInstantOrdersCallback() {
   const thunkDispatch: AppThunkDispatch = useAppDispatch();
   const { baseUrl } = useHedgerInfo() || {};
   const account = useActiveAccountAddress();
@@ -251,7 +257,7 @@ export function useGetOpenInstantClosesCallback() {
   return useCallback(() => {
     if (!account) return;
     thunkDispatch(
-      getInstantCloses({
+      getInstantActions({
         account,
         baseUrl,
         appName,

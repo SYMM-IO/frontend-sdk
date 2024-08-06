@@ -3,7 +3,11 @@ const { createAsyncThunk } = ((toolkitRaw as any).default ??
   toolkitRaw) as typeof toolkitRaw;
 import { ApolloClient, NormalizedCacheObject } from "@apollo/client";
 import { ORDER_HISTORY_DATA } from "../../apollo/queries";
-import { InstantCloseResponseType, SubGraphData } from "./types";
+import {
+  InstantCloseResponseType,
+  InstantOpenResponseType,
+  SubGraphData,
+} from "./types";
 import { Quote } from "../../types/quote";
 import { OrderType } from "../../types/trade";
 import { fromWei } from "../../utils/numbers";
@@ -96,8 +100,8 @@ export const getHistory = createAsyncThunk(
   }
 );
 
-export const getInstantCloses = createAsyncThunk(
-  "quotes/getInstantCloses",
+export const getInstantActions = createAsyncThunk(
+  "quotes/getInstantActions",
   async ({
     baseUrl,
     account,
@@ -106,31 +110,53 @@ export const getInstantCloses = createAsyncThunk(
     baseUrl: string | undefined;
     account: string;
     appName: string;
-  }): Promise<{ openInstantCloses: InstantCloseResponseType }> => {
+  }): Promise<{
+    instantCloses: InstantCloseResponseType;
+    instantOpens: InstantOpenResponseType;
+  }> => {
     if (!baseUrl) {
       throw new Error("baseUrl is empty");
     }
 
     const getInstantClosesUrl = new URL(`instant_close/${account}`, baseUrl)
       .href;
-    let openInstantCloses: InstantCloseResponseType = [];
+    const getInstantOpensUrl = new URL(`instant_open/${account}`, baseUrl).href;
+    let instantCloses: InstantCloseResponseType = [];
+    let instantOpens: InstantOpenResponseType = [];
 
+    const method = "GET";
+    const headers = [
+      ["Content-Type", "application/json"],
+      ["App-Name", appName],
+    ];
     try {
-      const [instantClosesRes] = await Promise.allSettled([
+      const [instantClosesRes, instantOpenRes] = await Promise.allSettled([
         makeHttpRequest<InstantCloseResponseType>(getInstantClosesUrl, {
-          method: "GET",
-          headers: [
-            ["Content-Type", "application/json"],
-            ["App-Name", appName],
-          ],
+          method,
+          headers,
+        }),
+        makeHttpRequest<InstantOpenResponseType>(getInstantOpensUrl, {
+          method,
+          headers,
         }),
       ]);
 
-      if (instantClosesRes.status === "fulfilled" && instantClosesRes.value) {
-        openInstantCloses = instantClosesRes.value;
+      if (
+        instantClosesRes &&
+        instantClosesRes.status === "fulfilled" &&
+        instantClosesRes.value
+      ) {
+        instantCloses = instantClosesRes.value;
+      }
+      if (
+        instantOpenRes &&
+        instantOpenRes.status === "fulfilled" &&
+        instantOpenRes.value
+      ) {
+        instantOpens = instantOpenRes.value;
       }
 
-      return { openInstantCloses };
+      return { instantCloses, instantOpens };
     } catch (error) {
       throw new Error(`Unable to get instant closes data from hedger`);
     }
