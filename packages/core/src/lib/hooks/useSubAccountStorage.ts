@@ -51,12 +51,14 @@ export default function useSubAccountStorage() {
 
   useEffect(() => {
     const data = readFromLocalStorage();
-    setData(
-      data.chainId,
-      data.frontEndName,
-      data.activeAccount.name,
-      data.activeAccount.accountAddress
-    );
+
+    data &&
+      setData(
+        data.chainId,
+        data.frontEndName,
+        data.activeAccount.name,
+        data.activeAccount.accountAddress
+      );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
