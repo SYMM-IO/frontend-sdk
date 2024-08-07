@@ -66,7 +66,6 @@ export default function UserPanel(): JSX.Element | null {
   const getOpenInstantOrders = useGetOpenInstantOrdersCallback();
 
   useEffect(() => {
-    if (positions.length) getOpenInstantOrders();
     getOpenInstantOrders();
   }, [getOpenInstantOrders, positions.length]);
 
