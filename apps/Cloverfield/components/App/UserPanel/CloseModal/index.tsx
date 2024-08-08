@@ -25,7 +25,7 @@ import { calculateString, calculationPattern } from "utils/calculationalString";
 
 import {
   useActiveAccount,
-  useExpertMode,
+  useBypassPrecisionCheckMode,
 } from "@symmio/frontend-sdk/state/user/hooks";
 import { useMarketData } from "@symmio/frontend-sdk/state/hedger/hooks";
 
@@ -127,8 +127,10 @@ export default function CloseModal({
     pricePrecision,
     minAcceptableQuoteValue,
   } = market || {};
-  const userExpertMode = useExpertMode();
-  const qPrecision = userExpertMode ? undefined : quantityPrecision;
+  const userBypassPrecisionCheckMode = useBypassPrecisionCheckMode();
+  const qPrecision = userBypassPrecisionCheckMode
+    ? undefined
+    : quantityPrecision;
   const availableAmount = useMemo(
     () =>
       quote && quantityPrecision !== null && quantityPrecision !== undefined

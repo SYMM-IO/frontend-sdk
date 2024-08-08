@@ -20,6 +20,7 @@ import { useHedgerInfo, useSetNotionalCap } from "../state/hedger/hooks";
 import { getAppNameHeader, getNotionalCapUrl } from "../state/hedger/thunks";
 import {
   useActiveAccountAddress,
+  useBypassPrecisionCheckMode,
   useExpertMode,
   usePartyBsWhiteList,
   useSlippageTolerance,
@@ -72,6 +73,7 @@ export function useSentQuoteCallback(): {
   const { account, chainId } = useActiveWagmi();
   const addTransaction = useTransactionAdder();
   const userExpertMode = useExpertMode();
+  const userBypassPrecisionCheckMode = useBypassPrecisionCheckMode();
   const addRecentTransaction = useAddRecentTransaction();
   const wagmiConfig = useWagmiConfig();
 
@@ -95,8 +97,10 @@ export function useSentQuoteCallback(): {
   const slippage = useSlippageTolerance();
   const pricePrecision = useMemo(
     () =>
-      userExpertMode ? undefined : market?.pricePrecision ?? DEFAULT_PRECISION,
-    [market?.pricePrecision, userExpertMode]
+      userBypassPrecisionCheckMode
+        ? undefined
+        : market?.pricePrecision ?? DEFAULT_PRECISION,
+    [market?.pricePrecision, userBypassPrecisionCheckMode]
   );
   const openPrice = useMemo(() => (price ? price : "0"), [price]);
   const MuonData = useMuonData();

@@ -5,6 +5,8 @@ export interface UserState {
   matchesDarkMode: boolean; // whether the dark mode media query matches
   userDarkMode: boolean | null; // the user's choice for dark mode or light mode
   userExpertMode: boolean | null; // the expert user's choice it for disable review modal and enable submit buggy tx
+  customHedgerMode: boolean | null; // user can added custom hedger and unselect default hedger
+  bypassPrecisionCheckMode: boolean | null; // The user can send a quote without checking the price and quantity precision
   userSlippageTolerance: "auto"; // user defined slippage tolerance in percentages
   timestamp: number;
   favorites: number[];

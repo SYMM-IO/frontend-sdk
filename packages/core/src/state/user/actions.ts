@@ -14,6 +14,14 @@ export const updateUserDarkMode = createAction<{ userDarkMode: boolean }>(
 export const updateUserExpertMode = createAction<{ userExpertMode: boolean }>(
   "user/updateUserExpertMode"
 );
+export const updateCustomHedgerMode = createAction<{
+  customHedgerMode: boolean;
+}>("user/updateCustomHedgerMode");
+
+export const updateBypassPrecisionCheckMode = createAction<{
+  bypassPrecisionCheckMode: boolean;
+}>("user/updateBypassPrecisionCheckMode");
+
 export const updateUserFavorites = createAction<string[]>(
   "user/updateUserFavorites"
 );

@@ -38,6 +38,8 @@ import {
   removeHedger,
   toggleDefaultHedger,
   updateAccount,
+  updateCustomHedgerMode,
+  updateBypassPrecisionCheckMode,
 } from "./actions";
 import { useHedgerInfo } from "../hedger/hooks";
 import useDebounce from "../../lib/hooks/useDebounce";
@@ -108,6 +110,40 @@ export function useSetExpertModeCallback() {
 export function useExpertMode(): boolean {
   const userExpertMode = useAppSelector((state) => state.user.userExpertMode);
   return userExpertMode ? true : false;
+}
+
+export function useSetCustomHedgerModeCallback() {
+  const dispatch = useAppDispatch();
+  return useCallback(
+    (customHedgerMode: boolean) => {
+      dispatch(updateCustomHedgerMode({ customHedgerMode }));
+    },
+    [dispatch]
+  );
+}
+
+export function useCustomHedgerMode(): boolean {
+  const customHedgerMode = useAppSelector(
+    (state) => state.user.customHedgerMode
+  );
+  return customHedgerMode ? true : false;
+}
+
+export function useSetBypassPrecisionCheckModeCallback() {
+  const dispatch = useAppDispatch();
+  return useCallback(
+    (bypassPrecisionCheckMode: boolean) => {
+      dispatch(updateBypassPrecisionCheckMode({ bypassPrecisionCheckMode }));
+    },
+    [dispatch]
+  );
+}
+
+export function useBypassPrecisionCheckMode(): boolean {
+  const bypassPrecisionCheckMode = useAppSelector(
+    (state) => state.user.bypassPrecisionCheckMode
+  );
+  return bypassPrecisionCheckMode ? true : false;
 }
 
 export function useUserWhitelist(): null | boolean {
@@ -329,23 +365,24 @@ export function usePartyBsWhiteList() {
   const PARTY_B_WHITELIST = usePartyBWhitelistAddress();
   const isDefaultHedgerSelected = useGetDefaultHedgerStatus();
   const addedHedgers = useGetAddedHedgers();
+  const isCustomHedgerMode = useCustomHedgerMode();
 
   const partyBWhiteList = useMemo(() => {
-    if (isDefaultHedgerSelected && chainId) {
+    if (chainId) {
       const whitelist = PARTY_B_WHITELIST[chainId] || [];
-      return [whitelist];
+      if (!isCustomHedgerMode || isDefaultHedgerSelected) return [whitelist];
     }
     return [];
-  }, [PARTY_B_WHITELIST, chainId, isDefaultHedgerSelected]);
+  }, [PARTY_B_WHITELIST, chainId, isCustomHedgerMode, isDefaultHedgerSelected]);
 
   const added = useMemo(() => {
-    if (chainId && addedHedgers[chainId]?.length > 0) {
+    if (chainId && isCustomHedgerMode && addedHedgers[chainId]?.length > 0) {
       return addedHedgers[chainId]
         .filter((h) => h.isSelected)
         .map((h) => h.address);
     }
     return [];
-  }, [addedHedgers, chainId]);
+  }, [addedHedgers, chainId, isCustomHedgerMode]);
 
   return [...added, ...partyBWhiteList.flat()];
 }
