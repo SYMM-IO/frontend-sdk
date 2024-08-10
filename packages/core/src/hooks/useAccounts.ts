@@ -59,10 +59,11 @@ export function useUserAccounts() {
             ({
               accountAddress: acc.accountAddress.toString(),
               name: acc.name,
+              owner: account,
             } as Account)
         )
       : [];
-  }, [accounts, isError, isSuccess]);
+  }, [account, accounts, isError, isSuccess]);
 
   return useMemo(
     () => ({

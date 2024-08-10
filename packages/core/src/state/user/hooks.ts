@@ -461,9 +461,13 @@ export function useSetActiveSubAccount() {
   const dispatch = useAppDispatch();
 
   return useCallback(
-    (accountAddress?: string, name?: string) => {
+    (accountAddress?: string, name?: string, owner?: string) => {
       dispatch(
-        updateAccount(accountAddress && name ? { accountAddress, name } : null)
+        updateAccount(
+          accountAddress && name && owner
+            ? { accountAddress, name, owner }
+            : null
+        )
       );
     },
     [dispatch]

@@ -67,7 +67,11 @@ export default function MyFunction() {
   useEffect(() => {
     if (accounts !== null) {
       const lastSubAccount = accounts[accounts.length - 1];
-      updateAccount(lastSubAccount.accountAddress, lastSubAccount.name);
+      updateAccount(
+        lastSubAccount.accountAddress,
+        lastSubAccount.name,
+        lastSubAccount.owner
+      );
     }
   }, [accounts, updateAccount]);
   return (

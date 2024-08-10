@@ -3,6 +3,7 @@ import { Address } from "viem";
 export type Account = {
   accountAddress: Address;
   name: string;
+  owner: string;
 };
 
 export type AccountUpnl = {

@@ -76,7 +76,7 @@ export default function AccountsModal({
   const updateAccount = useSetActiveSubAccount();
 
   const onClick = (account: AccountType) => {
-    updateAccount(account.accountAddress, account.name);
+    updateAccount(account.accountAddress, account.name, account.owner);
     onDismiss();
   };
 
