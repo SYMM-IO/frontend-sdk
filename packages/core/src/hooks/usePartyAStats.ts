@@ -130,10 +130,6 @@ export function usePartyAStats(
     accountBalanceLimit: fromWei(getSingleWagmiResult(secondData, 0)),
     withdrawCooldown: getSingleWagmiResult(secondData, 1)?.toString() ?? "0",
     cooldownMA: getMultipleBN(secondData?.[2]?.result)[0]?.toString() ?? "0",
-    forceCancelCooldown:
-      getMultipleBN(secondData?.[2]?.result)[1]?.toString() ?? "0",
-    forceCancelCloseCooldown:
-      getMultipleBN(secondData?.[2]?.result)[2]?.toString() ?? "0",
 
     allocatedBalance: fromWei(multipleBNResult[1]),
     lockedCVA: fromWei(multipleBNResult[2]),
@@ -151,6 +147,53 @@ export function usePartyAStats(
     nonces: multipleBNResult[12]?.toNumber() ?? 0,
     quotesCount: (multipleBNResult[13]?.toNumber() ?? 75) + 5,
     loading,
+    isError,
+  };
+}
+
+export function useForceCooldowns() {
+  const { chainId } = useActiveWagmi();
+  const isSupportedChainId = useSupportedChainId();
+  const DIAMOND_ADDRESS = useDiamondAddress();
+
+  const cooldownsCall = isSupportedChainId
+    ? [
+        {
+          functionName: "coolDownsOfMA",
+          callInputs: [],
+        },
+        {
+          functionName: "forceCloseCooldowns",
+          callInputs: [],
+        },
+        {
+          functionName: "forceCloseMinSigPeriod",
+          callInputs: [],
+        },
+      ]
+    : [];
+
+  const { data, isLoading, isError } = useSingleContractMultipleMethods(
+    chainId ? DIAMOND_ADDRESS[chainId] : "",
+    DIAMOND_ABI,
+    cooldownsCall,
+    {
+      watch: true,
+      enabled: cooldownsCall.length > 0,
+    }
+  );
+
+  return {
+    forceCancelCooldown: getMultipleBN(data?.[0]?.result)[1]?.toString() ?? "0",
+    forceCancelCloseCooldown:
+      getMultipleBN(data?.[0]?.result)[2]?.toString() ?? "0",
+    forceCloseFirstCooldown:
+      getMultipleBN(data?.[1]?.result)[0]?.toString() ?? "0",
+    forceCloseSecondCooldown:
+      getMultipleBN(data?.[1]?.result)[1]?.toString() ?? "0",
+    forceCloseMinSigPeriod: getSingleWagmiResult(data, 2)?.toString() ?? "0",
+
+    loading: isLoading,
     isError,
   };
 }

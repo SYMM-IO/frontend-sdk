@@ -75,6 +75,7 @@ import {
 import ManageTpSlModal from "../TPSL/manage";
 import EditPencil from "components/Icons/EditPencil";
 import { useTpSlAvailable } from "@symmio/frontend-sdk/state/chains";
+import { useForceCooldowns } from "@symmio/frontend-sdk/hooks/usePartyAStats";
 
 const TableStructure = styled(RowBetween)<{ active?: boolean }>`
   width: 100%;
@@ -232,15 +233,7 @@ function TableHeader({
   return (
     <HeaderWrap>
       {HEADERS.map((item, key) => {
-        if (item === "Status/uPNL") {
-          return (
-            <div style={{ width: "15%" }} key={key}>
-              {item}
-            </div>
-          );
-        } else {
-          return <div key={key}>{item}</div>;
-        }
+        return <div key={key}>{item}</div>;
       })}
       <div style={{ width: "16px", height: "100%", paddingTop: "10px" }}></div>
     </HeaderWrap>
@@ -262,14 +255,14 @@ function TableRow({
   mobileVersion: boolean;
 }) {
   const theme = useTheme();
-  const { quoteStatus } = quote;
+  const { id, quoteStatus, statusModifyTimestamp } = quote;
   const activeAccountAddress = useActiveAccountAddress();
-  const { liquidationStatus, forceCancelCooldown, forceCancelCloseCooldown } =
-    useAccountPartyAStat(activeAccountAddress);
+  const { liquidationStatus } = useAccountPartyAStat(activeAccountAddress);
+  const { forceCancelCloseCooldown, forceCancelCooldown } = useForceCooldowns();
   const { expired, expiredColor } = useCheckQuoteIsExpired(quote);
-  const { handleCancelClose } = useInstantClosePosition("0", "0", quote.id);
+  const { handleCancelClose } = useInstantClosePosition("0", "0", id);
 
-  const instantCloseData = useQuoteInstantCloseData(quote.id);
+  const instantCloseData = useQuoteInstantCloseData(id);
   useInstantCloseNotifications(quote);
   const instantCloseStatusInfo = useMemo(() => {
     if (instantCloseData) {
@@ -296,13 +289,13 @@ function TableRow({
   const [remainingTime, setRemainingTime] = useState(getRemainingTime(0));
   useEffect(() => {
     const cooldown =
-      quote.quoteStatus === QuoteStatus.CANCEL_PENDING
+      quoteStatus === QuoteStatus.CANCEL_PENDING
         ? forceCancelCooldown
         : forceCancelCloseCooldown;
 
     const interval = setInterval(() => {
       const updatedTime = getRemainingTime(
-        toBN(quote.statusModifyTimestamp).plus(cooldown).times(1000).toNumber()
+        toBN(statusModifyTimestamp).plus(cooldown).times(1000).toNumber()
       );
       setRemainingTime(updatedTime);
     }, 1000);
@@ -311,8 +304,8 @@ function TableRow({
   }, [
     forceCancelCloseCooldown,
     forceCancelCooldown,
-    quote.quoteStatus,
-    quote.statusModifyTimestamp,
+    quoteStatus,
+    statusModifyTimestamp,
   ]);
 
   const [buttonText, disableButton] = useMemo(() => {
@@ -485,8 +478,9 @@ function QuoteRow({
     quantityToClose,
     positionType,
     orderType,
+    marketId,
   } = quote;
-  const market = useMarket(quote.marketId);
+  const market = useMarket(marketId);
   const { name, pricePrecision } = market || {};
   const marketData = useMarketData(name);
   const leverage = useQuoteLeverage(quote);
@@ -617,11 +611,11 @@ function QuoteRow({
   const upnlPercent = useMemo(() => {
     return toBN(upnl)
       .div(quoteAvailableAmount)
-      .div(quote.openedPrice)
+      .div(openedPrice)
       .times(leverage)
       .times(100)
       .toFixed(2);
-  }, [leverage, upnl, quote.openedPrice, quoteAvailableAmount]);
+  }, [leverage, upnl, openedPrice, quoteAvailableAmount]);
 
   return useMemo(
     () => (
@@ -701,7 +695,7 @@ function QuoteRow({
             liquidatePending ? (
               <LiquidatedStatusValue>Liquidation...</LiquidatedStatusValue>
             ) : quoteStatus === QuoteStatus.OPENED ? (
-              <PnlValue color={color} style={{ width: "15%" }}>
+              <PnlValue color={color}>
                 {value === "-"
                   ? value
                   : `${value} (${Math.abs(Number(upnlPercent))})%`}
