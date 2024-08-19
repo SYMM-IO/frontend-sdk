@@ -275,7 +275,7 @@ function ActionButton({
       };
     }
 
-    if (forceCloseEnabled) {
+    if (!forceCloseEnabled) {
       return {
         isForceCloseAllowed: false,
         forceCloseError: "Price condition was not met",

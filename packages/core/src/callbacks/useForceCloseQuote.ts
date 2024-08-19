@@ -174,6 +174,8 @@ export function useForceCloseQuoteCallback(
       hedger: "",
     } as CancelQuoteTransactionInfo;
 
+    const summary = `${txInfo.name}-Q${txInfo.id} Force Close Position`;
+
     return {
       state: TransactionCallbackState.VALID,
       error: null,
@@ -185,7 +187,7 @@ export function useForceCloseQuoteCallback(
           addRecentTransaction,
           txInfo,
           wagmiConfig,
-          undefined,
+          summary,
           userExpertMode
         ),
     };
