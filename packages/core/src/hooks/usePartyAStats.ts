@@ -197,3 +197,35 @@ export function useForceCooldowns() {
     isError,
   };
 }
+
+export function useForceCloseGapRatio(marketId: number | undefined) {
+  const { chainId } = useActiveWagmi();
+  const isSupportedChainId = useSupportedChainId();
+  const DIAMOND_ADDRESS = useDiamondAddress();
+
+  const call =
+    isSupportedChainId && marketId
+      ? [
+          {
+            functionName: "forceCloseGapRatio",
+            callInputs: [marketId],
+          },
+        ]
+      : [];
+
+  const { data, isLoading, isError } = useSingleContractMultipleMethods(
+    chainId ? DIAMOND_ADDRESS[chainId] : "",
+    DIAMOND_ABI,
+    call,
+    {
+      watch: true,
+      enabled: call.length > 0,
+    }
+  );
+
+  return {
+    forceCloseGapRatio: fromWei(getSingleWagmiResult(data, 0)) ?? "0",
+    loading: isLoading,
+    isError,
+  };
+}

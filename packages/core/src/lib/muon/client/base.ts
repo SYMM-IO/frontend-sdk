@@ -1,4 +1,9 @@
-import { makeHttpRequest } from "../../../utils/http";
+import axios from "axios";
+
+interface ApiResponse {
+  result: any;
+  success: boolean;
+}
 
 export class MuonClient {
   public APP_METHOD: string;
@@ -20,13 +25,19 @@ export class MuonClient {
     });
 
     try {
-      const response = await makeHttpRequest<{ result: any; success: boolean }>(
-        MuonURL.href
-      );
-      return response;
+      const response = await axios.get<ApiResponse>(MuonURL.href);
+      return response.data;
     } catch (error) {
-      console.error(`Error during request to ${baseUrl}:`, error);
-      throw error;
+      if (axios.isAxiosError(error)) {
+        console.error("Axios error:", error.response?.data);
+        throw new Error(
+          error.response?.data.error.message ||
+            "An unknown error in get muon response"
+        );
+      } else {
+        console.error(`Error during request to ${baseUrl}:`, error);
+        throw error;
+      }
     }
   }
 }

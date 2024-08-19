@@ -29,6 +29,7 @@
     "react-tooltip": "^4.2.21",
     "rebass": "^4.0.7",
     "recharts": "2.6.2",
+    "rsuite": "^5.69.0",
     "siwe": "^2.3.2",
     "styled-components": "^5.3.6",
     "styled-react-modal": "^3.0.1",

@@ -113,6 +113,10 @@
       "types": "./dist/callbacks/useDelegateAccesses.d.ts",
       "default": "./dist/callbacks/useDelegateAccesses.js"
     },
+    "./callbacks/useForceCloseQuote": {
+      "types": "./dist/callbacks/useForceCloseQuote.d.ts",
+      "default": "./dist/callbacks/useForceCloseQuote.js"
+    },
     "./callbacks/useMintTestCollateral": {
       "types": "./dist/callbacks/useMintTestCollateral.d.ts",
       "default": "./dist/callbacks/useMintTestCollateral.js"
@@ -348,6 +352,10 @@
     "./lib/muon/client/deallocate": {
       "types": "./dist/lib/muon/client/deallocate.d.ts",
       "default": "./dist/lib/muon/client/deallocate.js"
+    },
+    "./lib/muon/client/forceClose": {
+      "types": "./dist/lib/muon/client/forceClose.d.ts",
+      "default": "./dist/lib/muon/client/forceClose.js"
     },
     "./lib/muon/client/quotes": {
       "types": "./dist/lib/muon/client/quotes.d.ts",
