@@ -25,7 +25,7 @@ const Container = styled.div`
 `;
 
 const ContainerLarge = styled(Container)`
-  top: 15px;
+  top: 9px;
   right: 13px;
   width: 457px;
 `;

@@ -112,8 +112,10 @@ export function useDelegateAccess(): {
 
     const txInfo = {
       type: TransactionType.SIGN_MESSAGE,
-      text: "Enable instance close",
+      text: "Enable instant close",
     } as SignMessageTransactionInfo;
+
+    const summary = `Enable instant close`;
 
     return {
       state: TransactionCallbackState.VALID,
@@ -125,7 +127,8 @@ export function useDelegateAccess(): {
           addTransaction,
           addRecentTransaction,
           txInfo,
-          wagmiConfig
+          wagmiConfig,
+          summary
         ),
     };
   }, [

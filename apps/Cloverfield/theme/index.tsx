@@ -225,6 +225,10 @@ export const ThemedGlobalStyle = createGlobalStyle`
     font-family: 'Spline Sans', monospace;
     font-size: 16px;
     font-weight:500;
+
+    .rs-picker-daterange-panel,.rs-picker-popup-daterange { 
+      z-index: ${Z_INDEX.popover};
+    }
   }
 
   button {

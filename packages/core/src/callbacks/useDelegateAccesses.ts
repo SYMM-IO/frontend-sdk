@@ -119,6 +119,8 @@ export function useDelegateAccesses(
       text: popupText,
     } as SignMessageTransactionInfo;
 
+    const summary = popupText;
+
     return {
       state: TransactionCallbackState.VALID,
       error: null,
@@ -130,7 +132,7 @@ export function useDelegateAccesses(
           addRecentTransaction,
           txInfo,
           wagmiConfig,
-          undefined
+          summary
         ),
     };
   }, [
