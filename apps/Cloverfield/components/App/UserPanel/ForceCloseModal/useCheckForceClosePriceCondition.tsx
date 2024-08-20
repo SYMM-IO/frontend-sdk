@@ -41,27 +41,50 @@ export default function useCheckForceClosePriceCondition({
 
   useEffect(() => {
     const fetchKlineData = async () => {
-      if (dateRange) {
+      if (dateRange && marketName) {
         const klinesUrl = "https://fapi.binance.com/fapi/v1/klines";
         const t0 = dateRange[0].getTime() / 1000;
         const t1 = dateRange[1].getTime() / 1000;
 
-        const rangeInMinutes = Math.floor((t1 - t0) / 60) + 1;
-        const params = {
-          symbol: marketName,
-          interval: "1m",
-          limit: rangeInMinutes,
-          startTime: t0 * 1000,
-          endTime: t1 * 1000,
+        const fetchChunk = async (startTime: number, endTime: number) => {
+          const params = {
+            symbol: marketName,
+            interval: "1m",
+            limit: 500, // API limit
+            startTime: startTime * 1000,
+            endTime: endTime * 1000,
+          };
+
+          try {
+            const { data } = await axios.get(klinesUrl, { params });
+            return data;
+          } catch (e) {
+            console.error(e);
+            throw new Error(e.message || "ERROR_IN_GET_CANDLES");
+          }
         };
 
-        try {
-          const { data } = await axios.get(klinesUrl, { params });
-          setCandles(data);
-        } catch (e) {
-          console.error(e);
-          setError(e.message || "ERROR_IN_GET_CANDLES");
-        }
+        const processChunks = async () => {
+          const maxLimit = 500;
+          const chunks: KlineArray[] = [];
+
+          for (let start = t0; start < t1; start += maxLimit * 60) {
+            const end = Math.min(start + maxLimit * 60, t1);
+            try {
+              const chunk = await fetchChunk(start, end);
+              chunks.push(chunk);
+            } catch (e) {
+              setError(e.message || "ERROR_IN_GET_CANDLES");
+              return;
+            }
+          }
+
+          // Flatten the array of chunks
+          const allCandles = chunks.flat();
+          setCandles(allCandles);
+        };
+
+        processChunks();
       }
     };
 
