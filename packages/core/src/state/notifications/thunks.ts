@@ -14,17 +14,22 @@ export const getNotifications = createAsyncThunk(
   async ({
     baseUrl,
     account,
-    timestamp,
     appName,
+    createTimestamp,
+    modifyTimestamp,
     start = 0,
     size = 10,
+    quoteId,
   }: {
     baseUrl: string | undefined;
     account: string;
-    timestamp: number;
     appName: string;
+
+    createTimestamp?: number;
+    modifyTimestamp?: number;
     start?: number;
     size?: number;
+    quoteId?: string;
   }) => {
     if (!baseUrl) {
       throw new Error("baseUrl is empty");
@@ -32,7 +37,9 @@ export const getNotifications = createAsyncThunk(
 
     const body = JSON.stringify({
       address: `${account}`,
-      modify_time_gte: timestamp,
+      modify_time_gte: modifyTimestamp,
+      create_time_gte: createTimestamp,
+      quote_id: quoteId,
     });
 
     const { href: getNotificationsUrl } = new URL(

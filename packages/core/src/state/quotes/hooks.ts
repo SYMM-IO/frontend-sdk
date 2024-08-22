@@ -29,6 +29,7 @@ import {
   InstantCloseItem,
   InstantCloseObject,
   InstantCloseStatus,
+  InstantOpenItem,
   InstantOpenObject,
   TpSlContent,
 } from "./types";
@@ -107,6 +108,15 @@ export function useInstantClosesData(): InstantCloseObject {
 export function useInstantOpensData(): InstantOpenObject {
   const data = useAppSelector((state) => state.quotes.instantOpensStates);
   return data;
+}
+
+export function useQuoteInstantOpenData(
+  id: number | undefined
+): InstantOpenItem | null {
+  const data: InstantOpenItem = useAppSelector(
+    (state) => state.quotes.instantOpensStates
+  );
+  return id !== undefined ? data[id] ?? null : null;
 }
 
 export function useQuoteInstantCloseData(id: number): InstantCloseItem {

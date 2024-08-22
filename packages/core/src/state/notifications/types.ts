@@ -1,3 +1,4 @@
+import { OrderType } from "../../types/trade";
 import { TransferTab } from "../../types/transfer";
 
 export enum LastSeenAction {
@@ -12,6 +13,8 @@ export enum LastSeenAction {
   FILL_LIMIT_ORDER_CLOSE = "FillLimitOrderClose",
   INSTANT_REQUEST_TO_CLOSE_POSITION = "InstantRequestToClosePosition",
   FILL_ORDER_INSTANT_CLOSE = "FillOrderInstantClose",
+  INSTANT_RFQ = "InstantRFQ",
+  SEND_QUOTE_TRANSACTION = "SendQuoteTransaction",
 }
 
 export const NotificationMessages: { [status: string]: string } = {
@@ -26,6 +29,8 @@ export const NotificationMessages: { [status: string]: string } = {
   [LastSeenAction.FILL_LIMIT_ORDER_CLOSE]: "Fill Limit Order Close",
   [LastSeenAction.INSTANT_REQUEST_TO_CLOSE_POSITION]: "Instant Close",
   [LastSeenAction.FILL_ORDER_INSTANT_CLOSE]: "Fill Instant Order Close",
+  [LastSeenAction.INSTANT_RFQ]: "Instant Open",
+  [LastSeenAction.SEND_QUOTE_TRANSACTION]: "Send Quote Transaction",
 };
 
 export enum FailureType {
@@ -77,6 +82,8 @@ export interface NotificationDetails {
   failureMessage: string | null;
   errorCode: number | null;
   transferAmount?: string;
+  tempQuoteId?: number;
+  orderType?: OrderType;
   transferType?: TransferTab;
 }
 
@@ -95,6 +102,8 @@ export interface NotificationResponse {
   error_code: number | null;
   state_type: string | null;
   version?: number;
+  temp_quote_id?: number;
+  order_type?: number;
 }
 
 export interface NotificationUrlResponseType {
