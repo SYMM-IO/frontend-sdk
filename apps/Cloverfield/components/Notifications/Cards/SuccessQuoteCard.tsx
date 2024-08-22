@@ -37,6 +37,7 @@ export default function SuccessQuoteCard({
   } = notification;
   const { marketId: instantQuoteMarketId } =
     useQuoteInstantOpenData(tempQuoteId) || {};
+
   const { symbol, asset } = useMarket(marketId ?? instantQuoteMarketId) || {};
   const token1 = useCurrencyLogo(symbol);
   const token2 = useCollateralLogo();
