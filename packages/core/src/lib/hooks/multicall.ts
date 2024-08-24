@@ -42,7 +42,11 @@ export function useSingleContractMultipleMethods(
   contractAddress: string,
   contractAbi: Abi,
   callsData?: CallData[],
-  option?: any
+  query?: {
+    enabled?: boolean;
+    refetchInterval?: number;
+    [key: string]: any; // Allows for additional properties with unknown names and types
+  }
 ) {
   const configs =
     (contractAddress &&
@@ -64,11 +68,16 @@ export function useSingleContractMultipleMethods(
         .filter(Boolean)) ||
     [];
 
-  const readContractsConfig = {
-    contracts: configs,
-    ...option,
-    query: { refetchInterval: 2000 },
-  };
+  let readContractsConfig;
+
+  if (query) {
+    readContractsConfig = { contracts: configs, query };
+  } else {
+    readContractsConfig = {
+      contracts: configs,
+    };
+  }
+
   const result = useReadContracts(readContractsConfig);
 
   return result;

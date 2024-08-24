@@ -80,7 +80,7 @@ export function usePartyAStats(
       },
     ],
     {
-      watch: true,
+      refetchInterval: 2000,
     }
   );
 
@@ -93,7 +93,7 @@ export function usePartyAStats(
     DIAMOND_ABI,
     partyAStatsCallsFirstCall,
     {
-      watch: true,
+      refetchInterval: 2000,
       enabled: partyAStatsCallsFirstCall.length > 0,
     }
   );
@@ -107,7 +107,7 @@ export function usePartyAStats(
     DIAMOND_ABI,
     partyAStatsCallsSecondCall,
     {
-      watch: true,
+      refetchInterval: 2000,
       enabled: partyAStatsCallsSecondCall.length > 0,
     }
   );
@@ -178,7 +178,7 @@ export function useForceCooldowns() {
     DIAMOND_ABI,
     cooldownsCall,
     {
-      watch: true,
+      refetchInterval: 2000,
       enabled: cooldownsCall.length > 0,
     }
   );
