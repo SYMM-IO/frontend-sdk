@@ -81,6 +81,7 @@ export function usePartyAStats(
     ],
     {
       refetchInterval: 2000,
+      enabled: !!account,
     }
   );
 
@@ -177,10 +178,7 @@ export function useForceCooldowns() {
     chainId ? DIAMOND_ADDRESS[chainId] : "",
     DIAMOND_ABI,
     cooldownsCall,
-    {
-      refetchInterval: 2000,
-      enabled: cooldownsCall.length > 0,
-    }
+    { enabled: cooldownsCall.length > 0 }
   );
 
   return {
@@ -218,7 +216,6 @@ export function useForceCloseGapRatio(marketId: number | undefined) {
     DIAMOND_ABI,
     call,
     {
-      watch: true,
       enabled: call.length > 0,
     }
   );
