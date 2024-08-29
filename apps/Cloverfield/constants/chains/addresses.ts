@@ -303,7 +303,7 @@ export const BlastChainCoreFE: ChainType = {
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://api.studio.thegraph.com/query/62454/main_blast_8_2/version/latest",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://subgraph-api.mantle.xyz/subgraphs/name/parties_mantle_8_2/graphql",
+    "https://api.studio.thegraph.com/query/62454/fundingrate_blast_8_2/version/latest",
 };
 
 export const BlastChainIntentXFE: ChainType = {
@@ -325,7 +325,7 @@ export const BlastChainIntentXFE: ChainType = {
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
     "https://api.studio.thegraph.com/query/62454/main_blast_8_2/version/latest",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://subgraph-api.mantle.xyz/subgraphs/name/parties_mantle_8_2/graphql",
+    "https://api.studio.thegraph.com/query/62454/fundingrate_blast_8_2/version/latest",
 };
 
 export const BaseChainVibeFE: ChainType = {
