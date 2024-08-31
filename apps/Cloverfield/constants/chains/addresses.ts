@@ -1,5 +1,8 @@
 import { SupportedChainId } from "@symmio/frontend-sdk/constants/chains";
-import { ChainType } from "@symmio/frontend-sdk/state/chains/reducer";
+import {
+  ChainsType,
+  ChainType,
+} from "@symmio/frontend-sdk/state/chains/reducer";
 
 export enum FrontEndsName {
   ALPHA = "Alpha",
@@ -460,9 +463,7 @@ export const ArbitrumChainCloverfieldFE: ChainType = {
     "https://api.studio.thegraph.com/query/62454/fundingrate_arbitrum_8_2/version/latest",
 };
 
-export const contractInfo: {
-  [chainId: number]: { [name: string]: ChainType };
-} = {
+export const contractInfo: ChainsType = {
   [SupportedChainId.FANTOM]: { [FrontEndsName.CLOVERFIELD]: FantomChain },
   [SupportedChainId.BSC]: {
     [FrontEndsName.ALPHA]: BSCChainAlphaFE,

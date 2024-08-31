@@ -1,10 +1,11 @@
 import { useCallback, useMemo } from "react";
 import { AppState, useAppDispatch, useAppSelector } from "../declaration";
 import { setChains } from "./actions";
-import { ChainsState, ChainsType, MuonDataType } from "./reducer";
+import { ChainsState, MuonDataObject } from "./reducer";
 import useActiveWagmi from "../../lib/hooks/useActiveWagmi";
 import { useFEName } from "../user/hooks";
 import { useHedgerInfo } from "../hedger/hooks";
+import { useStateContext } from "../../context/configSdkContext";
 
 type InputObject = {
   [chainId: number]: { [name: string]: any };
@@ -41,102 +42,100 @@ export function useCollateralAddress(): {
   [chainId: number]: string;
 } {
   const FE_NAME = useFEName();
-  const chains = useAppSelector((state: AppState) => state.chains.chains);
-  const v3_ids = useAppSelector((state: AppState) => state.chains.V3_CHAIN_IDS);
+
+  const { chains, clientChain } = useStateContext();
 
   return useMemo(() => {
     const data = compatibleWithLegacyStructure(
       chains,
-      v3_ids,
+      clientChain,
       "COLLATERAL_ADDRESS"
     );
 
     return getValuesByName(data, FE_NAME);
-  }, [FE_NAME, chains, v3_ids]);
+  }, [FE_NAME, chains, clientChain]);
 }
 
 export function useCollateralSymbol(): {
   [chainId: number]: string;
 } {
   const FE_NAME = useFEName();
-  const chains = useAppSelector((state: AppState) => state.chains.chains);
-  const v3_ids = useAppSelector((state: AppState) => state.chains.V3_CHAIN_IDS);
+
+  const { chains, clientChain } = useStateContext();
 
   return useMemo(() => {
     const data = compatibleWithLegacyStructure(
       chains,
-      v3_ids,
+      clientChain,
       "COLLATERAL_SYMBOL"
     );
     return getValuesByName(data, FE_NAME);
-  }, [FE_NAME, chains, v3_ids]);
+  }, [FE_NAME, chains, clientChain]);
 }
 
 export function useCollateralDecimal(): {
   [chainId: number]: number;
 } {
   const FE_NAME = useFEName();
-  const chains = useAppSelector((state: AppState) => state.chains.chains);
-  const v3_ids = useAppSelector((state: AppState) => state.chains.V3_CHAIN_IDS);
+
+  const { chains, clientChain } = useStateContext();
 
   return useMemo(() => {
     const data = compatibleWithLegacyStructure(
       chains,
-      v3_ids,
+      clientChain,
       "COLLATERAL_DECIMALS"
     );
     return getValuesByName(data, FE_NAME);
-  }, [FE_NAME, chains, v3_ids]);
+  }, [FE_NAME, chains, clientChain]);
 }
 
 export function useDiamondAddress() {
   const FE_NAME = useFEName();
-  const chains = useAppSelector((state: AppState) => state.chains.chains);
-  const v3_ids = useAppSelector((state: AppState) => state.chains.V3_CHAIN_IDS);
+  const { chains, clientChain } = useStateContext();
 
   return useMemo(() => {
     const data = compatibleWithLegacyStructure(
       chains,
-      v3_ids,
+      clientChain,
       "DIAMOND_ADDRESS"
     );
     return getValuesByName(data, FE_NAME);
-  }, [FE_NAME, chains, v3_ids]);
+  }, [FE_NAME, chains, clientChain]);
 }
 
 export function useMultiAccountAddress() {
   const FE_NAME = useFEName();
-  const chains = useAppSelector((state: AppState) => state.chains.chains);
-  const v3_ids = useAppSelector((state: AppState) => state.chains.V3_CHAIN_IDS);
+
+  const { chains, clientChain } = useStateContext();
 
   return useMemo(() => {
     const data = compatibleWithLegacyStructure(
       chains,
-      v3_ids,
+      clientChain,
       "MULTI_ACCOUNT_ADDRESS"
     );
     return getValuesByName(data, FE_NAME);
-  }, [FE_NAME, chains, v3_ids]);
+  }, [FE_NAME, chains, clientChain]);
 }
 
 export function useTpSlWalletAddress() {
   const FE_NAME = useFEName();
-  const chains = useAppSelector((state: AppState) => state.chains.chains);
-  const v3_ids = useAppSelector((state: AppState) => state.chains.V3_CHAIN_IDS);
+  const { chains, clientChain } = useStateContext();
 
   return useMemo(() => {
     const data = compatibleWithLegacyStructure(
       chains,
-      v3_ids,
+      clientChain,
       "TP_SL_WALLET_ADDRESS"
     );
     return getValuesByName(data, FE_NAME);
-  }, [FE_NAME, chains, v3_ids]);
+  }, [FE_NAME, chains, clientChain]);
 }
 
 export function useTpSlAvailable() {
   const FE_NAME = useFEName();
-  const chains = useAppSelector((state: AppState) => state.chains.chains);
+  const { chains } = useStateContext();
   const { chainId } = useActiveWagmi();
   const { tpslUrl } = useHedgerInfo() || {};
   const isEnableTpSl = chains?.[chainId ?? 1]?.[FE_NAME]?.TP_SL_WALLET_ADDRESS;
@@ -147,83 +146,80 @@ export function useTpSlAvailable() {
 }
 
 export function useAllMultiAccountAddresses() {
-  const chains = useAppSelector((state: AppState) => state.chains.chains);
-  const v3_ids = useAppSelector((state: AppState) => state.chains.V3_CHAIN_IDS);
+  const { chains, clientChain } = useStateContext();
 
   return useMemo(() => {
     return compatibleWithLegacyStructure(
       chains,
-      v3_ids,
+      clientChain,
       "MULTI_ACCOUNT_ADDRESS"
     );
-  }, [chains, v3_ids]);
+  }, [chains, clientChain]);
 }
 
 export function useSignatureStoreAddress() {
   const FE_NAME = useFEName();
-  const chains = useAppSelector((state: AppState) => state.chains.chains);
-  const v3_ids = useAppSelector((state: AppState) => state.chains.V3_CHAIN_IDS);
+  const { chains, clientChain } = useStateContext();
 
   return useMemo(() => {
     const data = compatibleWithLegacyStructure(
       chains,
-      v3_ids,
+      clientChain,
       "SIGNATURE_STORE_ADDRESS"
     );
     return getValuesByName(data, FE_NAME);
-  }, [FE_NAME, chains, v3_ids]);
+  }, [FE_NAME, chains, clientChain]);
 }
 
 export function usePartyBWhitelistAddress() {
   const FE_NAME = useFEName();
-  const chains = useAppSelector((state: AppState) => state.chains.chains);
-  const v3_ids = useAppSelector((state: AppState) => state.chains.V3_CHAIN_IDS);
+  const { chains, clientChain } = useStateContext();
 
   return useMemo(() => {
     const data = compatibleWithLegacyStructure(
       chains,
-      v3_ids,
+      clientChain,
       "PARTY_B_WHITELIST"
     );
     return getValuesByName(data, FE_NAME);
-  }, [FE_NAME, chains, v3_ids]);
+  }, [FE_NAME, chains, clientChain]);
 }
 
 export function useMultiCallAddress() {
   const FE_NAME = useFEName();
-  const chains = useAppSelector((state: AppState) => state.chains.chains);
-  const v3_ids = useAppSelector((state: AppState) => state.chains.V3_CHAIN_IDS);
+  const { chains, clientChain } = useStateContext();
 
   return useMemo(() => {
     const data = compatibleWithLegacyStructure(
       chains,
-      v3_ids,
+      clientChain,
       "MULTICALL3_ADDRESS"
     );
     return getValuesByName(data, FE_NAME);
-  }, [FE_NAME, chains, v3_ids]);
+  }, [FE_NAME, chains, clientChain]);
 }
 
 export function useUSDCAddress() {
   const FE_NAME = useFEName();
-  const chains = useAppSelector((state: AppState) => state.chains.chains);
-  const v3_ids = useAppSelector((state: AppState) => state.chains.V3_CHAIN_IDS);
+  const { chains, clientChain } = useStateContext();
 
   return useMemo(() => {
-    const data = compatibleWithLegacyStructure(chains, v3_ids, "USDC_ADDRESS");
+    const data = compatibleWithLegacyStructure(
+      chains,
+      clientChain,
+      "USDC_ADDRESS"
+    );
     return getValuesByName(data, FE_NAME);
-  }, [FE_NAME, chains, v3_ids]);
+  }, [FE_NAME, chains, clientChain]);
 }
 
 export function useV3Ids(): number[] {
-  const v3_ids = useAppSelector((state: AppState) => state.chains.V3_CHAIN_IDS);
-  return v3_ids;
+  const { clientChain } = useStateContext();
+  return clientChain;
 }
 
 export function useFallbackChainId() {
-  const fallbackChainId = useAppSelector(
-    (state: AppState) => state.chains.FALLBACK_CHAIN_ID
-  );
+  const { fallbackChainId } = useStateContext();
   return fallbackChainId;
 }
 
@@ -233,14 +229,14 @@ export function useHedgerAddress() {
 }
 
 export function useAppName() {
-  const appName = useAppSelector((state: AppState) => state.chains.appName);
+  const { appName } = useStateContext();
   return appName;
 }
 
 export function useOrderHistorySubgraphAddress() {
   const { chainId } = useActiveWagmi();
   const frontEndName = useFEName();
-  const chainsData = useAppSelector((state: AppState) => state.chains.chains);
+  const { chains: chainsData } = useStateContext();
 
   let address = "";
   if (chainId && frontEndName && chainsData && chainsData[chainId]) {
@@ -253,9 +249,7 @@ export function useOrderHistorySubgraphAddress() {
 }
 
 export function useGetUniqueElementInChains(element: string) {
-  const config: ChainsType = useAppSelector(
-    (state: AppState) => state.chains.chains
-  );
+  const { chains: config } = useStateContext();
 
   const addresses: { chainId: string; url: string }[] = [];
 
@@ -278,7 +272,7 @@ export function useGetUniqueElementInChains(element: string) {
 export function useAnalyticsSubgraphAddress() {
   const { chainId } = useActiveWagmi();
   const frontEndName = useFEName();
-  const chainsData = useAppSelector((state: AppState) => state.chains.chains);
+  const { chains: chainsData } = useStateContext();
 
   let address = "";
   if (chainId && frontEndName && chainsData && chainsData[chainId]) {
@@ -294,7 +288,7 @@ export function useAnalyticsSubgraphAddress() {
 export function useFundingRateSubgraphAddress() {
   const { chainId } = useActiveWagmi();
   const frontEndName = useFEName();
-  const chainsData = useAppSelector((state: AppState) => state.chains.chains);
+  const { chains: chainsData } = useStateContext();
 
   let address = "";
   if (chainId && frontEndName && chainsData && chainsData[chainId]) {
@@ -307,9 +301,9 @@ export function useFundingRateSubgraphAddress() {
   return address;
 }
 
-export function useMuonData(): { [chainId: number]: MuonDataType } {
-  const MuonData = useAppSelector((state: AppState) => state.chains.MuonData);
-  return MuonData;
+export function useMuonData(): MuonDataObject {
+  const { muonData } = useStateContext();
+  return muonData;
 }
 
 export function useWagmiConfig() {
@@ -319,35 +313,14 @@ export function useWagmiConfig() {
   return wagmiConfig;
 }
 
-export function useSetSdkConfig(): ({
-  chains,
-  V3_CHAIN_IDS,
-  FALLBACK_CHAIN_ID,
-  hedgers,
-  appName,
-  MuonData,
-  wagmiConfig,
-}: ChainsState) => void {
+export function useSetSdkConfig(): ({ wagmiConfig }: ChainsState) => void {
   const dispatch = useAppDispatch();
   return useCallback(
-    ({
-      chains,
-      V3_CHAIN_IDS,
-      FALLBACK_CHAIN_ID,
-      hedgers,
-      appName,
-      MuonData,
-      wagmiConfig,
-    }: ChainsState) => {
+    ({ wagmiConfig, hedgers }: ChainsState) => {
       dispatch(
         setChains({
-          chains,
-          V3_CHAIN_IDS,
-          FALLBACK_CHAIN_ID,
-          hedgers,
-          appName,
-          MuonData,
           wagmiConfig,
+          hedgers,
         })
       );
     },

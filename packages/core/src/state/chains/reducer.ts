@@ -4,7 +4,7 @@ const { createReducer } = ((toolkitRaw as any).default ??
   toolkitRaw) as typeof toolkitRaw;
 import { setChains } from "./actions";
 import { HedgerInfoMap } from "../../types/hedger";
-import { SupportedChainId } from "../../constants/chains";
+import { SupportedChainId } from "../../constants";
 
 export interface ChainType {
   readonly COLLATERAL_SYMBOL: string;
@@ -28,47 +28,29 @@ export interface MuonDataType {
   Urls: string[];
 }
 
+export interface MuonDataObject {
+  [chainId: number]: MuonDataType;
+}
+
 export interface ChainsType {
   [chainId: number]: { [name: string]: ChainType };
 }
 
 export interface ChainsState {
-  readonly chains: ChainsType;
-  readonly V3_CHAIN_IDS: number[];
-  readonly FALLBACK_CHAIN_ID: number;
   readonly hedgers: HedgerInfoMap;
-  readonly appName: string;
-  readonly MuonData: { [chainId: number]: MuonDataType };
   readonly wagmiConfig: Config;
 }
 
 const initialState: ChainsState = {
-  chains: {},
-  V3_CHAIN_IDS: [],
-  FALLBACK_CHAIN_ID: 1,
   hedgers: { [SupportedChainId.NOT_SET]: [] },
-  appName: "",
-  MuonData: {},
+
   wagmiConfig: {} as Config,
 };
 
 export default createReducer(initialState, (builder) =>
   builder.addCase(setChains, (state, { payload }) => {
-    const {
-      chains,
-      V3_CHAIN_IDS,
-      FALLBACK_CHAIN_ID,
-      hedgers,
-      appName,
-      MuonData,
-      wagmiConfig,
-    } = payload;
-    state.chains = chains;
-    state.V3_CHAIN_IDS = V3_CHAIN_IDS;
-    state.FALLBACK_CHAIN_ID = FALLBACK_CHAIN_ID;
+    const { wagmiConfig, hedgers } = payload;
     state.hedgers = hedgers;
-    state.appName = appName;
-    state.MuonData = MuonData;
     state.wagmiConfig = wagmiConfig;
   })
 );

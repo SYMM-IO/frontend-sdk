@@ -7,21 +7,40 @@ import { HedgerInfo } from "constants/chains/hedgers";
 import { APP_NAME } from "constants/chains/misc";
 import { MuonInfo } from "constants/chains/muon";
 import { wagmiConfig } from "pages/_app";
+import { useStateContext } from "@symmio/frontend-sdk/context/configSdkContext";
 
 export default function ConfigSDKComponent() {
   const setConfigCallBack = useSetSdkConfig();
+  const {
+    setChains,
+    setClientChain,
+    setFallbackChainId,
+    setHedgerInfo,
+    setAppName,
+    setMuonData,
+  } = useStateContext();
 
   useEffect(() => {
+    setChains(contractInfo);
+    setClientChain(ClientChain);
+    setFallbackChainId(FALLBACK_CHAIN_ID);
+    setHedgerInfo(HedgerInfo);
+    setAppName(APP_NAME);
+    setMuonData(MuonInfo);
+
     setConfigCallBack({
-      chains: contractInfo,
-      V3_CHAIN_IDS: ClientChain,
-      FALLBACK_CHAIN_ID,
-      hedgers: HedgerInfo,
-      appName: APP_NAME,
-      MuonData: MuonInfo,
       wagmiConfig,
+      hedgers: HedgerInfo,
     });
-  }, [setConfigCallBack]);
+  }, [
+    setAppName,
+    setChains,
+    setClientChain,
+    setConfigCallBack,
+    setFallbackChainId,
+    setHedgerInfo,
+    setMuonData,
+  ]);
 
   return <></>;
 }
