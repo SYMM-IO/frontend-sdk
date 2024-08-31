@@ -307,19 +307,16 @@ export function useMuonData(): MuonDataObject {
 }
 
 export function useWagmiConfig() {
-  const wagmiConfig = useAppSelector(
-    (state: AppState) => state.chains.wagmiConfig
-  );
+  const { wagmiConfig } = useStateContext();
   return wagmiConfig;
 }
 
-export function useSetSdkConfig(): ({ wagmiConfig }: ChainsState) => void {
+export function useSetSdkConfig(): ({ hedgers }: ChainsState) => void {
   const dispatch = useAppDispatch();
   return useCallback(
-    ({ wagmiConfig, hedgers }: ChainsState) => {
+    ({ hedgers }: ChainsState) => {
       dispatch(
         setChains({
-          wagmiConfig,
           hedgers,
         })
       );

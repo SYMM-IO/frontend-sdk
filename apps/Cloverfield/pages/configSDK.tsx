@@ -18,6 +18,7 @@ export default function ConfigSDKComponent() {
     setHedgerInfo,
     setAppName,
     setMuonData,
+    setWagmiConfig,
   } = useStateContext();
 
   useEffect(() => {
@@ -27,9 +28,9 @@ export default function ConfigSDKComponent() {
     setHedgerInfo(HedgerInfo);
     setAppName(APP_NAME);
     setMuonData(MuonInfo);
+    setWagmiConfig(wagmiConfig);
 
     setConfigCallBack({
-      wagmiConfig,
       hedgers: HedgerInfo,
     });
   }, [
@@ -40,6 +41,7 @@ export default function ConfigSDKComponent() {
     setFallbackChainId,
     setHedgerInfo,
     setMuonData,
+    setWagmiConfig,
   ]);
 
   return <></>;

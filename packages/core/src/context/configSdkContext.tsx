@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState } from "react";
 import { SupportedChainId } from "../constants";
 import { ChainsType, MuonDataObject } from "../state/chains/reducer";
 import { HedgerInfoMap } from "../types/hedger";
+import { Config } from "@wagmi/core";
 
 // Define your context state and actions
 interface State {
@@ -22,6 +23,9 @@ interface State {
 
   muonData: MuonDataObject;
   setMuonData: (data: MuonDataObject) => void;
+
+  wagmiConfig: Config;
+  setWagmiConfig: (config: Config) => void;
 }
 
 // Create a default state
@@ -45,6 +49,9 @@ const defaultState: State = {
 
   muonData: {},
   setMuonData: () => {},
+
+  wagmiConfig: {} as Config,
+  setWagmiConfig: () => {},
 };
 
 // Create the context with the default state
@@ -61,6 +68,8 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
   const [fallbackChainId, setFallbackChainId] = useState<number>(1);
   const [appName, setAppName] = useState<string>("");
   const [muonData, setMuonData] = useState<MuonDataObject>({});
+
+  const [wagmiConfig, setWagmiConfig] = useState<Config>({} as Config);
 
   const value = {
     clientChain,
@@ -80,6 +89,9 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
 
     muonData,
     setMuonData,
+
+    wagmiConfig,
+    setWagmiConfig,
   };
 
   return (
