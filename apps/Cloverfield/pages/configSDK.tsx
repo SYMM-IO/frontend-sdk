@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { useSetSdkConfig } from "@symmio/frontend-sdk/state/chains/hooks";
 
 import { contractInfo } from "constants/chains/addresses";
 import { ClientChain, FALLBACK_CHAIN_ID } from "constants/chains/chains";
@@ -10,7 +9,6 @@ import { wagmiConfig } from "pages/_app";
 import { useStateContext } from "@symmio/frontend-sdk/context/configSdkContext";
 
 export default function ConfigSDKComponent() {
-  const setConfigCallBack = useSetSdkConfig();
   const {
     setChains,
     setClientChain,
@@ -29,15 +27,10 @@ export default function ConfigSDKComponent() {
     setAppName(APP_NAME);
     setMuonData(MuonInfo);
     setWagmiConfig(wagmiConfig);
-
-    setConfigCallBack({
-      hedgers: HedgerInfo,
-    });
   }, [
     setAppName,
     setChains,
     setClientChain,
-    setConfigCallBack,
     setFallbackChainId,
     setHedgerInfo,
     setMuonData,

@@ -1,11 +1,11 @@
-import { useCallback, useMemo } from "react";
-import { AppState, useAppDispatch, useAppSelector } from "../declaration";
-import { setChains } from "./actions";
-import { ChainsState, MuonDataObject } from "./reducer";
+import { useMemo } from "react";
 import useActiveWagmi from "../../lib/hooks/useActiveWagmi";
 import { useFEName } from "../user/hooks";
 import { useHedgerInfo } from "../hedger/hooks";
-import { useStateContext } from "../../context/configSdkContext";
+import {
+  MuonDataObject,
+  useStateContext,
+} from "../../context/configSdkContext";
 
 type InputObject = {
   [chainId: number]: { [name: string]: any };
@@ -224,8 +224,8 @@ export function useFallbackChainId() {
 }
 
 export function useHedgerAddress() {
-  const hedgers = useAppSelector((state: AppState) => state.chains.hedgers);
-  return hedgers;
+  const { hedgerInfo } = useStateContext();
+  return hedgerInfo;
 }
 
 export function useAppName() {
@@ -309,18 +309,4 @@ export function useMuonData(): MuonDataObject {
 export function useWagmiConfig() {
   const { wagmiConfig } = useStateContext();
   return wagmiConfig;
-}
-
-export function useSetSdkConfig(): ({ hedgers }: ChainsState) => void {
-  const dispatch = useAppDispatch();
-  return useCallback(
-    ({ hedgers }: ChainsState) => {
-      dispatch(
-        setChains({
-          hedgers,
-        })
-      );
-    },
-    [dispatch]
-  );
 }

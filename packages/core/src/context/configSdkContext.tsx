@@ -1,8 +1,41 @@
 import React, { createContext, useContext, useState } from "react";
 import { SupportedChainId } from "../constants";
-import { ChainsType, MuonDataObject } from "../state/chains/reducer";
 import { HedgerInfoMap } from "../types/hedger";
 import { Config } from "@wagmi/core";
+
+export interface ChainType {
+  readonly COLLATERAL_SYMBOL: string;
+  readonly COLLATERAL_DECIMALS: number;
+  readonly COLLATERAL_ADDRESS: string;
+  readonly DIAMOND_ADDRESS: string;
+  readonly MULTI_ACCOUNT_ADDRESS: string;
+  readonly PARTY_B_WHITELIST: string;
+  readonly SIGNATURE_STORE_ADDRESS: string;
+  readonly TP_SL_WALLET_ADDRESS: string;
+  readonly MULTICALL3_ADDRESS: string;
+  readonly USDC_ADDRESS: string;
+  readonly WRAPPED_NATIVE_ADDRESS: string;
+  readonly ANALYTICS_SUBGRAPH_ADDRESS: string;
+  readonly ORDER_HISTORY_SUBGRAPH_ADDRESS: string;
+  readonly FUNDING_RATE_SUBGRAPH_ADDRESS: string;
+}
+
+export interface MuonDataType {
+  AppName: string;
+  Urls: string[];
+}
+
+export interface MuonDataObject {
+  [chainId: number]: MuonDataType;
+}
+
+export interface ChainsType {
+  [chainId: number]: { [name: string]: ChainType };
+}
+
+export interface ChainsState {
+  readonly hedgers: HedgerInfoMap;
+}
 
 // Define your context state and actions
 interface State {
