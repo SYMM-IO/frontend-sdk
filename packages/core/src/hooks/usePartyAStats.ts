@@ -80,7 +80,8 @@ export function usePartyAStats(
       },
     ],
     {
-      watch: true,
+      refetchInterval: 2000,
+      enabled: !!account,
     }
   );
 
@@ -93,7 +94,7 @@ export function usePartyAStats(
     DIAMOND_ABI,
     partyAStatsCallsFirstCall,
     {
-      watch: true,
+      refetchInterval: 2000,
       enabled: partyAStatsCallsFirstCall.length > 0,
     }
   );
@@ -107,7 +108,7 @@ export function usePartyAStats(
     DIAMOND_ABI,
     partyAStatsCallsSecondCall,
     {
-      watch: true,
+      refetchInterval: 2000,
       enabled: partyAStatsCallsSecondCall.length > 0,
     }
   );
@@ -177,10 +178,7 @@ export function useForceCooldowns() {
     chainId ? DIAMOND_ADDRESS[chainId] : "",
     DIAMOND_ABI,
     cooldownsCall,
-    {
-      watch: true,
-      enabled: cooldownsCall.length > 0,
-    }
+    { enabled: cooldownsCall.length > 0 }
   );
 
   return {
@@ -218,7 +216,6 @@ export function useForceCloseGapRatio(marketId: number | undefined) {
     DIAMOND_ABI,
     call,
     {
-      watch: true,
       enabled: call.length > 0,
     }
   );

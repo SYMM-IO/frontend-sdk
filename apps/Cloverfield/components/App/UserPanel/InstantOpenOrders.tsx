@@ -242,8 +242,15 @@ function QuoteRow({
   onClickButton: (event: React.MouseEvent<HTMLDivElement>) => void;
 }): JSX.Element | null {
   const theme = useTheme();
-  const { id, requestedOpenPrice, quantity, positionType, orderType } = quote;
-  const market = useMarket(quote.marketId);
+  const {
+    id,
+    requestedOpenPrice,
+    quantity,
+    positionType,
+    orderType,
+    marketId,
+  } = quote;
+  const market = useMarket(marketId);
   const { name, pricePrecision } = market || {};
   const marketData = useMarketData(name);
   const leverage = useQuoteLeverage(convertInstantOrderToQuote(quote));

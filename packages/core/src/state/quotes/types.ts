@@ -95,6 +95,7 @@ export interface InstantCloseResponse {
   quantity_to_close: number;
   quote_id: number;
   close_price: number;
+  status: InstantCloseStatus;
 }
 
 export interface InstantOpenResponse {

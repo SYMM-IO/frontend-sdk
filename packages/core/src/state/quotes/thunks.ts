@@ -5,6 +5,7 @@ import { ApolloClient, NormalizedCacheObject } from "@apollo/client";
 import { ORDER_HISTORY_DATA } from "../../apollo/queries";
 import {
   InstantCloseResponseType,
+  InstantCloseStatus,
   InstantOpenResponseType,
   SubGraphData,
 } from "./types";
@@ -16,6 +17,12 @@ import {
   getQuoteStateByIndex,
 } from "../../hooks/useQuotes";
 import { makeHttpRequest } from "../../utils/http";
+import {
+  ActionStatus,
+  LastSeenAction,
+  NotificationResponse,
+  NotificationUrlResponseType,
+} from "../notifications/types";
 
 function toQuoteFromGraph(entity: SubGraphData) {
   return {
@@ -146,7 +153,12 @@ export const getInstantActions = createAsyncThunk(
         instantClosesRes.status === "fulfilled" &&
         instantClosesRes.value
       ) {
-        instantCloses = instantClosesRes.value;
+        instantCloses = await checkInstantClosesStatus(
+          baseUrl,
+          appName,
+          account,
+          instantClosesRes.value
+        );
       }
       if (
         instantOpenRes &&
@@ -162,3 +174,82 @@ export const getInstantActions = createAsyncThunk(
     }
   }
 );
+
+const getPositionState = async (
+  url: string,
+  appName: string,
+  account: string,
+  quoteId: number
+) => {
+  try {
+    const body = JSON.stringify({
+      address: `${account}`,
+      quote_id: quoteId.toString(),
+    });
+    const { href: getNotificationsUrl } = new URL(`position-state/0/5`, url);
+    const response = makeHttpRequest<NotificationUrlResponseType>(
+      getNotificationsUrl,
+      {
+        method: "POST",
+        headers: [
+          ["Content-Type", "application/json"],
+          ["App-Name", appName],
+        ],
+        body,
+      }
+    );
+
+    return response; // Modify according to the actual response structure
+  } catch (error) {
+    console.error(`Failed to check position state for URL ${url}:`, error);
+    return null;
+  }
+};
+
+const checkInstantClosesStatus = async (
+  baseUrl: string,
+  appName: string,
+  account: string,
+  instantCloses: any
+) => {
+  // In this function, we check the position state API for each instant close status to determine whether the quote is processing or has failed.
+
+  const positionStateChecks = instantCloses.map(async (item) => {
+    const result = await getPositionState(
+      baseUrl,
+      appName,
+      account,
+      item.quote_id
+    );
+    return { ...item, positionState: result };
+  });
+
+  const positionsNotificationsData = await Promise.all(positionStateChecks);
+
+  const data = positionsNotificationsData.map((state) => {
+    let status = InstantCloseStatus.PROCESSING;
+    const positionNotification = state.positionState?.position_state;
+
+    if (positionNotification && positionNotification.length) {
+      positionNotification.forEach((s: NotificationResponse) => {
+        if (
+          s.action_status === ActionStatus.FAILED &&
+          (s.last_seen_action === LastSeenAction.FILL_ORDER_INSTANT_CLOSE ||
+            s.last_seen_action ===
+              LastSeenAction.INSTANT_REQUEST_TO_CLOSE_POSITION)
+        ) {
+          status = InstantCloseStatus.FAILED;
+        }
+      });
+    }
+
+    return {
+      quantity_to_close: state.quantity_to_close,
+      quote_id: state.quote_id,
+      close_price: state.close_price,
+      status,
+    };
+  });
+
+  return data;
+};
