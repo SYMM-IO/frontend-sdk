@@ -2,7 +2,7 @@ import { SupportedChainId } from "@symmio/frontend-sdk/constants/chains";
 import {
   ChainsType,
   ChainType,
-} from "@symmio/frontend-sdk/state/chains/reducer";
+} from "@symmio/frontend-sdk/context/configSdkContext";
 
 export enum FrontEndsName {
   ALPHA = "Alpha",

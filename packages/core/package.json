@@ -401,10 +401,6 @@
       "types": "./dist/state/application/updater.d.ts",
       "default": "./dist/state/application/updater.js"
     },
-    "./state/chains/actions": {
-      "types": "./dist/state/chains/actions.d.ts",
-      "default": "./dist/state/chains/actions.js"
-    },
     "./state/chains/hooks": {
       "types": "./dist/state/chains/hooks.d.ts",
       "default": "./dist/state/chains/hooks.js"
@@ -412,10 +408,6 @@
     "./state/chains": {
       "types": "./dist/state/chains/index.d.ts",
       "default": "./dist/state/chains/index.js"
-    },
-    "./state/chains/reducer": {
-      "types": "./dist/state/chains/reducer.d.ts",
-      "default": "./dist/state/chains/reducer.js"
     },
     "./state/hedger/actions": {
       "types": "./dist/state/hedger/actions.d.ts",
