@@ -299,7 +299,7 @@ export const BypassPrecisionCheckModeTitle = ({
         } #${tries}`
       );
     }
-  }, [tries, setBypassPrecisionCheck]);
+  }, [tries, setBypassPrecisionCheck, bypassPrecisionCheck]);
 
   const handleAccountOverviewClick = () => {
     setTries(tries + 1);
