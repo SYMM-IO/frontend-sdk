@@ -29,35 +29,6 @@ export const CustomOption = styled(DefaultOptionButton)`
   border-radius: 4px;
 `;
 
-export const InputAmount = styled.input.attrs({ type: "number" })<{
-  active?: boolean;
-}>`
-  border: 0;
-  outline: none;
-  width: 100%;
-  margin-right: 2px;
-  margin-left: 2px;
-  font-size: 12px;
-  background: transparent;
-  color: ${({ theme }) => theme.text1};
-
-  appearance: textfield;
-
-  ::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  ::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  ${({ active, theme }) =>
-    active &&
-    `
-    color: ${theme.text1};
-  `}
-`;
-
 export const AmountsWrapper = styled.div<{ hasCustom?: boolean }>`
   display: flex;
   flex-wrap: nowrap;
