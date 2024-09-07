@@ -299,6 +299,7 @@ export const BypassPrecisionCheckModeTitle = ({
         } #${tries}`
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tries, setBypassPrecisionCheck]);
 
   const handleAccountOverviewClick = () => {

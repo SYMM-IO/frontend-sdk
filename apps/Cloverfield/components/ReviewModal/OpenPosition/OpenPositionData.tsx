@@ -29,6 +29,11 @@ const LabelsWrapper = styled(Column)`
   gap: 12px;
 `;
 
+const ErrorMsgStyle = styled.div<{ color?: string; size?: string }>`
+  color: ${({ theme, color }) => color ?? theme.red2};
+  font-size: ${({ size }) => size ?? "12px"};
+`;
+
 export default function OpenPositionData() {
   const theme = useTheme();
   const { chainId } = useActiveWagmi();
@@ -41,8 +46,7 @@ export default function OpenPositionData() {
     COLLATERAL_TOKEN,
     chainId
   );
-
-  const { price, formattedAmounts } = useTradePage();
+  const { formattedAmounts, minPositionQuantity, price } = useTradePage();
 
   const [symbol, pricePrecision] = useMemo(
     () =>
@@ -123,6 +127,9 @@ export default function OpenPositionData() {
     sl,
   ]);
 
+  const errorMsg =
+    "Caution: The trade size might be smaller than the threshold while the order is being filled.";
+
   return (
     <React.Fragment>
       <LabelsWrapper>
@@ -150,6 +157,11 @@ export default function OpenPositionData() {
           />
         );
       })}
+      <ErrorMsgStyle>
+        <div>
+          {toBN(formattedAmounts[1]).lt(minPositionQuantity) && errorMsg}
+        </div>
+      </ErrorMsgStyle>
       <ActionButton />
     </React.Fragment>
   );
