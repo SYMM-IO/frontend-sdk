@@ -6,7 +6,7 @@ import axios from "axios";
 import { makeHttpRequest } from "../utils/http";
 import useActiveWagmi from "../lib/hooks/useActiveWagmi";
 
-import { useHedgerInfo } from "../state/hedger/hooks";
+// import { useHedgerInfo } from "../state/hedger/hooks";
 import { useActiveAccountAddress } from "../state/user/hooks";
 import { useFallbackChainId, usePartyBWhitelistAddress } from "../state/chains";
 
@@ -63,7 +63,7 @@ type InstantActionResponseType =
 export default function useInstantActions() {
   const { account, chainId } = useActiveWagmi();
   const activeAddress = useActiveAccountAddress();
-  const { baseUrl } = useHedgerInfo() || {};
+  const baseUrl = process.env.NEXT_PUBLIC_ORBS_INSTANT_BASE_URL as string;
   const { callback: signMessageCallback } = useSignMessage();
   const GetOpenInstantOrders = useGetOpenInstantOrdersCallback();
   const updateInstantCloseData = useUpdateInstantCloseDataCallback();

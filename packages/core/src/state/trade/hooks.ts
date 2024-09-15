@@ -260,7 +260,7 @@ export function useGetLockedPercentages(
       try {
         if (!baseUrl || !market) throw new Error("missing parameters");
         const { href: url } = new URL(
-          `/get_locked_params/${market.name}?leverage=${leverage}`,
+          `get_locked_params/${market.name}?leverage=${leverage}`,
           baseUrl
         );
 

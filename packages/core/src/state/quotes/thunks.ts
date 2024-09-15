@@ -24,6 +24,8 @@ import {
   NotificationUrlResponseType,
 } from "../notifications/types";
 
+const instantUrl = process.env.NEXT_PUBLIC_ORBS_INSTANT_BASE_URL as string;
+
 function toQuoteFromGraph(entity: SubGraphData) {
   return {
     id: Number(entity.quoteId),
@@ -125,9 +127,10 @@ export const getInstantActions = createAsyncThunk(
       throw new Error("baseUrl is empty");
     }
 
-    const getInstantClosesUrl = new URL(`instant_close/${account}`, baseUrl)
+    const getInstantClosesUrl = new URL(`instant_close/${account}`, instantUrl)
       .href;
-    const getInstantOpensUrl = new URL(`instant_open/${account}`, baseUrl).href;
+    const getInstantOpensUrl = new URL(`instant_open/${account}`, instantUrl)
+      .href;
     let instantCloses: InstantCloseResponseType = [];
     let instantOpens: InstantOpenResponseType = [];
 
