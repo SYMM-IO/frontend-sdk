@@ -8,6 +8,7 @@ import {
   BASE_MUON_BASE_URL,
   BLAST_MUON_BASE_URL,
   ARBITRUM_MUON_BASE_URL,
+  MODE_MUON_BASE_URL,
 } from "constants/chains/misc";
 
 export const BSCChain: MuonDataType = {
@@ -40,6 +41,11 @@ export const ArbitrumChain: MuonDataType = {
   Urls: ARBITRUM_MUON_BASE_URL,
 };
 
+export const ModeChain: MuonDataType = {
+  AppName: MUON_APP_NAME,
+  Urls: MODE_MUON_BASE_URL,
+};
+
 export const MuonInfo: { [chainId: number]: MuonDataType } = {
   [SupportedChainId.BSC]: BSCChain,
   [SupportedChainId.POLYGON]: PolygonChain,
@@ -47,4 +53,5 @@ export const MuonInfo: { [chainId: number]: MuonDataType } = {
   [SupportedChainId.BASE]: BaseChain,
   [SupportedChainId.BLAST]: BlastChain,
   [SupportedChainId.ARBITRUM]: ArbitrumChain,
+  [SupportedChainId.MODE]: ModeChain,
 };

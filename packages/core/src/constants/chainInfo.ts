@@ -160,4 +160,18 @@ export const ChainInfo: { [chainId: number]: Info } = {
     blockExplorerUrl: "https://blastscan.io/",
     WRAPPED_NATIVE_ADDRESS: "0x4300000000000000000000000000000000000004",
   },
+  [SupportedChainId.MODE]: {
+    chainId: "0x868b",
+    chainName: "Mode",
+    label: "Mode",
+    nativeCurrency: {
+      name: "ETH",
+      symbol: "Eth",
+      decimals: 18,
+    },
+
+    rpcUrl: "https://mainnet.mode.network",
+    blockExplorerUrl: "https://modescan.io/",
+    WRAPPED_NATIVE_ADDRESS: "0x4200000000000000000000000000000000000006",
+  },
 };
