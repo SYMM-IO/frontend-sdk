@@ -224,7 +224,7 @@ export default function useInstantActions() {
         chainId,
         nonceRes,
         host,
-        `${NEXT_PUBLIC_ORBS_INSTANT_BASE_URL}/login`
+        `${NEXT_PUBLIC_ORBS_INSTANT_BASE_URL}login`
       );
 
       const sign = await onSignMessage(message);
@@ -440,5 +440,6 @@ function createSiweMessage(
     issuedAt,
     expirationTime,
   });
+  console.log("siwe message:", message);
   return { message: message.prepareMessage(), issuedAt, expirationTime };
 }
