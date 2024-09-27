@@ -46,14 +46,16 @@ export default function Web3Network() {
   useOnOutsideClick(ref, () => toggleNetworksModal(false));
 
   const isMultiChain = useMemo(() => {
-    if (chainId && Object.keys(MULTI_ACCOUNT_ADDRESS).length > 0) {
-      return (
-        MULTI_ACCOUNT_ADDRESS[chainId] &&
-        Object.keys(MULTI_ACCOUNT_ADDRESS[chainId]).length > 1
-      );
-    }
-    return false;
-  }, [MULTI_ACCOUNT_ADDRESS, chainId]);
+    // if (chainId && Object.keys(MULTI_ACCOUNT_ADDRESS).length > 0) {
+    //   return (
+    //     MULTI_ACCOUNT_ADDRESS[chainId] &&
+    //     Object.keys(MULTI_ACCOUNT_ADDRESS[chainId]).length > 1
+    //   );
+    // }
+    // return false;
+    // Need to hardcode this otherwise the network selector dropdown is disabled
+    return true;
+  }, []);
 
   useEffect(() => {
     if (

@@ -54,7 +54,7 @@ export function HedgerUpdater(): null {
   const appName = useAppName();
 
   usePriceWebSocket();
-  useFundingRateWebSocket();
+  // useFundingRateWebSocket();
   useFetchMarkets(hedger, thunkDispatch);
   useFetchNotionalCap(hedger, thunkDispatch, activeMarket);
   useFetchOpenInterest(hedger, thunkDispatch);

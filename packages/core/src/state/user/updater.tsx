@@ -57,7 +57,7 @@ export function UserUpdater(): null {
   const configRequestRef = useRef<() => void>();
   const { baseUrl, fetchData, tpslUrl } = useHedgerInfo() || {};
 
-  useUpnlWebSocket(dispatch);
+  // useUpnlWebSocket(dispatch);
 
   useEffect(() => {
     if (delegateChecker && delegateChecker.length > 1) {

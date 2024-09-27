@@ -6,7 +6,6 @@ import axios from "axios";
 import { makeHttpRequest } from "../utils/http";
 import useActiveWagmi from "../lib/hooks/useActiveWagmi";
 
-// import { useHedgerInfo } from "../state/hedger/hooks";
 import { useActiveAccountAddress } from "../state/user/hooks";
 import { useFallbackChainId, usePartyBWhitelistAddress } from "../state/chains";
 
@@ -36,6 +35,7 @@ import { OrderType, PositionType } from "../types/trade";
 import { formatPrice, toBN } from "../utils/numbers";
 import { useMarket } from "./useMarkets";
 import { LIMIT_ORDER_DEADLINE, MARKET_ORDER_DEADLINE } from "../constants";
+import { useHedgerInfo } from "../state/hedger/hooks";
 
 type NonceResponseType = {
   nonce: string;
@@ -61,9 +61,9 @@ type InstantActionResponseType =
   | ErrorResponse;
 
 export default function useInstantActions() {
+  const { instantUrl } = useHedgerInfo();
   const { account, chainId } = useActiveWagmi();
   const activeAddress = useActiveAccountAddress();
-  const baseUrl = process.env.NEXT_PUBLIC_ORBS_INSTANT_BASE_URL as string;
   const { callback: signMessageCallback } = useSignMessage();
   const GetOpenInstantOrders = useGetOpenInstantOrdersCallback();
   const updateInstantCloseData = useUpdateInstantCloseDataCallback();
@@ -133,11 +133,11 @@ export default function useInstantActions() {
   );
 
   const getNonce = useCallback(async () => {
-    const nonceUrl = new URL(`nonce/${activeAddress}`, baseUrl).href;
+    const nonceUrl = new URL(`nonce/${activeAddress}`, instantUrl).href;
     const nonceResponse = await makeHttpRequest<NonceResponseType>(nonceUrl);
     if (nonceResponse) return nonceResponse.nonce;
     return "";
-  }, [activeAddress, baseUrl]);
+  }, [activeAddress, instantUrl]);
 
   const getAccessToken = useCallback(
     async (
@@ -146,7 +146,7 @@ export default function useInstantActions() {
       issuedAt: string,
       nonce: string
     ) => {
-      const loginUrl = new URL(`login`, baseUrl).href;
+      const loginUrl = new URL(`login`, instantUrl).href;
       const body = {
         account_address: `${activeAddress}`,
         expiration_time: expirationTime,
@@ -185,7 +185,7 @@ export default function useInstantActions() {
         }
       }
     },
-    [activeAddress, baseUrl]
+    [activeAddress, instantUrl]
   );
 
   const checkAccessToken = useCallback(async () => {
@@ -213,7 +213,7 @@ export default function useInstantActions() {
         chainId,
         nonceRes,
         host,
-        `${baseUrl}/login`
+        `${instantUrl}login`
       );
 
       const sign = await onSignMessage(message);
@@ -224,10 +224,10 @@ export default function useInstantActions() {
   }, [
     account,
     activeAddress,
-    baseUrl,
     chainId,
     getAccessToken,
     getNonce,
+    instantUrl,
     onSignMessage,
   ]);
 
@@ -235,8 +235,9 @@ export default function useInstantActions() {
     async (quoteId: number) => {
       if (!quoteId) throw new Error("quote id is required");
 
-      const cancelCloseUrl = new URL(`instant_close/${quoteId}`, baseUrl).href;
-      const cancelOpenUrl = new URL(`instant_open/${quoteId}`, baseUrl).href;
+      const cancelCloseUrl = new URL(`instant_close/${quoteId}`, instantUrl)
+        .href;
+      const cancelOpenUrl = new URL(`instant_open/${quoteId}`, instantUrl).href;
       const isCancelClose = quoteId > 0;
 
       try {
@@ -271,12 +272,12 @@ export default function useInstantActions() {
         }
       }
     },
-    [GetOpenInstantOrders, baseUrl, checkAccessToken, updateInstantCloseData]
+    [GetOpenInstantOrders, checkAccessToken, updateInstantCloseData]
   );
 
   const instantClose = useCallback(
     async (quoteId: number, closePrice: string, quantityToClose: string) => {
-      const instantCloseUrl = new URL("instant_close", baseUrl).href;
+      const instantCloseUrl = new URL("instant_close", instantUrl).href;
 
       const body = {
         quote_id: quoteId,
@@ -317,13 +318,13 @@ export default function useInstantActions() {
         }
       }
     },
-    [addInstantCloseData, baseUrl, checkAccessToken]
+    [addInstantCloseData, checkAccessToken, instantUrl]
   );
 
   const instantOpen = useCallback(async () => {
     if (!pricePrecision) throw new Error("missing market props");
 
-    const instantOpenUrl = new URL("instant_open", baseUrl).href;
+    const instantOpenUrl = new URL("instant_open", instantUrl).href;
 
     const body = {
       symbolId: marketId,
@@ -369,7 +370,6 @@ export default function useInstantActions() {
     }
   }, [
     GetOpenInstantOrders,
-    baseUrl,
     checkAccessToken,
     lockedCVA,
     lockedLF,
@@ -415,5 +415,6 @@ function createSiweMessage(
     issuedAt,
     expirationTime,
   });
+  console.log("siwe message:", message);
   return { message: message.prepareMessage(), issuedAt, expirationTime };
 }

@@ -35,7 +35,7 @@ export function NotificationUpdater(): null {
 
   useNotifications(account, fetchData, baseUrl, timestamp, thunkDispatch);
   useNotificationHistory();
-  useNotificationsWebSocket();
+  // useNotificationsWebSocket();
 
   return null;
 }

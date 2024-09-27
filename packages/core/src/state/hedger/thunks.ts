@@ -283,7 +283,7 @@ export const getMarketsInfo = createAsyncThunk(
       throw new Error("hedgerUrl is empty");
     }
 
-    const { href: marketsInfoUrl } = new URL(`get_market_info`, hedgerUrl);
+    const { href: marketsInfoUrl } = new URL(`/get_market_info`, hedgerUrl);
     const marketsInfo: MarketsInfo = {};
     try {
       const [marketsInfoRes] = await Promise.allSettled([

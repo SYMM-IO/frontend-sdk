@@ -35,6 +35,7 @@ export const WEBSOCKET_RPC_URLS: { [key in SupportedChainId]?: string } = {
   [SupportedChainId.MANTLE]: "wss://mantle-rpc.publicnode.com",
   [SupportedChainId.BASE]: "wss://base-rpc.publicnode.com",
   [SupportedChainId.BLAST]: "wss://blast.drpc.org",
+  [SupportedChainId.ARBITRUM]: "wss://arbitrum-one-rpc.publicnode.com",
 };
 
 export const ClientChain = [
@@ -44,6 +45,7 @@ export const ClientChain = [
   SupportedChainId.BASE,
   SupportedChainId.BLAST,
   SupportedChainId.MODE,
+  SupportedChainId.ARBITRUM,
 ];
 
 export const ALL_CHAINS = Object.values(supportedWagmiChain);
@@ -51,4 +53,4 @@ export const ALL_CHAINS = Object.values(supportedWagmiChain);
 export const APP_CHAINS = getWagmiChain(ClientChain);
 
 export const FALLBACK_CHAIN_ID = SupportedChainId.POLYGON;
-export const FALLBACK_FE_NAME = FrontEndsName.CLOVERFIELD;
+export const FALLBACK_FE_NAME = FrontEndsName.ORBS;
