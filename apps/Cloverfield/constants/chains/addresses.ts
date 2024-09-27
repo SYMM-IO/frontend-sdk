@@ -84,6 +84,28 @@ const BSCChainOrbs: ChainType = {
 };
 // --------------------------------------------------------------------
 
+export const ModeChainCloverfieldFE: ChainType = {
+  COLLATERAL_SYMBOL: "USDC",
+  COLLATERAL_DECIMALS: 18,
+  COLLATERAL_ADDRESS: "0xd988097fb8612cc24eeC14542bC03424c656005f",
+
+  DIAMOND_ADDRESS: "0x3d17f073cCb9c3764F105550B0BCF9550477D266",
+  MULTI_ACCOUNT_ADDRESS: "0xd1215e77eD4468a7Ec287daeC2Bc89178a138C9a",
+  PARTY_B_WHITELIST: "0x87FC464fa528260F1eeaB94FA20F73FeD8536Eb7",
+  SIGNATURE_STORE_ADDRESS: "N/A",
+  TP_SL_WALLET_ADDRESS: "",
+
+  MULTICALL3_ADDRESS: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  USDC_ADDRESS: "0xd988097fb8612cc24eeC14542bC03424c656005f",
+  WRAPPED_NATIVE_ADDRESS: "N/A",
+  ANALYTICS_SUBGRAPH_ADDRESS:
+    "https://api.studio.thegraph.com/query/62454/analytics_arbitrum_8_2/version/latest",
+  ORDER_HISTORY_SUBGRAPH_ADDRESS:
+    "https://api.studio.thegraph.com/query/62454/main_arbitrum_8_2/version/latest",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://api.studio.thegraph.com/query/62454/fundingrate_arbitrum_8_2/version/latest",
+};
+
 export const contractInfo: {
   [chainId: number]: { [name: string]: ChainType };
 } = {
@@ -103,5 +125,9 @@ export const contractInfo: {
   },
   [SupportedChainId.ARBITRUM]: {
     [FrontEndsName.ORBS]: ArbitrumChainOrbs,
+  },
+
+  [SupportedChainId.MODE]: {
+    [FrontEndsName.ORBS]: ModeChainCloverfieldFE,
   },
 };

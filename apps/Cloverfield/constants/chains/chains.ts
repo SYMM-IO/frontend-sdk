@@ -9,6 +9,7 @@ import {
   mantle,
   blast,
   Chain,
+  mode,
 } from "wagmi/chains";
 import { FrontEndsName } from "./addresses";
 
@@ -21,6 +22,7 @@ const supportedWagmiChain = {
   [SupportedChainId.MAINNET]: mainnet,
   [SupportedChainId.MANTLE]: mantle,
   [SupportedChainId.BLAST]: blast,
+  [SupportedChainId.MODE]: mode,
 };
 
 function getWagmiChain(supportChainList: number[]): Chain[] {
@@ -42,6 +44,7 @@ export const ClientChain = [
   SupportedChainId.MANTLE,
   SupportedChainId.BASE,
   SupportedChainId.BLAST,
+  SupportedChainId.MODE,
   SupportedChainId.ARBITRUM,
 ];
 
