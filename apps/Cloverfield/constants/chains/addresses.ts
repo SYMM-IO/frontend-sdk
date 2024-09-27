@@ -12,7 +12,7 @@ export enum FrontEndsName {
   BEFI = "Befi",
   VIBE = "Vibe",
   PEAR = "Pear",
-  BMX = "BMX",
+  ORBS = "Orbs",
 }
 
 // --------------------------------------------------------------------
