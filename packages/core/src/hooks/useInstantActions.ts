@@ -64,7 +64,6 @@ export default function useInstantActions() {
   const { instantUrl } = useHedgerInfo();
   const { account, chainId } = useActiveWagmi();
   const activeAddress = useActiveAccountAddress();
-  
   const { callback: signMessageCallback } = useSignMessage();
   const GetOpenInstantOrders = useGetOpenInstantOrdersCallback();
   const updateInstantCloseData = useUpdateInstantCloseDataCallback();
