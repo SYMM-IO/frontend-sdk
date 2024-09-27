@@ -136,7 +136,6 @@ export const getInstantActions = createAsyncThunk(
       `instant_open/${account}`,
       NEXT_PUBLIC_ORBS_INSTANT_BASE_URL
     ).href;
-
     let instantCloses: InstantCloseResponseType = [];
     let instantOpens: InstantOpenResponseType = [];
 
