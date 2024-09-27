@@ -4,7 +4,8 @@ import { Hedger, OpenInterest } from "@symmio/frontend-sdk/types/hedger";
 export const DEFAULT_HEDGER = {
   apiUrl: "https://fapi.binance.com/",
   webSocketUrl: "wss://fstream.binance.com/stream",
-  baseUrl: "https://polygon-hedger-test.rasa.capital",
+  baseUrl: `https://${process.env.NEXT_PUBLIC_BSC_HEDGER_URL}`,
+  instantUrl: `https://${process.env.NEXT_PUBLIC_BSC_INSTANT_BASE_URL}`,
   tpslUrl: "",
   webSocketFundingRateUrl:
     "wss://polygon-hedger-test.rasa.capital/ws/funding-rate-ws",
@@ -40,6 +41,7 @@ export const HedgerInfo = {
       apiUrl: "https://fapi.binance.com/",
       webSocketUrl: "wss://fstream.binance.com/stream",
       baseUrl: `https://${process.env.NEXT_PUBLIC_BSC_HEDGER_URL}`,
+      instantUrl: `https://${process.env.NEXT_PUBLIC_BSC_INSTANT_BASE_URL}`,
       tpslUrl: "",
       webSocketUpnlUrl: `wss://${process.env.NEXT_PUBLIC_BSC_HEDGER_URL}/ws/upnl-ws`,
       webSocketNotificationUrl: `wss://${process.env.NEXT_PUBLIC_BSC_HEDGER_URL}/ws/position-state-ws3`,
@@ -52,7 +54,6 @@ export const HedgerInfo = {
       clientName: "THENA",
     },
   ],
-
   [SupportedChainId.POLYGON]: [
     {
       apiUrl: "https://fapi.binance.com/",
@@ -75,6 +76,7 @@ export const HedgerInfo = {
       apiUrl: "https://fapi.binance.com/",
       webSocketUrl: "wss://fstream.binance.com/stream",
       baseUrl: `https://${process.env.NEXT_PUBLIC_MANTLE_HEDGER_URL}`,
+      instantUrl: `https://${process.env.NEXT_PUBLIC_MANTLE_INSTANT_BASE_URL}`,
       tpslUrl: "",
       webSocketUpnlUrl: `wss://${process.env.NEXT_PUBLIC_MANTLE_HEDGER_URL}/ws/upnl-ws`,
       webSocketNotificationUrl: `wss://${process.env.NEXT_PUBLIC_MANTLE_HEDGER_URL}/ws/position-state-ws3`,
@@ -126,6 +128,7 @@ export const HedgerInfo = {
       apiUrl: "https://fapi.binance.com/",
       webSocketUrl: "wss://fstream.binance.com/stream",
       baseUrl: `https://${process.env.NEXT_PUBLIC_ARBITRUM_HEDGER_URL}`,
+      instantUrl: `https://${process.env.NEXT_PUBLIC_ARBITRUM_INSTANT_BASE_URL}`,
       tpslUrl: "",
       webSocketUpnlUrl: `wss://${process.env.NEXT_PUBLIC_ARBITRUM_HEDGER_URL}/ws/upnl-ws`,
       webSocketNotificationUrl: `wss://${process.env.NEXT_PUBLIC_ARBITRUM_HEDGER_URL}/ws/position-state-ws3`,

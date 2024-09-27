@@ -35,6 +35,7 @@ import { OrderType, PositionType } from "../types/trade";
 import { formatPrice, toBN } from "../utils/numbers";
 import { useMarket } from "./useMarkets";
 import { LIMIT_ORDER_DEADLINE, MARKET_ORDER_DEADLINE } from "../constants";
+import { useHedgerInfo } from "../state/hedger/hooks";
 
 type NonceResponseType = {
   nonce: string;
@@ -59,16 +60,8 @@ type InstantActionResponseType =
     }
   | ErrorResponse;
 
-const NEXT_PUBLIC_ORBS_INSTANT_BASE_URL =
-  process.env.NEXT_PUBLIC_ORBS_INSTANT_BASE_URL;
-
 export default function useInstantActions() {
-  if (!NEXT_PUBLIC_ORBS_INSTANT_BASE_URL) {
-    throw new Error(
-      "NEXT_PUBLIC_ORBS_INSTANT_BASE_URL is not set (format `https://localhost/instant/v1/3000a/0xF9e39B4B30E26c18d2a725c0397Ed5A925efE46B/`"
-    );
-  }
-
+  const { instantUrl } = useHedgerInfo();
   const { account, chainId } = useActiveWagmi();
   const activeAddress = useActiveAccountAddress();
 
@@ -141,14 +134,11 @@ export default function useInstantActions() {
   );
 
   const getNonce = useCallback(async () => {
-    const nonceUrl = new URL(
-      `nonce/${activeAddress}`,
-      NEXT_PUBLIC_ORBS_INSTANT_BASE_URL
-    ).href;
+    const nonceUrl = new URL(`nonce/${activeAddress}`, instantUrl).href;
     const nonceResponse = await makeHttpRequest<NonceResponseType>(nonceUrl);
     if (nonceResponse) return nonceResponse.nonce;
     return "";
-  }, [activeAddress]);
+  }, [activeAddress, instantUrl]);
 
   const getAccessToken = useCallback(
     async (
@@ -157,7 +147,7 @@ export default function useInstantActions() {
       issuedAt: string,
       nonce: string
     ) => {
-      const loginUrl = new URL(`login`, NEXT_PUBLIC_ORBS_INSTANT_BASE_URL).href;
+      const loginUrl = new URL(`login`, instantUrl).href;
       const body = {
         account_address: `${activeAddress}`,
         expiration_time: expirationTime,
@@ -196,7 +186,7 @@ export default function useInstantActions() {
         }
       }
     },
-    [activeAddress]
+    [activeAddress, instantUrl]
   );
 
   const checkAccessToken = useCallback(async () => {
@@ -224,7 +214,7 @@ export default function useInstantActions() {
         chainId,
         nonceRes,
         host,
-        `${NEXT_PUBLIC_ORBS_INSTANT_BASE_URL}login`
+        `${instantUrl}login`
       );
 
       const sign = await onSignMessage(message);
@@ -238,6 +228,7 @@ export default function useInstantActions() {
     chainId,
     getAccessToken,
     getNonce,
+    instantUrl,
     onSignMessage,
   ]);
 
@@ -245,14 +236,9 @@ export default function useInstantActions() {
     async (quoteId: number) => {
       if (!quoteId) throw new Error("quote id is required");
 
-      const cancelCloseUrl = new URL(
-        `instant_close/${quoteId}`,
-        NEXT_PUBLIC_ORBS_INSTANT_BASE_URL
-      ).href;
-      const cancelOpenUrl = new URL(
-        `instant_open/${quoteId}`,
-        NEXT_PUBLIC_ORBS_INSTANT_BASE_URL
-      ).href;
+      const cancelCloseUrl = new URL(`instant_close/${quoteId}`, instantUrl)
+        .href;
+      const cancelOpenUrl = new URL(`instant_open/${quoteId}`, instantUrl).href;
       const isCancelClose = quoteId > 0;
 
       try {
@@ -292,14 +278,7 @@ export default function useInstantActions() {
 
   const instantClose = useCallback(
     async (quoteId: number, closePrice: string, quantityToClose: string) => {
-      console.log(
-        "NEXT_PUBLIC_ORBS_INSTANT_BASE_URL :",
-        NEXT_PUBLIC_ORBS_INSTANT_BASE_URL
-      );
-      const instantCloseUrl = new URL(
-        "instant_close",
-        NEXT_PUBLIC_ORBS_INSTANT_BASE_URL
-      ).href;
+      const instantCloseUrl = new URL("instant_close", instantUrl).href;
 
       const body = {
         quote_id: quoteId,
@@ -340,16 +319,13 @@ export default function useInstantActions() {
         }
       }
     },
-    [addInstantCloseData, checkAccessToken]
+    [addInstantCloseData, checkAccessToken, instantUrl]
   );
 
   const instantOpen = useCallback(async () => {
     if (!pricePrecision) throw new Error("missing market props");
 
-    const instantOpenUrl = new URL(
-      "instant_open",
-      NEXT_PUBLIC_ORBS_INSTANT_BASE_URL
-    ).href;
+    const instantOpenUrl = new URL("instant_open", instantUrl).href;
 
     const body = {
       symbolId: marketId,
