@@ -128,6 +128,6 @@ export const contractInfo: {
   },
 
   [SupportedChainId.MODE]: {
-    [FrontEndsName.BMX]: ModeChainCloverfieldFE,
+    [FrontEndsName.ORBS]: ModeChainCloverfieldFE,
   },
 };
