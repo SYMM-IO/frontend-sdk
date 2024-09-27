@@ -146,6 +146,7 @@ export const HedgerInfo = {
       apiUrl: "https://fapi.binance.com/",
       webSocketUrl: "wss://fstream.binance.com/stream",
       baseUrl: `https://${process.env.NEXT_PUBLIC_MODE_HEDGER_URL}`,
+      instantUrl: `https://${process.env.NEXT_PUBLIC_MODE_INSTANT_BASE_URL}`,
       tpslUrl: "",
       webSocketUpnlUrl: `wss://${process.env.NEXT_PUBLIC_MODE_HEDGER_URL}/ws/upnl-ws`,
       webSocketNotificationUrl: `wss://${process.env.NEXT_PUBLIC_MODE_HEDGER_URL}/ws/position-state-ws3`,
