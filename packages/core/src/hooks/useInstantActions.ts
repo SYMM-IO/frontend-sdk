@@ -61,10 +61,9 @@ type InstantActionResponseType =
   | ErrorResponse;
 
 export default function useInstantActions() {
-  const { instantUrl } = useHedgerInfo();
   const { account, chainId } = useActiveWagmi();
   const activeAddress = useActiveAccountAddress();
-
+  const { baseUrl } = useHedgerInfo() || {};
   const { callback: signMessageCallback } = useSignMessage();
   const GetOpenInstantOrders = useGetOpenInstantOrdersCallback();
   const updateInstantCloseData = useUpdateInstantCloseDataCallback();
@@ -134,11 +133,11 @@ export default function useInstantActions() {
   );
 
   const getNonce = useCallback(async () => {
-    const nonceUrl = new URL(`nonce/${activeAddress}`, instantUrl).href;
+    const nonceUrl = new URL(`nonce/${activeAddress}`, baseUrl).href;
     const nonceResponse = await makeHttpRequest<NonceResponseType>(nonceUrl);
     if (nonceResponse) return nonceResponse.nonce;
     return "";
-  }, [activeAddress, instantUrl]);
+  }, [activeAddress, baseUrl]);
 
   const getAccessToken = useCallback(
     async (
@@ -147,7 +146,7 @@ export default function useInstantActions() {
       issuedAt: string,
       nonce: string
     ) => {
-      const loginUrl = new URL(`login`, instantUrl).href;
+      const loginUrl = new URL(`login`, baseUrl).href;
       const body = {
         account_address: `${activeAddress}`,
         expiration_time: expirationTime,
@@ -186,7 +185,7 @@ export default function useInstantActions() {
         }
       }
     },
-    [activeAddress, instantUrl]
+    [activeAddress, baseUrl]
   );
 
   const checkAccessToken = useCallback(async () => {
@@ -214,7 +213,7 @@ export default function useInstantActions() {
         chainId,
         nonceRes,
         host,
-        `${instantUrl}login`
+        `${baseUrl}login`
       );
 
       const sign = await onSignMessage(message);
@@ -225,10 +224,10 @@ export default function useInstantActions() {
   }, [
     account,
     activeAddress,
+    baseUrl,
     chainId,
     getAccessToken,
     getNonce,
-    instantUrl,
     onSignMessage,
   ]);
 
@@ -236,9 +235,8 @@ export default function useInstantActions() {
     async (quoteId: number) => {
       if (!quoteId) throw new Error("quote id is required");
 
-      const cancelCloseUrl = new URL(`instant_close/${quoteId}`, instantUrl)
-        .href;
-      const cancelOpenUrl = new URL(`instant_open/${quoteId}`, instantUrl).href;
+      const cancelCloseUrl = new URL(`instant_close/${quoteId}`, baseUrl).href;
+      const cancelOpenUrl = new URL(`instant_open/${quoteId}`, baseUrl).href;
       const isCancelClose = quoteId > 0;
 
       try {
@@ -273,12 +271,12 @@ export default function useInstantActions() {
         }
       }
     },
-    [GetOpenInstantOrders, checkAccessToken, updateInstantCloseData]
+    [GetOpenInstantOrders, baseUrl, checkAccessToken, updateInstantCloseData]
   );
 
   const instantClose = useCallback(
     async (quoteId: number, closePrice: string, quantityToClose: string) => {
-      const instantCloseUrl = new URL("instant_close", instantUrl).href;
+      const instantCloseUrl = new URL("instant_close", baseUrl).href;
 
       const body = {
         quote_id: quoteId,
@@ -319,13 +317,13 @@ export default function useInstantActions() {
         }
       }
     },
-    [addInstantCloseData, checkAccessToken, instantUrl]
+    [addInstantCloseData, baseUrl, checkAccessToken]
   );
 
   const instantOpen = useCallback(async () => {
     if (!pricePrecision) throw new Error("missing market props");
 
-    const instantOpenUrl = new URL("instant_open", instantUrl).href;
+    const instantOpenUrl = new URL("instant_open", baseUrl).href;
 
     const body = {
       symbolId: marketId,
@@ -371,6 +369,7 @@ export default function useInstantActions() {
     }
   }, [
     GetOpenInstantOrders,
+    baseUrl,
     checkAccessToken,
     lockedCVA,
     lockedLF,

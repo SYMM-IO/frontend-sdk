@@ -16,7 +16,6 @@ export default function ConfigSDKComponent() {
       chains: contractInfo,
       V3_CHAIN_IDS: ClientChain,
       FALLBACK_CHAIN_ID,
-      // @ts-expect-error - Temp passing instantUrl
       hedgers: HedgerInfo,
       appName: APP_NAME,
       MuonData: MuonInfo,
