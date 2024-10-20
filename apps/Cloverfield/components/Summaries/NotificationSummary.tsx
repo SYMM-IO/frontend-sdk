@@ -5,6 +5,7 @@ import {
   NotificationMessages,
   NotificationDetails,
   NotificationType,
+  LastSeenAction,
 } from "@symmio/frontend-sdk/state/notifications/types";
 
 import { RowStart } from "components/Row";
@@ -12,7 +13,10 @@ import {
   useErrorMessage,
   useMarket,
 } from "@symmio/frontend-sdk/hooks/useMarkets";
-import { useGetExistedQuoteByIdsCallback } from "@symmio/frontend-sdk/state/quotes/hooks";
+import {
+  useGetExistedQuoteByIdsCallback,
+  useQuoteInstantOpenData,
+} from "@symmio/frontend-sdk/state/quotes/hooks";
 import { useGetQuoteByIds } from "@symmio/frontend-sdk/hooks/useQuotes";
 import { Quote } from "@symmio/frontend-sdk/types/quote";
 
@@ -23,7 +27,6 @@ const NotificationText = styled(RowStart)`
 
   & > * {
     &:first-child {
-      /* color: ${({ theme }) => theme.primaryBlue}; */
       margin-right: 4px;
     }
   }
@@ -34,18 +37,41 @@ export default function NotificationSummary({
 }: {
   notification: NotificationDetails;
 }): JSX.Element | null {
-  const { notificationType, quoteId, lastSeenAction, errorCode } = notification;
+  const { notificationType, quoteId, lastSeenAction, errorCode, tempQuoteId } =
+    notification;
   const existedQuoteCallback = useGetExistedQuoteByIdsCallback();
   const existedQuote = existedQuoteCallback(quoteId);
   const { quotes, loading } = useGetQuoteByIds([Number(quoteId)]);
+  const { marketId: instantQuoteMarketId } =
+    useQuoteInstantOpenData(tempQuoteId) || {};
   const quoteData = existedQuote
     ? existedQuote
     : !loading
     ? quotes[0]
     : ({} as Quote);
-  const { name } = useMarket(quoteData?.marketId) || {};
-  const text =
-    lastSeenAction !== null ? NotificationMessages[lastSeenAction] : "";
+  const { name } = useMarket(quoteData?.marketId ?? instantQuoteMarketId) || {};
+
+  // Determine the text based on lastSeenAction
+  const getText = () => {
+    let message = "";
+
+    if (lastSeenAction === LastSeenAction.SEND_QUOTE_TRANSACTION) {
+      message = `Temp Quote${tempQuoteId} converted to ${quoteId}`;
+    } else if (lastSeenAction) {
+      message = `"${NotificationMessages[lastSeenAction]}"`;
+    }
+
+    // Add "successful" if not SEND_QUOTE_TRANSACTION
+    if (lastSeenAction !== LastSeenAction.SEND_QUOTE_TRANSACTION) {
+      if (notificationType === NotificationType.SEEN_BY_HEDGER) {
+        message += " received";
+      } else if (notificationType === NotificationType.SUCCESS)
+        message += " successful";
+    }
+
+    return `${message}`;
+  };
+
   const errorMessage = useErrorMessage(errorCode);
 
   switch (notificationType) {
@@ -61,7 +87,7 @@ export default function NotificationSummary({
     case NotificationType.SEEN_BY_HEDGER:
       return (
         <NotificationText>
-          {name}-Q{quoteId} &#34;{text}&#34; received
+          {name}-Q{quoteId} {getText()}
         </NotificationText>
       );
 
@@ -80,7 +106,7 @@ export default function NotificationSummary({
     case NotificationType.SUCCESS:
       return (
         <NotificationText>
-          {name}-Q{quoteId} &#34;{text}&#34; successful
+          {name}-Q{quoteId} {getText()}
         </NotificationText>
       );
     case NotificationType.OTHER:

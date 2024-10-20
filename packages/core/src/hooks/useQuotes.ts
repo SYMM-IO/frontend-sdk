@@ -87,7 +87,10 @@ export function useGetPositions(): {
   } = useSingleContractMultipleMethods(
     chainId ? DIAMOND_ADDRESS[chainId] : "",
     DIAMOND_ABI,
-    calls
+    calls,
+    {
+      refetchInterval: 2000,
+    }
   );
 
   const quotesValue = useMemo(
@@ -142,7 +145,10 @@ export function useGetQuoteByIds(ids: number[]): {
   } = useSingleContractMultipleMethods(
     chainId ? DIAMOND_ADDRESS[chainId] : "",
     DIAMOND_ABI,
-    calls
+    calls,
+    {
+      refetchInterval: 2000,
+    }
   );
 
   const quotesValue = useMemo(
@@ -211,7 +217,10 @@ export function useGetPendingIds(): {
   } = useSingleContractMultipleMethods(
     chainId ? DIAMOND_ADDRESS[chainId] : "",
     DIAMOND_ABI,
-    calls
+    calls,
+    {
+      refetchInterval: 2000,
+    }
   );
 
   const quoteIdsValue = useMemo(
