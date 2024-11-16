@@ -35,23 +35,20 @@ export interface SubGraphData {
   closedPrice: string;
   quantityToClose: string;
   closePrice: string;
-  deadline: string;
+  openDeadline: string;
   partyBsWhiteList: string[];
   symbolId: string;
-  timeStamp: string;
+  timestamp: string;
   marketPrice: string;
   fillAmount: string;
   closedAmount: string;
   averageClosedPrice: string;
   liquidateAmount: string;
   liquidatePrice: string;
-  initialData: {
-    cva: string;
-    lf: string;
-    partyAmm: string;
-    partyBmm: string;
-    timeStamp: string;
-  };
+  initialLf: string;
+  initialCva: string;
+  initialPartyAmm: string;
+  initialPartyBmm: string;
 }
 
 export enum InstantCloseStatus {
