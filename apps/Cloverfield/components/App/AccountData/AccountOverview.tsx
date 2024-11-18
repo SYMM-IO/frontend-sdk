@@ -60,7 +60,7 @@ const Title = styled(Row)`
   `};
 `;
 
-const AccountHealth = styled(RowEnd)<{ color?: string }>`
+const AccountHealth = styled(RowEnd) <{ color?: string }>`
   font-weight: 500;
   font-size: 16px;
   padding: 12px 12px 12px 0px;
@@ -282,8 +282,7 @@ export const BypassPrecisionCheckModeTitle = ({
   useEffect(() => {
     const toggleExpertMode = () => {
       toast.success(
-        `Bypass Precision Check is ${
-          bypassPrecisionCheck ? "deactivated" : "activated"
+        `Bypass Precision Check is ${bypassPrecisionCheck ? "deactivated" : "activated"
         }!`
       );
       setBypassPrecisionCheck(!bypassPrecisionCheck);
@@ -294,12 +293,11 @@ export const BypassPrecisionCheckModeTitle = ({
       toggleExpertMode();
     } else if (tries > 2) {
       toast.error(
-        `Bypass Precision Check is ${
-          bypassPrecisionCheck ? "deactivating" : "activating"
+        `Bypass Precision Check is ${bypassPrecisionCheck ? "deactivating" : "activating"
         } #${tries}`
       );
     }
-  }, [tries, setBypassPrecisionCheck]);
+  }, [tries, setBypassPrecisionCheck, bypassPrecisionCheck]);
 
   const handleAccountOverviewClick = () => {
     setTries(tries + 1);

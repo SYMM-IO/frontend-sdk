@@ -42,6 +42,8 @@ export default function useTradePage(): {
   formattedAmounts: string[];
   state: ErrorState;
   balance: string;
+  minPositionValue: string;
+  minPositionQuantity: string;
 } {
   const typedValue = useTypedValue();
   const inputField = useInputField();
@@ -140,7 +142,6 @@ export default function useTradePage(): {
   }, [availableForOrder, leverage, market]);
 
   const outOfRangePrice = useMemo(() => {
-    // check limit price range)
     const { name, maxPrice, minPrice } = priceRange;
 
     if (orderType === OrderType.LIMIT && market && market.name === name) {
@@ -153,6 +154,29 @@ export default function useTradePage(): {
     return false;
   }, [priceRange, orderType, market, positionType, limitPrice]);
 
+  const [minPositionValue, minPositionQuantity] = useMemo(() => {
+    // find maximum quantity between min quote value & minimum value base on quantity precision
+    if (market) {
+      const quantity = BigNumber.max(
+        toBN(market.minAcceptableQuoteValue)
+          .div(marketPrice)
+          .times(leverage)
+          .toFixed(quantityPrecision, RoundMode.ROUND_UP),
+        toBN(10)
+          .pow(quantityPrecision * -1)
+          .toFixed(quantityPrecision, RoundMode.ROUND_UP)
+      );
+      const value = toBN(quantity).times(marketPrice).div(leverage);
+
+      if (value.isNaN()) return ["-", "-"];
+      return [
+        value.toFixed(pricePrecision, RoundMode.ROUND_UP),
+        quantity.toFixed(quantityPrecision, RoundMode.ROUND_UP),
+      ];
+    }
+    return ["-", "-"];
+  }, [market, marketPrice, leverage, quantityPrecision, pricePrecision]);
+
   const state = useMemo(() => {
     const notionalValue = toBN(formattedAmounts[1]).isNaN()
       ? toBN(0)
@@ -161,7 +185,6 @@ export default function useTradePage(): {
     const freeOpenInterest = toBN(totalOpenInterest).minus(usedOpenInterest);
     const lockedValue = notionalValue.div(leverage);
     const minimumCap = BigNumber.min(freeNotionalCap, freeOpenInterest);
-
     if (
       formattedAmounts[0] &&
       formattedAmounts[1] &&
@@ -174,7 +197,7 @@ export default function useTradePage(): {
     }
     if (
       market &&
-      toBN(lockedValue).lt(market.minAcceptableQuoteValue) &&
+      toBN(lockedValue).lt(minPositionValue) &&
       formattedAmounts[0] &&
       formattedAmounts[1]
     ) {
@@ -212,6 +235,7 @@ export default function useTradePage(): {
     totalOpenInterest,
     usedOpenInterest,
     leverage,
+    minPositionValue,
     balance,
     market,
     outOfRangePrice,
@@ -220,8 +244,22 @@ export default function useTradePage(): {
   ]);
 
   return useMemo(
-    () => ({ price, formattedAmounts, state, balance }),
-    [price, formattedAmounts, state, balance]
+    () => ({
+      price,
+      formattedAmounts,
+      state,
+      balance,
+      minPositionValue,
+      minPositionQuantity,
+    }),
+    [
+      price,
+      formattedAmounts,
+      state,
+      balance,
+      minPositionValue,
+      minPositionQuantity,
+    ]
   );
 }
 

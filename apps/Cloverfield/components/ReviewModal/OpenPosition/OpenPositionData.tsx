@@ -29,6 +29,11 @@ const LabelsWrapper = styled(Column)`
   gap: 12px;
 `;
 
+const ErrorMsgStyle = styled.div<{ color?: string; size?: string }>`
+  color: ${({ theme, color }) => color ?? theme.red2};
+  font-size: ${({ size }) => size ?? "12px"};
+`;
+
 export default function OpenPositionData() {
   const theme = useTheme();
   const { chainId } = useActiveWagmi();
@@ -42,7 +47,7 @@ export default function OpenPositionData() {
     chainId
   );
 
-  const { price, formattedAmounts } = useTradePage();
+  const tradePage = useTradePage();
 
   const [symbol, pricePrecision] = useMemo(
     () =>
@@ -50,11 +55,14 @@ export default function OpenPositionData() {
     [market]
   );
   const quantityAsset = useMemo(
-    () => (toBN(formattedAmounts[1]).isNaN() ? "0" : formattedAmounts[1]),
-    [formattedAmounts]
+    () =>
+      toBN(tradePage.formattedAmounts[1]).isNaN()
+        ? "0"
+        : tradePage.formattedAmounts[1],
+    [tradePage.formattedAmounts]
   );
   const { tp, sl } = useTradeTpSl();
-  const notionalValue = useNotionalValue(quantityAsset, price);
+  const notionalValue = useNotionalValue(quantityAsset, tradePage.price);
 
   const { total: lockedValue } = useLockedValues(notionalValue);
 
@@ -71,39 +79,40 @@ export default function OpenPositionData() {
     const basedInfo = [
       {
         title: "Locked Value:",
-        value: `${
-          lockedValueBN.isNaN() ? "0" : lockedValueBN.toFixed(pricePrecision)
-        } ${collateralCurrency?.symbol}`,
+        value: `${lockedValueBN.isNaN() ? "0" : lockedValueBN.toFixed(pricePrecision)
+          } ${collateralCurrency?.symbol}`,
       },
       { title: "Leverage:", value: `${userLeverage} X` },
       {
         title: "Open Price:",
-        value: `${
-          price === "" ? "-" : orderType === OrderType.MARKET ? "Market" : price
-        }`,
+        value: `${tradePage.price === ""
+            ? "-"
+            : orderType === OrderType.MARKET
+              ? "Market"
+              : tradePage.price
+          }`,
         valueColor: theme.primaryBlue,
       },
       {
         title: "Platform Fee:",
         value: !toBN(tradingFee).isNaN()
           ? `${formatAmount(
-              toBN(tradingFee).div(2),
-              3,
-              true
-            )} (OPEN) / ${formatAmount(
-              toBN(tradingFee).div(2),
-              3,
-              true
-            )} (CLOSE) ${collateralCurrency?.symbol}`
+            toBN(tradingFee).div(2),
+            3,
+            true
+          )} (OPEN) / ${formatAmount(
+            toBN(tradingFee).div(2),
+            3,
+            true
+          )} (CLOSE) ${collateralCurrency?.symbol}`
           : `0 (OPEN) / 0 (CLOSE) ${collateralCurrency?.symbol}`,
       },
       {
         title: "Order Expire Time:",
-        value: `${
-          orderType === OrderType.MARKET
+        value: `${orderType === OrderType.MARKET
             ? `${MARKET_ORDER_DEADLINE} seconds`
             : "Unlimited"
-        }`,
+          }`,
       },
     ];
     if (tp || sl) {
@@ -115,13 +124,16 @@ export default function OpenPositionData() {
     pricePrecision,
     collateralCurrency?.symbol,
     userLeverage,
-    price,
+    tradePage.price,
     orderType,
     theme.primaryBlue,
     tradingFee,
     tp,
     sl,
   ]);
+
+  const errorMsg =
+    "Caution: The trade size might be smaller than the threshold while the order is being filled.";
 
   return (
     <React.Fragment>
@@ -136,7 +148,7 @@ export default function OpenPositionData() {
 
         <DisplayLabel
           label="Receive"
-          value={formattedAmounts[1]}
+          value={tradePage.formattedAmounts[1]}
           symbol={symbol}
         />
       </LabelsWrapper>
@@ -150,6 +162,13 @@ export default function OpenPositionData() {
           />
         );
       })}
+      <ErrorMsgStyle>
+        <div>
+          {toBN(tradePage.formattedAmounts[1]).lt(
+            tradePage.minPositionQuantity
+          ) && errorMsg}
+        </div>
+      </ErrorMsgStyle>
       <ActionButton />
     </React.Fragment>
   );
