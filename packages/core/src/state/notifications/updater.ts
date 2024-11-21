@@ -25,6 +25,7 @@ import {
   useNotificationAdderCallback,
 } from "./hooks";
 import { useAppName } from "../chains/hooks";
+import { OrderType } from "../../types/trade";
 
 export function NotificationUpdater(): null {
   const thunkDispatch: AppThunkDispatch = useAppDispatch();
@@ -120,7 +121,7 @@ function useNotifications(
         getNotifications({
           account,
           baseUrl,
-          timestamp: Number(timestamp),
+          modifyTimestamp: Number(timestamp),
           appName,
         })
       );
@@ -148,6 +149,12 @@ export function toNotification(
     createTime: data.create_time.toString(),
     modifyTime: data.modify_time.toString(),
     version: data.version?.toString(),
+    tempQuoteId: data.temp_quote_id,
+    orderType:
+      Number(data.order_type?.toString()) === 1
+        ? OrderType.MARKET
+        : OrderType.LIMIT,
+
     showInModal: true,
   };
   return notification;

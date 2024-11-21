@@ -1,4 +1,4 @@
-import { createConfig, http } from "wagmi";
+import { createConfig, http, webSocket } from "wagmi";
 import { Chain } from "wagmi/chains";
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import {
@@ -11,8 +11,9 @@ import {
   safeWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 
-import { ALL_CHAINS } from "constants/chains/chains";
+import { ALL_CHAINS, WEBSOCKET_RPC_URLS } from "constants/chains/chains";
 import { APP_NAME } from "constants/chains/misc";
+import { SupportedChainId } from "@symmio/frontend-sdk/constants";
 
 export const getWagmiConfig = () => {
   if (!process.env.NEXT_PUBLIC_INFURA_KEY) {
@@ -28,10 +29,11 @@ export const getWagmiConfig = () => {
   const chains: readonly [Chain, ...Chain[]] =
     ALL_CHAINS as unknown as readonly [Chain, ...Chain[]];
 
-  const transports = chains.reduce((acc, chain) => {
-    acc[chain.id] = http();
+  const transports = chains.reduce((acc, chain: Chain) => {
+    const url = WEBSOCKET_RPC_URLS[chain.id];
+    acc[chain.id] = url ? webSocket(url) : http();
     return acc;
-  }, {});
+  }, {} as Record<SupportedChainId, ReturnType<typeof webSocket> | ReturnType<typeof http>>);
 
   const connectors = connectorsForWallets(
     [

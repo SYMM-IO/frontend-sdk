@@ -30,7 +30,6 @@ export function useERC20Allowance({
     args: [owner as Address, spender as Address],
     query: {
       enabled: Boolean(token && owner && spender && token.chainId && enabled),
-      refetchInterval: 2000,
     },
   });
 

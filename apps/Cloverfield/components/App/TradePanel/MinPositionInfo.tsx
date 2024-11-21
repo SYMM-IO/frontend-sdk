@@ -32,25 +32,32 @@ export default function MinPositionInfo() {
   );
 
   const market = useActiveMarket();
-  const { minPositionValue, minPositionQuantity } = useTradePage();
+  const tradePage = useTradePage();
   const [outputTicker, pricePrecision] = useMemo(
     () =>
       market ? [market.symbol, market.pricePrecision] : ["", DEFAULT_PRECISION],
     [market]
   );
 
+  const [value, quantity] = useMemo(
+    () =>
+      tradePage
+        ? [tradePage.minPositionValue, tradePage.minPositionQuantity]
+        : ["-", "-"],
+    [tradePage]
+  );
+
   return (
     <InfoItem
       label={"Minimum position size:"}
       balanceExact={formatPrice(
-        minPositionValue,
+        value,
         pricePrecision,
         false,
         RoundMode.ROUND_UP
       )}
-      amount={`${minPositionValue} ${collateralCurrency?.symbol} (${
-        toBN(minPositionQuantity).eq(0) ? "-" : minPositionQuantity
-      } ${outputTicker})`}
+      amount={`${value} ${collateralCurrency?.symbol} (${toBN(quantity).eq(0) ? "-" : quantity
+        } ${outputTicker})`}
       onClick={(value) => setTypedValue(value, InputField.PRICE)}
     />
   );

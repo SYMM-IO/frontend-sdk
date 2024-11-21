@@ -7,7 +7,6 @@ import unionBy from "lodash/unionBy.js";
 import {
   InstantCloseItem,
   InstantCloseResponse,
-  InstantCloseStatus,
   InstantOpenItem,
   InstantOpenResponse,
   QuotesState,
@@ -179,12 +178,11 @@ export default createReducer(initialState, (builder) =>
 
         instantCloses.forEach((d: InstantCloseResponse) => {
           const data = instantClosesStates[d.quote_id];
-          // TODO: fix bug
           if (!data || data.amount !== d.quantity_to_close) {
             instantClosesStates[d.quote_id] = {
               amount: d.quantity_to_close.toString(),
               timestamp: Math.floor(new Date().getTime() / 1000),
-              status: InstantCloseStatus.FAILED,
+              status: d.status,
             } as InstantCloseItem;
           }
         });
