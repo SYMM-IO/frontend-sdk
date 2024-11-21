@@ -56,8 +56,9 @@ export default function MinPositionInfo() {
         false,
         RoundMode.ROUND_UP
       )}
-      amount={`${value} ${collateralCurrency?.symbol} (${toBN(quantity).eq(0) ? "-" : quantity
-        } ${outputTicker})`}
+      amount={`${value} ${collateralCurrency?.symbol} (${
+        toBN(quantity).eq(0) ? "-" : quantity
+      } ${outputTicker})`}
       onClick={(value) => setTypedValue(value, InputField.PRICE)}
     />
   );

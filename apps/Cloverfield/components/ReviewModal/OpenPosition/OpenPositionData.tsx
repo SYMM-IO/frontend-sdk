@@ -79,40 +79,43 @@ export default function OpenPositionData() {
     const basedInfo = [
       {
         title: "Locked Value:",
-        value: `${lockedValueBN.isNaN() ? "0" : lockedValueBN.toFixed(pricePrecision)
-          } ${collateralCurrency?.symbol}`,
+        value: `${
+          lockedValueBN.isNaN() ? "0" : lockedValueBN.toFixed(pricePrecision)
+        } ${collateralCurrency?.symbol}`,
       },
       { title: "Leverage:", value: `${userLeverage} X` },
       {
         title: "Open Price:",
-        value: `${tradePage.price === ""
+        value: `${
+          tradePage.price === ""
             ? "-"
             : orderType === OrderType.MARKET
-              ? "Market"
-              : tradePage.price
-          }`,
+            ? "Market"
+            : tradePage.price
+        }`,
         valueColor: theme.primaryBlue,
       },
       {
         title: "Platform Fee:",
         value: !toBN(tradingFee).isNaN()
           ? `${formatAmount(
-            toBN(tradingFee).div(2),
-            3,
-            true
-          )} (OPEN) / ${formatAmount(
-            toBN(tradingFee).div(2),
-            3,
-            true
-          )} (CLOSE) ${collateralCurrency?.symbol}`
+              toBN(tradingFee).div(2),
+              3,
+              true
+            )} (OPEN) / ${formatAmount(
+              toBN(tradingFee).div(2),
+              3,
+              true
+            )} (CLOSE) ${collateralCurrency?.symbol}`
           : `0 (OPEN) / 0 (CLOSE) ${collateralCurrency?.symbol}`,
       },
       {
         title: "Order Expire Time:",
-        value: `${orderType === OrderType.MARKET
+        value: `${
+          orderType === OrderType.MARKET
             ? `${MARKET_ORDER_DEADLINE} seconds`
             : "Unlimited"
-          }`,
+        }`,
       },
     ];
     if (tp || sl) {

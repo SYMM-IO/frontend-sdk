@@ -60,7 +60,7 @@ const Title = styled(Row)`
   `};
 `;
 
-const AccountHealth = styled(RowEnd) <{ color?: string }>`
+const AccountHealth = styled(RowEnd)<{ color?: string }>`
   font-weight: 500;
   font-size: 16px;
   padding: 12px 12px 12px 0px;
@@ -299,7 +299,7 @@ export const BypassPrecisionCheckModeTitle = ({
         } #${tries}`
       );
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tries, setBypassPrecisionCheck]);
 
   const handleAccountOverviewClick = () => {
