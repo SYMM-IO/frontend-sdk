@@ -248,13 +248,13 @@ export function useGetOrderHistoryCallback() {
       skip: number,
       ItemsPerPage: number
     ) => {
-      if (!chainId || !account) return;
+      if (!chainId || !account || !client) return;
       thunkDispatch(
         getHistory({ account, chainId, client, first, skip, ItemsPerPage })
       );
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [thunkDispatch, subgraphAddress]
+    [thunkDispatch, subgraphAddress, client]
   );
 }
 
