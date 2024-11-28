@@ -116,7 +116,7 @@ export function UserUpdater(): null {
   ]);
 
   useEffect(() => {
-    if (chainId)
+    if (chainId && client)
       thunkDispatch(
         getTotalDepositsAndWithdrawals({
           account: activeAccountAddress,
@@ -125,7 +125,7 @@ export function UserUpdater(): null {
         })
       );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeAccountAddress, chainId, subgraphAddress, thunkDispatch]);
+  }, [activeAccountAddress, chainId, subgraphAddress, thunkDispatch, client]);
 
   // keep dark mode in sync with the system
   useEffect(() => {

@@ -53,11 +53,11 @@ export const BSCChainAlphaFE: ChainType = {
   WRAPPED_NATIVE_ADDRESS: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
 
   ANALYTICS_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/analytics_bnb_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/bnb_analytics/latest/gn",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/main_bnb_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/bnb_analytics/latest/gn",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/fundingrate_bnb_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/bnb_analytics/latest/gn",
 };
 
 export const BSCChainVibeFE: ChainType = {
@@ -77,11 +77,11 @@ export const BSCChainVibeFE: ChainType = {
   WRAPPED_NATIVE_ADDRESS: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
 
   ANALYTICS_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/analytics_bnb_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/bnb_analytics/latest/gn",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/main_bnb_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/bnb_analytics/latest/gn",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/fundingrate_bnb_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/bnb_analytics/latest/gn",
 };
 
 export const BSCChainCloverfieldFE: ChainType = {
@@ -101,11 +101,11 @@ export const BSCChainCloverfieldFE: ChainType = {
   WRAPPED_NATIVE_ADDRESS: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
 
   ANALYTICS_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/analytics_bnb_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/bnb_analytics/latest/gn",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/main_bnb_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/bnb_analytics/latest/gn",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/fundingrate_bnb_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/bnb_analytics/latest/gn",
 };
 
 export const PolygonChain: ChainType = {
@@ -123,11 +123,11 @@ export const PolygonChain: ChainType = {
   USDC_ADDRESS: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
   WRAPPED_NATIVE_ADDRESS: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
   ANALYTICS_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/analytics_polygon_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/polygon_events/latest/gn",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/main_polygon_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/polygon_events/latest/gn",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/fundingrate_polygon_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/polygon_events/latest/gn",
 };
 
 export const NewPolygonChain: ChainType = {
@@ -167,11 +167,11 @@ export const MantleChainIntentXFE: ChainType = {
   USDC_ADDRESS: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
   WRAPPED_NATIVE_ADDRESS: "0x29019c39EC418Ac4e7aFc1d88d6b962Ff172aBf6",
   ANALYTICS_SUBGRAPH_ADDRESS:
-    "https://subgraph-api.mantle.xyz/subgraphs/name/analytics_mantle_8_2",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/mantle_analytics/latest/gn",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
-    "https://subgraph-api.mantle.xyz/subgraphs/name/main_mantle_8_2",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/mantle_analytics/latest/gn",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://subgraph-api.mantle.xyz/subgraphs/name/parties_mantle_8_2/graphql",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/mantle_analytics/latest/gn",
 };
 
 export const MantleChainVibeFE: ChainType = {
@@ -189,11 +189,11 @@ export const MantleChainVibeFE: ChainType = {
   USDC_ADDRESS: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
   WRAPPED_NATIVE_ADDRESS: "0x29019c39EC418Ac4e7aFc1d88d6b962Ff172aBf6",
   ANALYTICS_SUBGRAPH_ADDRESS:
-    "https://subgraph-api.mantle.xyz/subgraphs/name/analytics_mantle_8_2",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/mantle_analytics/latest/gn",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
-    "https://subgraph-api.mantle.xyz/subgraphs/name/main_mantle_8_2",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/mantle_analytics/latest/gn",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://subgraph-api.mantle.xyz/subgraphs/name/parties_mantle_8_2/graphql",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/mantle_analytics/latest/gn",
 };
 
 export const MantleChainCloverfieldFE: ChainType = {
@@ -211,11 +211,11 @@ export const MantleChainCloverfieldFE: ChainType = {
   USDC_ADDRESS: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
   WRAPPED_NATIVE_ADDRESS: "0x29019c39EC418Ac4e7aFc1d88d6b962Ff172aBf6",
   ANALYTICS_SUBGRAPH_ADDRESS:
-    "https://subgraph-api.mantle.xyz/subgraphs/name/analytics_mantle_8_2",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/mantle_analytics/latest/gn",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
-    "https://subgraph-api.mantle.xyz/subgraphs/name/main_mantle_8_2",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/mantle_analytics/latest/gn",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://subgraph-api.mantle.xyz/subgraphs/name/parties_mantle_8_2/graphql",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/mantle_analytics/latest/gn",
 };
 
 export const BaseChainBasedFE: ChainType = {
@@ -233,11 +233,11 @@ export const BaseChainBasedFE: ChainType = {
   USDC_ADDRESS: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
   WRAPPED_NATIVE_ADDRESS: "0x4200000000000000000000000000000000000006",
   ANALYTICS_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/analytics_base_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/base_analytics/latest/gn",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/main_base_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/base_analytics/latest/gn",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/fundingrate_base_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/base_analytics/latest/gn",
 };
 
 export const BaseChainIntentXFE: ChainType = {
@@ -255,11 +255,11 @@ export const BaseChainIntentXFE: ChainType = {
   USDC_ADDRESS: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
   WRAPPED_NATIVE_ADDRESS: "0x4200000000000000000000000000000000000006",
   ANALYTICS_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/analytics_base_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/base_analytics/latest/gn",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/main_base_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/base_analytics/latest/gn",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/fundingrate_base_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/base_analytics/latest/gn",
 };
 
 export const BaseChainMorphexFE: ChainType = {
@@ -277,11 +277,11 @@ export const BaseChainMorphexFE: ChainType = {
   USDC_ADDRESS: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
   WRAPPED_NATIVE_ADDRESS: "0x4200000000000000000000000000000000000006",
   ANALYTICS_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/analytics_base_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/base_analytics/latest/gn",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/main_base_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/base_analytics/latest/gn",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/fundingrate_base_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/base_analytics/latest/gn",
 };
 
 export const BlastChainCoreFE: ChainType = {
@@ -299,11 +299,11 @@ export const BlastChainCoreFE: ChainType = {
   USDC_ADDRESS: "0x4300000000000000000000000000000000000003",
   WRAPPED_NATIVE_ADDRESS: "0x4300000000000000000000000000000000000004",
   ANALYTICS_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/analytics_blast_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/blast_analytics/latest/gn",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/main_blast_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/blast_analytics/latest/gn",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/fundingrate_blast_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/blast_analytics/latest/gn",
 };
 
 export const BlastChainIntentXFE: ChainType = {
@@ -321,11 +321,11 @@ export const BlastChainIntentXFE: ChainType = {
   USDC_ADDRESS: "0x4300000000000000000000000000000000000003",
   WRAPPED_NATIVE_ADDRESS: "0x4300000000000000000000000000000000000004",
   ANALYTICS_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/analytics_blast_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/blast_analytics/latest/gn",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/main_blast_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/blast_analytics/latest/gn",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/fundingrate_blast_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/blast_analytics/latest/gn",
 };
 
 export const BaseChainVibeFE: ChainType = {
@@ -343,11 +343,11 @@ export const BaseChainVibeFE: ChainType = {
   USDC_ADDRESS: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
   WRAPPED_NATIVE_ADDRESS: "0x4200000000000000000000000000000000000006",
   ANALYTICS_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/analytics_base_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/base_analytics/latest/gn",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/main_base_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/base_analytics/latest/gn",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/fundingrate_base_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/base_analytics/latest/gn",
 };
 
 export const BaseChainBefiFE: ChainType = {
@@ -365,11 +365,11 @@ export const BaseChainBefiFE: ChainType = {
   USDC_ADDRESS: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
   WRAPPED_NATIVE_ADDRESS: "0x4200000000000000000000000000000000000006",
   ANALYTICS_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/analytics_base_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/base_analytics/latest/gn",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/main_base_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/base_analytics/latest/gn",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/fundingrate_base_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/base_analytics/latest/gn",
 };
 
 export const BaseChainCloverfieldFE: ChainType = {
@@ -387,11 +387,11 @@ export const BaseChainCloverfieldFE: ChainType = {
   USDC_ADDRESS: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
   WRAPPED_NATIVE_ADDRESS: "0x4200000000000000000000000000000000000006",
   ANALYTICS_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/analytics_base_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/base_analytics/latest/gn",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/main_base_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/base_analytics/latest/gn",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/fundingrate_base_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/base_analytics/latest/gn",
 };
 
 export const ArbitrumChainPearFE: ChainType = {
@@ -409,11 +409,11 @@ export const ArbitrumChainPearFE: ChainType = {
   USDC_ADDRESS: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
   WRAPPED_NATIVE_ADDRESS: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
   ANALYTICS_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/analytics_arbitrum_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/arbitrum_analytics/latest/gn",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/main_arbitrum_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/arbitrum_analytics/latest/gn",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/fundingrate_arbitrum_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/arbitrum_analytics/latest/gn",
 };
 
 export const ArbitrumChainVibeFE: ChainType = {
@@ -431,11 +431,11 @@ export const ArbitrumChainVibeFE: ChainType = {
   USDC_ADDRESS: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
   WRAPPED_NATIVE_ADDRESS: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
   ANALYTICS_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/analytics_arbitrum_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/arbitrum_analytics/latest/gn",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/main_arbitrum_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/arbitrum_analytics/latest/gn",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/fundingrate_arbitrum_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/arbitrum_analytics/latest/gn",
 };
 
 export const ArbitrumChainCloverfieldFE: ChainType = {
@@ -453,11 +453,11 @@ export const ArbitrumChainCloverfieldFE: ChainType = {
   USDC_ADDRESS: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
   WRAPPED_NATIVE_ADDRESS: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
   ANALYTICS_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/analytics_arbitrum_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/arbitrum_analytics/latest/gn",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/main_arbitrum_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/arbitrum_analytics/latest/gn",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/fundingrate_arbitrum_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/arbitrum_analytics/latest/gn",
 };
 
 export const contractInfo: {

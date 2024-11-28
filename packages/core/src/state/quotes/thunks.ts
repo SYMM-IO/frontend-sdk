@@ -34,9 +34,9 @@ function toQuoteFromGraph(entity: SubGraphData) {
     openedPrice: fromWei(entity.openedPrice),
     requestedOpenPrice: fromWei(entity.requestedOpenPrice),
     quantity: fromWei(entity.quantity),
-    initialCVA: fromWei(entity.initialData.cva ?? null),
-    initialPartyAMM: fromWei(entity.initialData.partyAmm ?? null),
-    initialLF: fromWei(entity.initialData.lf ?? null),
+    initialCVA: fromWei(entity.initialCva ?? null),
+    initialPartyAMM: fromWei(entity.initialPartyAmm ?? null),
+    initialLF: fromWei(entity.initialLf ?? null),
     CVA: fromWei(entity.cva),
     partyAMM: fromWei(entity.partyAmm),
     LF: fromWei(entity.lf),
@@ -45,9 +45,9 @@ function toQuoteFromGraph(entity: SubGraphData) {
     quoteStatus: getQuoteStateByIndex(entity.quoteStatus),
     avgClosedPrice: fromWei(entity.averageClosedPrice),
     quantityToClose: fromWei(entity.quantityToClose),
-    statusModifyTimestamp: Number(entity.timeStamp),
-    createTimestamp: Number(entity.initialData.timeStamp ?? null),
-    deadline: Number(entity.deadline),
+    statusModifyTimestamp: Number(entity.timestamp),
+    createTimestamp: Number(entity.timestampSendQuote ?? null),
+    deadline: Number(entity.openDeadline),
     marketPrice: fromWei(entity.marketPrice),
     closedAmount: fromWei(entity.closedAmount),
     liquidateAmount: fromWei(entity.liquidateAmount),
@@ -85,14 +85,14 @@ export const getHistory = createAsyncThunk(
     try {
       let hasMore = false;
       const {
-        data: { resultEntities },
+        data: { quotes: resQuotes },
       } = await client.query({
         query: ORDER_HISTORY_DATA,
         variables: { address: account, first, skip },
         fetchPolicy: "no-cache",
       });
 
-      const quotes: Quote[] = resultEntities.map((entity: SubGraphData) =>
+      const quotes: Quote[] = resQuotes.map((entity: SubGraphData) =>
         toQuoteFromGraph(entity)
       );
       if (quotes.length === ItemsPerPage + 1) {
