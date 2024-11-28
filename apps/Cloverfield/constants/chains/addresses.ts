@@ -123,11 +123,11 @@ export const PolygonChain: ChainType = {
   USDC_ADDRESS: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
   WRAPPED_NATIVE_ADDRESS: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
   ANALYTICS_SUBGRAPH_ADDRESS:
-    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/polygon_events/latest/gn",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/polygon_analytics/latest/gn",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
-    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/polygon_events/latest/gn",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/polygon_analytics/latest/gn",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/polygon_events/latest/gn",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/polygon_analytics/latest/gn",
 };
 
 export const NewPolygonChain: ChainType = {
@@ -145,11 +145,11 @@ export const NewPolygonChain: ChainType = {
   USDC_ADDRESS: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
   WRAPPED_NATIVE_ADDRESS: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
   ANALYTICS_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/analytics_polygon_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/polygon_analytics/latest/gn",
   ORDER_HISTORY_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/main_polygon_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/polygon_analytics/latest/gn",
   FUNDING_RATE_SUBGRAPH_ADDRESS:
-    "https://api.studio.thegraph.com/query/62454/fundingrate_polygon_8_2/version/latest",
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/polygon_analytics/latest/gn",
 };
 
 export const MantleChainIntentXFE: ChainType = {
