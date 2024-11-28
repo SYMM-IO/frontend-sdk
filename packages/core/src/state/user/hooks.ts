@@ -267,7 +267,7 @@ export function useGetBalanceHistoryCallback() {
       );
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [thunkDispatch, subgraphAddress]
+    [thunkDispatch, subgraphAddress, client]
   );
 }
 

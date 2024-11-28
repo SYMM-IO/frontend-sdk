@@ -376,16 +376,17 @@ export const getPaidAmount = createAsyncThunk(
     }
 
     try {
-      const {
-        data: { resultEntities },
-      } = await client.query<{
-        resultEntities: { fee: string; __typename: string }[];
+      const { data } = await client.query<{
+        quotes: { userPaidFunding: string; __typename: string }[];
+        networkStatus: number;
+        loading: boolean;
       }>({
         query: GET_PAID_AMOUNT,
         variables: { id: `${quoteId}` },
         fetchPolicy: "no-cache",
       });
-      if (resultEntities.length) return { fee: resultEntities[0].fee };
+
+      if (data.quotes.length) return { fee: data.quotes[0].userPaidFunding };
       return { fee: "" };
     } catch (error) {
       console.error(error);

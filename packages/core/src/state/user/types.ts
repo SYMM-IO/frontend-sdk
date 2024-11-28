@@ -35,8 +35,7 @@ export interface UserState {
 
 export enum BalanceHistoryType {
   DEPOSIT_PARTY_A = "DEPOSIT",
-  ALLOCATE_PARTY_A = "ALLOCATE_PARTY_A",
-  DEALLOCATE_PARTY_A = "DEALLOCATE_PARTY_A",
+  DEALLOCATE_PARTY_A = "DEALLOCATE",
   WITHDRAW_PARTY_A = "WITHDRAW",
 }
 

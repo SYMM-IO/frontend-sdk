@@ -1,11 +1,11 @@
 import gql from "graphql-tag";
 
 export const ORDER_HISTORY_DATA = gql`
-  query OrderHistory($address: String!, $first: Int!, $skip: Int!) {
-    resultEntities(
+  query OrderHistory($address: Bytes!, $first: Int!, $skip: Int!) {
+    quotes(
       first: $first
       skip: $skip
-      orderBy: timeStamp
+      orderBy: timestamp
       orderDirection: desc
       where: { partyA: $address, quoteStatus_in: [3, 7, 8, 9] }
     ) {
@@ -26,9 +26,10 @@ export const ORDER_HISTORY_DATA = gql`
       requestedOpenPrice
       closedPrice
       quantityToClose
-      timeStamp
+      timestamp
+      timestampSendQuote
       closePrice
-      deadline
+      openDeadline
       partyBsWhiteList
       symbolId
       fillAmount
@@ -37,21 +38,21 @@ export const ORDER_HISTORY_DATA = gql`
       liquidateAmount
       liquidatePrice
       closedAmount
-      initialData {
-        cva
-        lf
-        partyAmm
-        partyBmm
-        timeStamp
-      }
+      initialLf
+      initialCva
+      initialPartyAmm
+      initialPartyBmm
     }
   }
 `;
 
 export const BALANCE_CHANGES_DATA = gql`
-  query BalanceChanges($account: String!, $first: Int!, $skip: Int!) {
+  query BalanceChanges($account: Bytes!, $first: Int!, $skip: Int!) {
     balanceChanges(
-      where: { account: $account, type_not: "ALLOCATE_PARTY_A" }
+      where: {
+        account: $account
+        type_in: ["DEALLOCATE", "WITHDRAW", "DEPOSIT"]
+      }
       first: $first
       skip: $skip
       orderBy: timestamp
@@ -67,7 +68,7 @@ export const BALANCE_CHANGES_DATA = gql`
 `;
 
 export const TOTAL_DEPOSITS_AND_WITHDRAWALS = gql`
-  query TotalDepositsAndWithdrawals($id: String!) {
+  query TotalDepositsAndWithdrawals($id: ID!) {
     accounts(where: { id: $id }) {
       id
       timestamp
@@ -79,9 +80,9 @@ export const TOTAL_DEPOSITS_AND_WITHDRAWALS = gql`
 `;
 
 export const GET_PAID_AMOUNT = gql`
-  query GetPaidAmount($id: String!) {
-    resultEntities(where: { quoteId: $id }) {
-      fee
+  query GetPaidAmount($id: BigInt!) {
+    quotes(where: { quoteId: $id }) {
+      userPaidFunding
     }
   }
 `;
