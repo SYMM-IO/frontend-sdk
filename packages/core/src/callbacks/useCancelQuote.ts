@@ -116,7 +116,7 @@ export function useCancelQuote(
 
     const summary = ` ${market.name}-Q${quote.id.toString()} “${
       CloseQuoteMessages[closeQuote || CloseQuote.CANCEL_QUOTE]
-    }” ${status}`;
+    }”`;
 
     const txInfo = {
       type: TransactionType.CANCEL,

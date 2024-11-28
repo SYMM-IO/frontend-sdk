@@ -93,7 +93,7 @@ export function useAddAccountToContract(accountName: string): {
       name: accountName,
     } as AddAccountTransactionInfo;
 
-    const summary = `Add new account [${txInfo.name}]}`;
+    const summary = `Add new account [${txInfo.name}]`;
 
     return {
       state: TransactionCallbackState.VALID,
