@@ -1,5 +1,6 @@
 import { SupportedChainId } from "@symmio/frontend-sdk/constants/chains";
-import { MuonDataType } from "@symmio/frontend-sdk/state/chains/reducer";
+import { MuonDataType } from "@symmio/frontend-sdk/context/configSdkContext";
+
 import {
   MUON_APP_NAME,
   BSC_MUON_BASE_URLS,
