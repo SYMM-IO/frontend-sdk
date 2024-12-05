@@ -28,7 +28,7 @@ function getWagmiChain(supportChainList: number[]): Chain[] {
 }
 
 export const WEBSOCKET_RPC_URLS: { [key in SupportedChainId]?: string } = {
-  [SupportedChainId.POLYGON]: "wss://polygon.drpc.org",
+  [SupportedChainId.POLYGON]: "wss://polygon-bor-rpc.publicnode.com",
   [SupportedChainId.BSC]: "wss://bsc-rpc.publicnode.com",
   [SupportedChainId.MANTLE]: "wss://mantle-rpc.publicnode.com",
   [SupportedChainId.BASE]: "wss://base-rpc.publicnode.com",
