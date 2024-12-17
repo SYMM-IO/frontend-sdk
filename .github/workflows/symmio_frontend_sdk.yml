@@ -1,0 +1,128 @@
+name: Symmio Frontend SDK
+env:
+  aws_deploy_region: "ap-northeast-1"
+  build_path: "."
+  terraform_state_s3_bucket: "orbs-terraform-tfstate"
+  terraform_state_s3_key_prefix: "symmio-frontend-sdk"
+  terraform_state_dynamodb_table: "orbs-terraform-locks"
+on:
+  push:
+    branches: ["develop"]
+    paths:
+      - "**"
+
+  pull_request:
+    branches: ["develop"]
+    paths:
+      - "**"
+
+  workflow_dispatch:
+
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
+
+jobs:
+  aws-terraform-dev:
+    name: Run AWS Terraform (Dev)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.aws_deploy_region }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_NONPROD }}
+          role-session-name: terraform-gha
+
+      - name: Run AWS Terraform
+        uses: ./.github/actions/aws-terraform
+        with:
+          aws_deploy_region: ${{ env.aws_deploy_region }}
+          terraform_state_s3_bucket: ${{ env.terraform_state_s3_bucket }}
+          terraform_state_s3_key_prefix: ${{ env.terraform_state_s3_key_prefix }}
+          terraform_state_dynamodb_table: ${{ env.terraform_state_dynamodb_table }}
+          build_path: ${{ env.build_path }}
+          environment: "dev"
+          branch: ${GITHUB_REF##*/}
+          amplify_custom_domain: ${{ secrets.AMPLIFY_CUSTOM_DOMAIN_DEV }}
+          amplify_basic_auth_credentials: ${{ secrets.AMPLIFY_BASIC_AUTH_CREDENTIALS_DEV }}
+
+  aws-terraform-staging:
+    name: Run AWS Terraform (Staging)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.aws_deploy_region }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_NONPROD }}
+          role-session-name: terraform-gha
+
+      - name: Run AWS Terraform
+        uses: ./.github/actions/aws-terraform
+        with:
+          aws_deploy_region: ${{ env.aws_deploy_region }}
+          terraform_state_s3_bucket: ${{ env.terraform_state_s3_bucket }}
+          terraform_state_s3_key_prefix: ${{ env.terraform_state_s3_key_prefix }}
+          terraform_state_dynamodb_table: ${{ env.terraform_state_dynamodb_table }}
+          build_path: ${{ env.build_path }}
+          environment: "staging"
+          branch: ${GITHUB_REF##*/}
+          amplify_custom_domain: ${{ secrets.AMPLIFY_CUSTOM_DOMAIN_STAGING }}
+          amplify_basic_auth_credentials: ${{ secrets.AMPLIFY_BASIC_AUTH_CREDENTIALS_STAGING }}
+
+  aws-terraform-prod:
+    name: Run AWS Terraform (Prod)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.aws_deploy_region }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_NONPROD }}
+          role-session-name: terraform-gha
+
+      - name: Run AWS Terraform
+        uses: ./.github/actions/aws-terraform
+        with:
+          aws_deploy_region: ${{ env.aws_deploy_region }}
+          terraform_state_s3_bucket: ${{ env.terraform_state_s3_bucket }}
+          terraform_state_s3_key_prefix: ${{ env.terraform_state_s3_key_prefix }}
+          terraform_state_dynamodb_table: ${{ env.terraform_state_dynamodb_table }}
+          build_path: ${{ env.build_path }}
+          environment: "prod"
+          branch: ${GITHUB_REF##*/}
+          amplify_custom_domain: ${{ secrets.AMPLIFY_CUSTOM_DOMAIN_PROD }}
+          amplify_basic_auth_credentials: ${{ secrets.AMPLIFY_BASIC_AUTH_CREDENTIALS_PROD }}
+
+  check-for-failure:
+    name: Check for failure
+    runs-on: ubuntu-latest
+    needs: [aws-terraform-dev, aws-terraform-staging, aws-terraform-prod]
+    if: ${{ always() && contains(needs.*.result, 'failure') }}
+    steps:
+      - name: Send message to Telegram
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          format: markdown
+          message: |
+            ❌ *Build failure!*
+
+            Workflow: ${{ github.workflow }}
+            Author: ${{ github.actor }}
+            Commit: ${{ github.sha }}
+            Branch: ${{ github.base_ref }}
+            PR: [${{ github.event.pull_request.title }}](${{ github.server_url}}/${{ github.repository }}/pull/${{ github.event.pull_request.number }})
+
+            [See error 🔗](${{ github.server_url}}/${{ github.repository }}/actions/runs/${{github.run_id}})
