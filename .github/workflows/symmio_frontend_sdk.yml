@@ -37,6 +37,12 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_NONPROD }}
           role-session-name: terraform-gha
 
+      - name: Generate Amplify Environment Variables (Dev)
+        uses: ./.github/actions/amplify-environment-variable-generation
+        with:
+          environments: "dev"
+          github_token: ${{ secrets.PERPS_HEDGER_CONFIG_GITHUB_TOKEN }}
+
       - name: Run AWS Terraform
         uses: ./.github/actions/aws-terraform
         with:
@@ -49,6 +55,7 @@ jobs:
           branch: ${GITHUB_REF##*/}
           amplify_custom_domain: ${{ secrets.AMPLIFY_CUSTOM_DOMAIN_DEV }}
           amplify_basic_auth_credentials: ${{ secrets.AMPLIFY_BASIC_AUTH_CREDENTIALS_DEV }}
+          additional_tfvars_path: "./terraform.tfvars"
 
   aws-terraform-staging:
     name: Run AWS Terraform (Staging)
@@ -64,6 +71,12 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_NONPROD }}
           role-session-name: terraform-gha
 
+      - name: Generate Amplify Environment Variables (Dev)
+        uses: ./.github/actions/amplify-environment-variable-generation
+        with:
+          environments: "staging"
+          github_token: ${{ secrets.PERPS_HEDGER_CONFIG_GITHUB_TOKEN }}
+
       - name: Run AWS Terraform
         uses: ./.github/actions/aws-terraform
         with:
@@ -76,6 +89,7 @@ jobs:
           branch: ${GITHUB_REF##*/}
           amplify_custom_domain: ${{ secrets.AMPLIFY_CUSTOM_DOMAIN_STAGING }}
           amplify_basic_auth_credentials: ${{ secrets.AMPLIFY_BASIC_AUTH_CREDENTIALS_STAGING }}
+          additional_tfvars_path: "./terraform.tfvars"
 
   aws-terraform-prod:
     name: Run AWS Terraform (Prod)
@@ -91,6 +105,12 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_NONPROD }}
           role-session-name: terraform-gha
 
+      - name: Generate Amplify Environment Variables (Staging)
+        uses: ./.github/actions/amplify-environment-variable-generation
+        with:
+          environments: "prod"
+          github_token: ${{ secrets.PERPS_HEDGER_CONFIG_GITHUB_TOKEN }}
+
       - name: Run AWS Terraform
         uses: ./.github/actions/aws-terraform
         with:
@@ -103,6 +123,7 @@ jobs:
           branch: ${GITHUB_REF##*/}
           amplify_custom_domain: ${{ secrets.AMPLIFY_CUSTOM_DOMAIN_PROD }}
           amplify_basic_auth_credentials: ${{ secrets.AMPLIFY_BASIC_AUTH_CREDENTIALS_PROD }}
+          additional_tfvars_path: "./terraform.tfvars"
 
   check-for-failure:
     name: Check for failure

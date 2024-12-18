@@ -29,6 +29,9 @@ inputs:
   amplify_basic_auth_credentials:
     description: "Basic auth credentials for Amplify"
     required: true
+  additional_tfvars_path:
+    description: "Path to additional tfvars file"
+    required: false
 
 runs:
   using: "composite"
@@ -67,7 +70,7 @@ runs:
       run: |
         export TF_VAR_environment=${environment}
         ${{ github.action_path }}/box.sh "Running Terraform plan"
-        plan_command="terraform plan -var-file='./environments/${{ inputs.environment }}/${{ inputs.environment }}.tfvars' -var 'region=${{ inputs.aws_deploy_region }}' -var 'amplify_custom_domain=${{inputs.amplify_custom_domain}}' -var 'amplify_basic_auth_credentials=${{inputs.amplify_basic_auth_credentials}}' -input=false -out=plan.out"
+        plan_command="terraform plan -var-file='./environments/${{ inputs.environment }}/${{ inputs.environment }}.tfvars' $([ -n "${additional_tfvars_path}" ] && echo "-var-file=${additional_tfvars_path}") -var 'region=${{ inputs.aws_deploy_region }}' -var 'amplify_custom_domain=${{inputs.amplify_custom_domain}}' -var 'amplify_basic_auth_credentials=${{inputs.amplify_basic_auth_credentials}}' -input=false -out=plan.out"
         if [ "${{ github.event_name }}" == "workflow_dispatch" ] || [ "${{ inputs.branch }}" == "develop" ]; then
           eval $plan_command
         else

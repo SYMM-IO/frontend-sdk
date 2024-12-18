@@ -1,0 +1,34 @@
+name: Amplify Environment Variable Generation
+description: Generates environment variables for Amplify
+inputs:
+  environment:
+    description: "Name of the environment e.g. dev, staging, prod"
+    required: true
+  github_token:
+    description: "GitHub token"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup build environment
+      id: setup
+      run: |
+        # Variables
+        environment="${{ inputs.environment }}"
+        config_file_name=${{ github.event.inputs.environment == 'dev' && 'development.json' || github.event.inputs.environment }}.json
+        target_branch=${{ github.event.inputs.environment == 'prod' && 'main' || github.event.inputs.environment }}
+
+        # GitHub setup and clone Perps Hedger Config repo
+        git config --global credential.helper store
+        echo "https://x-access-token:${github.event.inputs.github_token}@github.com" > ~/.git-credentials
+        git clone -b ${target_branch} https://github.com/orbs-network/perps-hedger-config.git
+
+        # Python setup and generate environment variables tfvars file
+        python -m venv venv
+        source venv/bin/activate
+        pip install -r requirements.txt
+        python amplify-environment-variable-generation.py --config ./perps-hedger-config/appconfig/$config_file_name --environment $environment
+        mv terraform.tfvars ../../../../infrastructure/terraform.tfvars
+      shell: bash
+      working-directory: ./.github/actions/amplify-environment-variable-generation/amplify-environment-variable-generation

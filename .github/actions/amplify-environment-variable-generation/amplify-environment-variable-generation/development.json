@@ -1,0 +1,816 @@
+{
+  "globals": {
+    "rabbit": {
+      "maxTimeoutMs": 20000,
+      "dedupLockTtlMs": 60000
+    },
+    "privateKeyLocker": {
+      "lockTtlMs": 300000,
+      "waitToLockTimeoutMs": 360000
+    },
+    "infra": {
+      "remoteConfigPollingIntervalMs": 30000
+    },
+    "heartbeat": {
+      "intervalMs": 2000,
+      "minAllowedUptimeToConsiderHealthySec": 10
+    },
+    "monitoringService": {
+      "intervalMs": 120000,
+      "chainDbSyncLagCheckIntervalMs": 300000,
+      "gasBalanceCheckIntervalMs": 120000
+    },
+    "binanceCache": {
+      "incomeHistoryProcessorIntervalMs": 600000,
+      "maxBinanceReadOrderCalls": 20,
+      "getAllOrdersLimit": 500,
+      "fetchSafetyMarginMs": 3600000,
+      "binanceOrderUpdateDebounceMs": 100,
+      "binancePositionUpdateDebounceMs": 20,
+      "backupSyncIntervalMs": 60000,
+      "backupSyncLockTtlMs": 60000,
+      "databaseName": "binance-cache",
+      "wsEventLockTtlMs": 10000,
+      "incomeHistoryProcessorEnabled": false,
+      "notionalAndLeverageBracketsPollIntervalSeconds": 3600,
+      "depositHandlerEnabled": false,
+      "depositHandlerBalanceThreshold": 10,
+      "depositHandlerPollIntervalMs": 300000,
+      "depositHandlerUsdtUsdcLimitOrderPrice": 0.999
+    },
+    "instantTrading": {
+      "databaseName": "instant-trading",
+      "enabled": true,
+      "validateApiKey": false,
+      "validateAccessToken": true,
+      "logRequests": false,
+      "instantOpensEnabled": true
+    },
+    "chainDBSync": {
+      "databaseName": "chain-db-sync",
+      "wsEventLockTtlMs": 10000,
+      "backupSyncLockTtlMs": 60000
+    },
+    "mongodb": {
+      "connectTimeoutSec": 5,
+      "persistBatchSize": 1000
+    },
+    "binance": {
+      "accountLeverage": 20,
+      "minBrokerBalance": 500,
+      "maxBrokerLeverage": 3,
+      "maxBrokerMarginRatio": 0.4,
+      "deadlineSpreadMs": 3600000,
+      "leverages": {
+        "params": {
+          "profiles": {
+            "default": {
+              "leverage": 4
+            }
+          },
+          "symbols": {}
+        },
+        "isEnabled": false
+      },
+      "splitBigOrdersEnabled": false,
+      "artificialOrderSplitFactor": 0.8,
+      "capitalControls": {
+        "perCategory": {},
+        "perSymbol": {
+          "profiles": {
+            "default": {
+              "notionalCap": 10000000,
+              "notionalPercentageCap": 50
+            }
+          },
+          "symbols": {}
+        }
+      },
+      "leveragePerSymbolDisabled": false
+    },
+    "business": {
+      "profiles": {
+        "defaultUI": {
+          "defaultProfile": {
+            "spreadBPS": 5,
+            "maxPositionNotionalUSD": 1400000,
+            "minQuotePrincipalUSD": 20,
+            "minQuoteNotionalUSD": 20,
+            "maxLeverage": 25,
+            "maxQuoteNotionalUSD": 150000,
+            "minLfPortionOfMm": 0.004,
+            "maxFundingRate": 200
+          },
+          "btc": {
+            "spreadBPS": 5,
+            "maxPositionNotionalUSD": 2100000,
+            "minQuotePrincipalUSD": 240,
+            "minQuoteNotionalUSD": 240,
+            "maxLeverage": 60,
+            "maxQuoteNotionalUSD": 1000000,
+            "minLfPortionOfMm": 0.004,
+            "maxFundingRate": 200
+          },
+          "eth": {
+            "spreadBPS": 5,
+            "maxPositionNotionalUSD": 2100000,
+            "minQuotePrincipalUSD": 60,
+            "minQuoteNotionalUSD": 60,
+            "maxLeverage": 60,
+            "maxQuoteNotionalUSD": 1000000,
+            "minLfPortionOfMm": 0.004,
+            "maxFundingRate": 200
+          },
+          "majors": {
+            "spreadBPS": 5,
+            "maxPositionNotionalUSD": 1400000,
+            "minQuotePrincipalUSD": 20,
+            "minQuoteNotionalUSD": 20,
+            "maxLeverage": 50,
+            "maxQuoteNotionalUSD": 1000000,
+            "minLfPortionOfMm": 0.004,
+            "maxFundingRate": 200
+          },
+          "altcoins": {
+            "spreadBPS": 5,
+            "maxPositionNotionalUSD": 1400000,
+            "minQuotePrincipalUSD": 20,
+            "minQuoteNotionalUSD": 20,
+            "maxLeverage": 40,
+            "maxQuoteNotionalUSD": 1000000,
+            "minLfPortionOfMm": 0.004,
+            "maxFundingRate": 200
+          },
+          "shitcoins": {
+            "spreadBPS": 5,
+            "maxPositionNotionalUSD": 1400000,
+            "minQuotePrincipalUSD": 20,
+            "minQuoteNotionalUSD": 20,
+            "maxLeverage": 8,
+            "maxQuoteNotionalUSD": 150000,
+            "minLfPortionOfMm": 0.004,
+            "maxFundingRate": 200
+          }
+        }
+      },
+      "symbols": {
+        "defaultUI": {
+          "BTCUSDT": "btc",
+          "ETHUSDT": "eth",
+          "LTCUSDT": "majors",
+          "BCHUSDT": "majors",
+          "ETCUSDT": "majors",
+          "LINKUSDT": "majors",
+          "XRPUSDT": "majors",
+          "EOSUSDT": "majors",
+          "ADAUSDT": "majors",
+          "BNBUSDT": "majors",
+          "DOGEUSDT": "majors",
+          "TRXUSDT": "altcoins",
+          "ATOMUSDT": "altcoins",
+          "VETUSDT": "altcoins",
+          "MKRUSDT": "altcoins",
+          "DOTUSDT": "altcoins",
+          "SOLUSDT": "altcoins",
+          "UNIUSDT": "altcoins",
+          "AVAXUSDT": "altcoins",
+          "FTMUSDT": "altcoins",
+          "FILUSDT": "altcoins",
+          "MATICUSDT": "altcoins",
+          "AXSUSDT": "altcoins",
+          "SANDUSDT": "altcoins",
+          "MANAUSDT": "altcoins",
+          "1000SHIBUSDT": "altcoins",
+          "MASKUSDT": "altcoins",
+          "DYDXUSDT": "altcoins",
+          "GALAUSDT": "altcoins",
+          "APEUSDT": "altcoins",
+          "OPUSDT": "altcoins",
+          "LDOUSDT": "altcoins",
+          "APTUSDT": "altcoins",
+          "ARBUSDT": "altcoins",
+          "SUIUSDT": "altcoins",
+          "CFXUSDT": "altcoins",
+          "USDCUSDT": "altcoins",
+          "NEOUSDT": "altcoins",
+          "1000BONKUSDT": "altcoins",
+          "PYTHUSDT": "altcoins",
+          "ILVUSDT": "altcoins",
+          "MEMEUSDT": "altcoins",
+          "BEAMXUSDT": "altcoins",
+          "USTCUSDT": "altcoins",
+          "SEIUSDT": "altcoins",
+          "JTOUSDT": "altcoins",
+          "TRBUSDT": "altcoins",
+          "ENJUSDT": "altcoins",
+          "FLMUSDT": "shitcoins",
+          "STMXUSDT": "shitcoins",
+          "LUNA2USDT": "shitcoins",
+          "JOEUSDT": "shitcoins",
+          "AMBUSDT": "shitcoins",
+          "NMRUSDT": "shitcoins",
+          "BTCDOMUSDT": "shitcoins",
+          "BLZUSDT": "shitcoins",
+          "UNFIUSDT": "shitcoins",
+          "TLMUSDT": "shitcoins",
+          "BICOUSDT": "shitcoins",
+          "BNXUSDT": "shitcoins",
+          "ENAUSDT": "shitcoins",
+          "REZUSDT": "shitcoins",
+          "DEFIUSDT": "shitcoins",
+          "OMNIUSDT": "shitcoins",
+          "SXPUSDT": "shitcoins",
+          "1000PEPEUSDT": "shitcoins",
+          "WLDUSDT": "shitcoins",
+          "MAVUSDT": "shitcoins",
+          "ARKUSDT": "shitcoins",
+          "LOOMUSDT": "shitcoins",
+          "STORJUSDT": "shitcoins",
+          "CYBERUSDT": "shitcoins",
+          "XVGUSDT": "shitcoins",
+          "OXTUSDT": "shitcoins",
+          "DODOXUSDT": "shitcoins"
+        }
+      }
+    },
+    "intervalScheduler": {
+      "defaultTimeoutMs": 1800000
+    },
+    "symmIdToMultiaccounts": {
+      "56a": [
+        "0x650a2D6C263A93cFF5EdD41f836ce832F05A1cF3"
+      ],
+      "5000a": [
+        "0xECbd0788bB5a72f9dFDAc1FFeAAF9B7c2B26E456"
+      ],
+      "42161a": [
+        "0x6273242a7E88b3De90822b31648C212215caaFE4",
+        "0x141269E29a770644C34e05B127AB621511f20109"
+      ],
+      "34443a": [
+        "0xC0ff4B56f62f20bA45f4229CC6BAaD986FA2a904"
+      ],
+      "8453a": [
+        "0x8Ab178C07184ffD44F0ADfF4eA2ce6cFc33F3b86"
+      ]
+    },
+    "blockchainExecutor": {
+      "sendTransactionTimeoutMs": 30000
+    },
+    "riskEngine": {
+      "maxOiMultiplier": 3,
+      "mmRatioAtMaxLeverage": 0.6,
+      "spareFundsFactor": 0.3,
+      "spareFundsFactorWarnBuffer": 1.1,
+      "maxUsageForOiMultiplier": 0.8
+    },
+    "consistencyProvider": {
+      "errorSlidingWindowMs": 3600000,
+      "shouldDebugLog": false
+    },
+    "queueProvider": "Redis"
+  },
+  "perSymmId": {
+    "56a": {
+      "positionManager": {
+        "flagGetAllocationFromDb": true,
+        "actOnTradeRetryConfig": {
+          "retries": 3,
+          "factor": 1.5,
+          "minTimeout": 300,
+          "maxTimeout": 3000
+        }
+      },
+      "blockchain": {
+        "maxBlockRangeForGetLogs": 2000,
+        "maxChainDBBlockDelta": 10,
+        "consistencyProvider": {
+          "retryStaleConfig": {
+            "retries": 3,
+            "factor": 1.5,
+            "minTimeout": 300,
+            "maxTimeout": 3000
+          },
+          "rpcs": [
+            "https://necessary-indulgent-spring.bsc.quiknode.pro/65a1146a15fc6c03bfcc47490b31ec0b7dedd13a/",
+            "https://lb.drpc.org/ogrpc?network=bsc&dkey=AsLFV4HL9kVAkLCydcvX4XTuNF-XKKkR76E_hkHL9tz4"
+          ],
+          "chooseProviderIntervalMs": 60000,
+          "maxBlockLagAllowedBeforeSwitch": 10,
+          "shouldUseStaleCheck": true,
+          "shouldUseErrorCheck": true,
+          "rpcHealthCheckTimeoutMs": 2000,
+          "minErrorCountAllowedBeforeSwitch": 10,
+          "minTotalCallsCountAllowedBeforeSwitch": 20,
+          "maxErrorRateAllowedBeforeSwitch": 0.2
+        }
+      },
+      "chainDBSync": {
+        "firstSymmBlock": 34345962,
+        "backupSyncIntervalMs": 20000
+      },
+      "muon": {
+        "app": "symmio",
+        "urls": [
+          "https://muon-oracle2.rasa.capital/v1/",
+          "https://muon-oracle3.rasa.capital/v1/",
+          "https://muon-oracle4.rasa.capital/v1/"
+        ]
+      },
+      "symm": {
+        "symmCoreAddress": "0x9A9F48888600FC9c05f11E03Eab575EBB2Fc2c8f",
+        "partyBAddress": "0xdF077F5f52bc41A9072F9d0e5fB281770bCD1142"
+      },
+      "monitoringThresholds": {
+        "minBotGasBalance": 0.1,
+        "botAddresses": [
+          "0xF09928aB8419957d5E9Fd6b8BCA7E42D1ACdBe19",
+          "0x87Df68F2069D08c908A197e3a707C9BEb0754133",
+          "0xf35109321eB25e6C50d07fa217277Fb0acF7A576",
+          "0xA142Ec33458e4A1ffbD5fD45b93aa50Ba51d9Cf5",
+          "0xE14863eD4a72Efde86BD4F25821515fdeec42a40",
+          "0x6d1240d96F37A8Cc8aD390558d39A4E3f309bF2A",
+          "0x33E31cdB83Cd4386C43A22a2896C2C740DFef515"
+        ]
+      },
+      "riskEngine": {
+        "maxInitialNotionalUSD": 2000,
+        "targetHealthFactor": 0.1,
+        "lowHealthFactorTh": 0.08,
+        "highHealthFactorTh": 0.2,
+        "isEmergencyHaltEnabled": false,
+        "rebalancerIntervalMs": 120000,
+        "minAllowedMaxFundingRate": 200
+      },
+      "web3agent": {
+        "retries": 5,
+        "partyALockTtlMS": 300000
+      },
+      "blockchainExecutor": {
+        "gasPriceGWEI": 6,
+        "maxGasPriceGWEI": 30,
+        "gasPriceIncreaseIntervalMS": 2000,
+        "gasPriceIncreaseMaxRetries": 10,
+        "gasPriceIncreaseMultiplier": 1.2,
+        "useLegacyExecutor": false,
+        "executionTimeoutMS": 180000
+      },
+      "fundingRate": {
+        "intervalMs": 180000,
+        "spreadFactor": 0.2,
+        "minProfitUSD": 1,
+        "chargeEnabled": true
+      },
+      "tradeIdFilter": {
+        "filterEnabled": false,
+        "tradeIdModuloFilter": 0,
+        "notionalBelowUSD": 0,
+        "delayMs": 1000
+      },
+      "liveEventWatcher": {
+        "pollingIntervalMs": 2000
+      },
+      "liquidator": {
+        "intervalMs": 10000,
+        "contractAddress": "0xE8cDEa1B566f506b9276585559896260b55Cb7E8",
+        "retryConfig": {
+          "retries": 3,
+          "factor": 1.5,
+          "minTimeout": 300,
+          "maxTimeout": 3000
+        }
+      }
+    },
+    "5000a": {
+      "liquidator": {
+        "intervalMs": 10000,
+        "contractAddress": "0x82261Fcb908989dd418cEDCA35359B284D7D86d6",
+        "retryConfig": {
+          "retries": 3,
+          "factor": 1.5,
+          "minTimeout": 300,
+          "maxTimeout": 3000
+        }
+      },
+      "positionManager": {
+        "flagGetAllocationFromDb": true,
+        "actOnTradeRetryConfig": {
+          "retries": 3,
+          "factor": 1.5,
+          "minTimeout": 300,
+          "maxTimeout": 3000
+        }
+      },
+      "blockchain": {
+        "maxBlockRangeForGetLogs": 2000,
+        "maxChainDBBlockDelta": 15,
+        "consistencyProvider": {
+          "retryStaleConfig": {
+            "minTimeout": 500,
+            "maxTimeout": 3000,
+            "retries": 4,
+            "factor": 1.5
+          },
+          "rpcs": [
+            "https://blissful-little-cloud.mantle-mainnet.quiknode.pro/3836a9592f294e6980dc9949b98fe0dd689c21d7/",
+            "https://lb.drpc.org/ogrpc?network=mantle&dkey=AsLFV4HL9kVAkLCydcvX4XTuNF-XKKkR76E_hkHL9tz4"
+          ],
+          "chooseProviderIntervalMs": 60000,
+          "maxBlockLagAllowedBeforeSwitch": 30,
+          "shouldUseStaleCheck": true,
+          "shouldUseErrorCheck": true,
+          "rpcHealthCheckTimeoutMs": 2000,
+          "minErrorCountAllowedBeforeSwitch": 10,
+          "minTotalCallsCountAllowedBeforeSwitch": 20,
+          "maxErrorRateAllowedBeforeSwitch": 0.2
+        }
+      },
+      "chainDBSync": {
+        "firstSymmBlock": 61972154,
+        "backupSyncIntervalMs": 20000
+      },
+      "muon": {
+        "app": "symmio",
+        "urls": [
+          "https://muon-oracle2.rasa.capital/v1/",
+          "https://muon-oracle3.rasa.capital/v1/",
+          "https://muon-oracle4.rasa.capital/v1/"
+        ]
+      },
+      "symm": {
+        "symmCoreAddress": "0x2Ecc7da3Cc98d341F987C85c3D9FC198570838B5",
+        "partyBAddress": "0xF9e39B4B30E26c18d2a725c0397Ed5A925efE46B"
+      },
+      "monitoringThresholds": {
+        "minBotGasBalance": 50,
+        "botAddresses": [
+          "0xF09928aB8419957d5E9Fd6b8BCA7E42D1ACdBe19",
+          "0x87Df68F2069D08c908A197e3a707C9BEb0754133",
+          "0xf35109321eB25e6C50d07fa217277Fb0acF7A576",
+          "0xA142Ec33458e4A1ffbD5fD45b93aa50Ba51d9Cf5",
+          "0xE14863eD4a72Efde86BD4F25821515fdeec42a40",
+          "0x6d1240d96F37A8Cc8aD390558d39A4E3f309bF2A",
+          "0x33E31cdB83Cd4386C43A22a2896C2C740DFef515"
+        ]
+      },
+      "riskEngine": {
+        "maxInitialNotionalUSD": 2000,
+        "targetHealthFactor": 0.1,
+        "lowHealthFactorTh": 0.08,
+        "highHealthFactorTh": 0.2,
+        "isEmergencyHaltEnabled": false,
+        "rebalancerIntervalMs": 120000,
+        "minAllowedMaxFundingRate": 200
+      },
+      "web3agent": {
+        "retries": 5,
+        "partyALockTtlMS": 300000
+      },
+      "blockchainExecutor": {
+        "gasPriceGWEI": 0.02,
+        "maxGasPriceGWEI": 0.1,
+        "gasPriceIncreaseMultiplier": 1.2,
+        "gasPriceIncreaseIntervalMS": 2000,
+        "gasPriceIncreaseMaxRetries": 10,
+        "useLegacyExecutor": false,
+        "executionTimeoutMS": 180000
+      },
+      "fundingRate": {
+        "intervalMs": 180000,
+        "spreadFactor": 0.2,
+        "minProfitUSD": 1,
+        "chargeEnabled": true
+      },
+      "tradeIdFilter": {
+        "filterEnabled": false,
+        "tradeIdModuloFilter": 0,
+        "notionalBelowUSD": 0,
+        "delayMs": 1000
+      },
+      "liveEventWatcher": {
+        "pollingIntervalMs": 2000
+      }
+    },
+    "42161a": {
+      "liquidator": {
+        "intervalMs": 10000,
+        "contractAddress": "0x7ECBEB26Cf76ca8680c851336B97D4BE8521918C",
+        "retryConfig": {
+          "maxTimeout": 3000,
+          "minTimeout": 300,
+          "retries": 3,
+          "factor": 1.5
+        }
+      },
+      "positionManager": {
+        "flagGetAllocationFromDb": true,
+        "actOnTradeRetryConfig": {
+          "maxTimeout": 3000,
+          "minTimeout": 300,
+          "retries": 3,
+          "factor": 1.5
+        }
+      },
+      "blockchain": {
+        "maxBlockRangeForGetLogs": 10000,
+        "maxChainDBBlockDelta": 160,
+        "consistencyProvider": {
+          "retryStaleConfig": {
+            "maxTimeout": 3000,
+            "minTimeout": 300,
+            "retries": 3,
+            "factor": 1.5
+          },
+          "rpcs": [
+            "https://bold-fittest-arrow.arbitrum-mainnet.quiknode.pro/edb712c03f3e57e9035025db47842bf1971061ca",
+            "https://lb.drpc.org/ogrpc?network=arbitrum&dkey=AsLFV4HL9kVAkLCydcvX4XTuNF-XKKkR76E_hkHL9tz4"
+          ],
+          "chooseProviderIntervalMs": 60000,
+          "maxBlockLagAllowedBeforeSwitch": 60,
+          "shouldUseStaleCheck": true,
+          "shouldUseErrorCheck": true,
+          "rpcHealthCheckTimeoutMs": 3000,
+          "minErrorCountAllowedBeforeSwitch": 10,
+          "minTotalCallsCountAllowedBeforeSwitch": 20,
+          "maxErrorRateAllowedBeforeSwitch": 0.2
+        }
+      },
+      "chainDBSync": {
+        "firstSymmBlock": 210771536,
+        "backupSyncIntervalMs": 20000
+      },
+      "muon": {
+        "app": "symmio",
+        "urls": [
+          "https://muon-oracle2.rasa.capital/v1/",
+          "https://muon-oracle3.rasa.capital/v1/",
+          "https://muon-oracle4.rasa.capital/v1/"
+        ]
+      },
+      "symm": {
+        "symmCoreAddress": "0x8F06459f184553e5d04F07F868720BDaCAB39395",
+        "partyBAddress": "0xdB91D232E93969130272De309d3d914547604426"
+      },
+      "monitoringThresholds": {
+        "minBotGasBalance": 0.017,
+        "botAddresses": [
+          "0xF09928aB8419957d5E9Fd6b8BCA7E42D1ACdBe19",
+          "0x87Df68F2069D08c908A197e3a707C9BEb0754133",
+          "0xf35109321eB25e6C50d07fa217277Fb0acF7A576",
+          "0xA142Ec33458e4A1ffbD5fD45b93aa50Ba51d9Cf5",
+          "0xE14863eD4a72Efde86BD4F25821515fdeec42a40",
+          "0x6d1240d96F37A8Cc8aD390558d39A4E3f309bF2A",
+          "0x33E31cdB83Cd4386C43A22a2896C2C740DFef515"
+        ]
+      },
+      "riskEngine": {
+        "maxInitialNotionalUSD": 2000,
+        "targetHealthFactor": 0.1,
+        "lowHealthFactorTh": 0.08,
+        "highHealthFactorTh": 0.2,
+        "isEmergencyHaltEnabled": false,
+        "rebalancerIntervalMs": 120000,
+        "minAllowedMaxFundingRate": 200
+      },
+      "web3agent": {
+        "retries": 5,
+        "partyALockTtlMS": 300000
+      },
+      "blockchainExecutor": {
+        "gasPriceGWEI": 0.01,
+        "maxGasPriceGWEI": 0.05,
+        "gasPriceIncreaseMultiplier": 1.2,
+        "gasPriceIncreaseIntervalMS": 2000,
+        "gasPriceIncreaseMaxRetries": 10,
+        "useLegacyExecutor": false,
+        "executionTimeoutMS": 180000
+      },
+      "fundingRate": {
+        "intervalMs": 180000,
+        "spreadFactor": 0.2,
+        "minProfitUSD": 1,
+        "chargeEnabled": true
+      },
+      "tradeIdFilter": {
+        "filterEnabled": false,
+        "tradeIdModuloFilter": 0,
+        "notionalBelowUSD": 0,
+        "delayMs": 1000
+      },
+      "liveEventWatcher": {
+        "pollingIntervalMs": 2000
+      }
+    },
+    "34443a": {
+      "liquidator": {
+        "intervalMs": 10000,
+        "contractAddress": "0x0000000000000000000000000000000000000000",
+        "retryConfig": {
+          "maxTimeout": 3000,
+          "minTimeout": 300,
+          "retries": 3,
+          "factor": 1.5
+        }
+      },
+      "positionManager": {
+        "flagGetAllocationFromDb": true,
+        "actOnTradeRetryConfig": {
+          "maxTimeout": 3000,
+          "minTimeout": 300,
+          "retries": 3,
+          "factor": 1.5
+        }
+      },
+      "blockchain": {
+        "maxBlockRangeForGetLogs": 2000,
+        "maxChainDBBlockDelta": 15,
+        "consistencyProvider": {
+          "retryStaleConfig": {
+            "minTimeout": 500,
+            "maxTimeout": 3000,
+            "retries": 4,
+            "factor": 1.5
+          },
+          "rpcs": [
+            "https://lb.drpc.org/ogrpc?network=mode&dkey=AsLFV4HL9kVAkLCydcvX4XTuNF-XKKkR76E_hkHL9tz4"
+          ],
+          "chooseProviderIntervalMs": 60000,
+          "maxBlockLagAllowedBeforeSwitch": 30,
+          "shouldUseStaleCheck": true,
+          "shouldUseErrorCheck": true,
+          "rpcHealthCheckTimeoutMs": 2000,
+          "minErrorCountAllowedBeforeSwitch": 10,
+          "minTotalCallsCountAllowedBeforeSwitch": 20,
+          "maxErrorRateAllowedBeforeSwitch": 0.2
+        }
+      },
+      "chainDBSync": {
+        "firstSymmBlock": 61972154,
+        "backupSyncIntervalMs": 20000
+      },
+      "muon": {
+        "app": "symmio",
+        "urls": [
+          "https://muon-oracle2.rasa.capital/v1/",
+          "https://muon-oracle3.rasa.capital/v1/",
+          "https://muon-oracle4.rasa.capital/v1/"
+        ]
+      },
+      "symm": {
+        "symmCoreAddress": "0x3d17f073cCb9c3764F105550B0BCF9550477D266",
+        "partyBAddress": "0x78E76Ac7fEc050cA785c19fFADDF57137b890543"
+      },
+      "monitoringThresholds": {
+        "minBotGasBalance": 50,
+        "botAddresses": [
+          "0xF09928aB8419957d5E9Fd6b8BCA7E42D1ACdBe19",
+          "0x87Df68F2069D08c908A197e3a707C9BEb0754133",
+          "0xf35109321eB25e6C50d07fa217277Fb0acF7A576",
+          "0xA142Ec33458e4A1ffbD5fD45b93aa50Ba51d9Cf5",
+          "0xE14863eD4a72Efde86BD4F25821515fdeec42a40",
+          "0x6d1240d96F37A8Cc8aD390558d39A4E3f309bF2A",
+          "0x33E31cdB83Cd4386C43A22a2896C2C740DFef515"
+        ]
+      },
+      "riskEngine": {
+        "maxInitialNotionalUSD": 2000,
+        "targetHealthFactor": 0.1,
+        "lowHealthFactorTh": 0.08,
+        "highHealthFactorTh": 0.2,
+        "isEmergencyHaltEnabled": false,
+        "rebalancerIntervalMs": 120000,
+        "minAllowedMaxFundingRate": 200
+      },
+      "web3agent": {
+        "retries": 5,
+        "partyALockTtlMS": 300000
+      },
+      "blockchainExecutor": {
+        "gasPriceGWEI": 0.01,
+        "maxGasPriceGWEI": 0.05,
+        "gasPriceIncreaseMultiplier": 1.2,
+        "gasPriceIncreaseIntervalMS": 2000,
+        "gasPriceIncreaseMaxRetries": 10,
+        "useLegacyExecutor": false,
+        "executionTimeoutMS": 180000
+      },
+      "fundingRate": {
+        "intervalMs": 180000,
+        "spreadFactor": 0.2,
+        "minProfitUSD": 1,
+        "chargeEnabled": true
+      },
+      "tradeIdFilter": {
+        "filterEnabled": false,
+        "tradeIdModuloFilter": 0,
+        "notionalBelowUSD": 0,
+        "delayMs": 1000
+      },
+      "liveEventWatcher": {
+        "pollingIntervalMs": 2000
+      }
+    },
+    "8453a": {
+      "positionManager": {
+        "flagGetAllocationFromDb": true,
+        "actOnTradeRetryConfig": {
+          "retries": 10,
+          "factor": 1.5,
+          "minTimeout": 300,
+          "maxTimeout": 3000
+        }
+      },
+      "blockchain": {
+        "maxBlockRangeForGetLogs": 10000,
+        "maxChainDBBlockDelta": 20,
+        "consistencyProvider": {
+          "retryStaleConfig": {
+            "maxTimeout": 3000,
+            "minTimeout": 300,
+            "retries": 3,
+            "factor": 1.5
+          },
+          "rpcs": [
+            "https://polished-multi-replica.base-mainnet.quiknode.pro/650a8f30f9242935baae0a4a32261221d5d5400c/",
+            "https://lb.drpc.org/ogrpc?network=base&dkey=AsLFV4HL9kVAkLCydcvX4XTuNF-XKKkR76E_hkHL9tz4"
+          ],
+          "chooseProviderIntervalMs": 60000,
+          "maxBlockLagAllowedBeforeSwitch": 30,
+          "rpcHealthCheckTimeoutMs": 2000,
+          "minErrorCountAllowedBeforeSwitch": 30,
+          "minTotalCallsCountAllowedBeforeSwitch": 20,
+          "maxErrorRateAllowedBeforeSwitch": 0.2,
+          "shouldUseStaleCheck": true,
+          "shouldUseErrorCheck": true
+        }
+      },
+      "chainDBSync": {
+        "firstSymmBlock": 8443806,
+        "backupSyncIntervalMs": 20000
+      },
+      "muon": {
+        "app": "symmio",
+        "urls": [
+          "https://muon-oracle2.rasa.capital/v1/",
+          "https://muon-oracle3.rasa.capital/v1/",
+          "https://muon-oracle4.rasa.capital/v1/"
+        ]
+      },
+      "symm": {
+        "symmCoreAddress": "0x91Cf2D8Ed503EC52768999aA6D8DBeA6e52dbe43",
+        "partyBAddress": "0xB6e3b44975f2966707a91747F89D2002ff8d62Db"
+      },
+      "monitoringThresholds": {
+        "minBotGasBalance": 0.01,
+        "botAddresses": []
+      },
+      "riskEngine": {
+        "maxInitialNotionalUSD": 5000,
+        "targetHealthFactor": 0.1666,
+        "lowHealthFactorTh": 0.14,
+        "highHealthFactorTh": 0.2,
+        "isEmergencyHaltEnabled": false,
+        "rebalancerIntervalMs": 120000,
+        "minAllowedMaxFundingRate": 200
+      },
+      "web3agent": {
+        "retries": 5,
+        "partyALockTtlMS": 300000
+      },
+      "blockchainExecutor": {
+        "gasPriceGWEI": 0.012,
+        "maxGasPriceGWEI": 0.2,
+        "gasPriceIncreaseMultiplier": 1.3,
+        "gasPriceIncreaseIntervalMS": 4000,
+        "gasPriceIncreaseMaxRetries": 10,
+        "useLegacyExecutor": false,
+        "executionTimeoutMS": 180000
+      },
+      "fundingRate": {
+        "intervalMs": 180000,
+        "spreadFactor": 0.2,
+        "minProfitUSD": 1,
+        "chargeEnabled": true
+      },
+      "tradeIdFilter": {
+        "filterEnabled": true,
+        "tradeIdModuloFilter": 2,
+        "notionalBelowUSD": 2000,
+        "delayMs": 10000
+      },
+      "liveEventWatcher": {
+        "pollingIntervalMs": 2000
+      },
+      "liquidator": {
+        "intervalMs": 1000,
+        "contractAddress": "0xeB7bd77D49bb9e86A736dc6350a7A1F90327cA80",
+        "retryConfig": {
+          "retries": 3,
+          "factor": 1.5,
+          "minTimeout": 300,
+          "maxTimeout": 3000
+        }
+      }
+    }
+  }
+}
