@@ -22,7 +22,7 @@ import { MULTI_ACCOUNT_ABI } from "../constants";
 
 export function useAddAccountToContract(accountName: string): {
   state: TransactionCallbackState;
-  callback: null | (() => Promise<any>);
+  callback: null | (() => ReturnType<typeof createTransactionCallback>);
   error: string | null;
 } {
   const { account, chainId } = useActiveWagmi();
@@ -93,7 +93,7 @@ export function useAddAccountToContract(accountName: string): {
       name: accountName,
     } as AddAccountTransactionInfo;
 
-    const summary = `Add new account [${txInfo.name}]}`;
+    const summary = `Add new account [${txInfo.name}]`;
 
     return {
       state: TransactionCallbackState.VALID,

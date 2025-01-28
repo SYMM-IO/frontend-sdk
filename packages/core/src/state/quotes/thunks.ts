@@ -3,7 +3,12 @@ const { createAsyncThunk } = ((toolkitRaw as any).default ??
   toolkitRaw) as typeof toolkitRaw;
 import { ApolloClient, NormalizedCacheObject } from "@apollo/client";
 import { ORDER_HISTORY_DATA } from "../../apollo/queries";
-import { InstantCloseResponseType, SubGraphData } from "./types";
+import {
+  InstantCloseResponseType,
+  InstantCloseStatus,
+  InstantOpenResponseType,
+  SubGraphData,
+} from "./types";
 import { Quote } from "../../types/quote";
 import { OrderType } from "../../types/trade";
 import { fromWei } from "../../utils/numbers";
@@ -12,6 +17,12 @@ import {
   getQuoteStateByIndex,
 } from "../../hooks/useQuotes";
 import { makeHttpRequest } from "../../utils/http";
+import {
+  ActionStatus,
+  LastSeenAction,
+  NotificationResponse,
+  NotificationUrlResponseType,
+} from "../notifications/types";
 
 function toQuoteFromGraph(entity: SubGraphData) {
   return {
@@ -23,9 +34,9 @@ function toQuoteFromGraph(entity: SubGraphData) {
     openedPrice: fromWei(entity.openedPrice),
     requestedOpenPrice: fromWei(entity.requestedOpenPrice),
     quantity: fromWei(entity.quantity),
-    initialCVA: fromWei(entity.initialData.cva ?? null),
-    initialPartyAMM: fromWei(entity.initialData.partyAmm ?? null),
-    initialLF: fromWei(entity.initialData.lf ?? null),
+    initialCVA: fromWei(entity.initialCva ?? null),
+    initialPartyAMM: fromWei(entity.initialPartyAmm ?? null),
+    initialLF: fromWei(entity.initialLf ?? null),
     CVA: fromWei(entity.cva),
     partyAMM: fromWei(entity.partyAmm),
     LF: fromWei(entity.lf),
@@ -34,9 +45,9 @@ function toQuoteFromGraph(entity: SubGraphData) {
     quoteStatus: getQuoteStateByIndex(entity.quoteStatus),
     avgClosedPrice: fromWei(entity.averageClosedPrice),
     quantityToClose: fromWei(entity.quantityToClose),
-    statusModifyTimestamp: Number(entity.timeStamp),
-    createTimestamp: Number(entity.initialData.timeStamp ?? null),
-    deadline: Number(entity.deadline),
+    statusModifyTimestamp: Number(entity.timestamp),
+    createTimestamp: Number(entity.timestampSendQuote ?? null),
+    deadline: Number(entity.openDeadline),
     marketPrice: fromWei(entity.marketPrice),
     closedAmount: fromWei(entity.closedAmount),
     liquidateAmount: fromWei(entity.liquidateAmount),
@@ -74,14 +85,14 @@ export const getHistory = createAsyncThunk(
     try {
       let hasMore = false;
       const {
-        data: { resultEntities },
+        data: { quotes: resQuotes },
       } = await client.query({
         query: ORDER_HISTORY_DATA,
         variables: { address: account, first, skip },
         fetchPolicy: "no-cache",
       });
 
-      const quotes: Quote[] = resultEntities.map((entity: SubGraphData) =>
+      const quotes: Quote[] = resQuotes.map((entity: SubGraphData) =>
         toQuoteFromGraph(entity)
       );
       if (quotes.length === ItemsPerPage + 1) {
@@ -96,8 +107,8 @@ export const getHistory = createAsyncThunk(
   }
 );
 
-export const getInstantCloses = createAsyncThunk(
-  "quotes/getInstantCloses",
+export const getInstantActions = createAsyncThunk(
+  "quotes/getInstantActions",
   async ({
     baseUrl,
     account,
@@ -106,33 +117,139 @@ export const getInstantCloses = createAsyncThunk(
     baseUrl: string | undefined;
     account: string;
     appName: string;
-  }): Promise<{ openInstantCloses: InstantCloseResponseType }> => {
+  }): Promise<{
+    instantCloses: InstantCloseResponseType;
+    instantOpens: InstantOpenResponseType;
+  }> => {
     if (!baseUrl) {
       throw new Error("baseUrl is empty");
     }
 
     const getInstantClosesUrl = new URL(`instant_close/${account}`, baseUrl)
       .href;
-    let openInstantCloses: InstantCloseResponseType = [];
+    const getInstantOpensUrl = new URL(`instant_open/${account}`, baseUrl).href;
+    let instantCloses: InstantCloseResponseType = [];
+    let instantOpens: InstantOpenResponseType = [];
 
+    const method = "GET";
+    const headers = [
+      ["Content-Type", "application/json"],
+      ["App-Name", appName],
+    ];
     try {
-      const [instantClosesRes] = await Promise.allSettled([
+      const [instantClosesRes, instantOpenRes] = await Promise.allSettled([
         makeHttpRequest<InstantCloseResponseType>(getInstantClosesUrl, {
-          method: "GET",
-          headers: [
-            ["Content-Type", "application/json"],
-            ["App-Name", appName],
-          ],
+          method,
+          headers,
+        }),
+        makeHttpRequest<InstantOpenResponseType>(getInstantOpensUrl, {
+          method,
+          headers,
         }),
       ]);
 
-      if (instantClosesRes.status === "fulfilled" && instantClosesRes.value) {
-        openInstantCloses = instantClosesRes.value;
+      if (
+        instantClosesRes &&
+        instantClosesRes.status === "fulfilled" &&
+        instantClosesRes.value
+      ) {
+        instantCloses = await checkInstantClosesStatus(
+          baseUrl,
+          appName,
+          account,
+          instantClosesRes.value
+        );
+      }
+      if (
+        instantOpenRes &&
+        instantOpenRes.status === "fulfilled" &&
+        instantOpenRes.value
+      ) {
+        instantOpens = instantOpenRes.value;
       }
 
-      return { openInstantCloses };
+      return { instantCloses, instantOpens };
     } catch (error) {
       throw new Error(`Unable to get instant closes data from hedger`);
     }
   }
 );
+
+const getPositionState = async (
+  url: string,
+  appName: string,
+  account: string,
+  quoteId: number
+) => {
+  try {
+    const body = JSON.stringify({
+      address: `${account}`,
+      quote_id: quoteId.toString(),
+    });
+    const { href: getNotificationsUrl } = new URL(`position-state/0/5`, url);
+    const response = makeHttpRequest<NotificationUrlResponseType>(
+      getNotificationsUrl,
+      {
+        method: "POST",
+        headers: [
+          ["Content-Type", "application/json"],
+          ["App-Name", appName],
+        ],
+        body,
+      }
+    );
+
+    return response; // Modify according to the actual response structure
+  } catch (error) {
+    console.error(`Failed to check position state for URL ${url}:`, error);
+    return null;
+  }
+};
+
+const checkInstantClosesStatus = async (
+  baseUrl: string,
+  appName: string,
+  account: string,
+  instantCloses: any
+) => {
+  // In this function, we check the position state API for each instant close status to determine whether the quote is processing or has failed.
+
+  const positionStateChecks = instantCloses.map(async (item) => {
+    const result = await getPositionState(
+      baseUrl,
+      appName,
+      account,
+      item.quote_id
+    );
+    return { ...item, positionState: result };
+  });
+
+  const positionsNotificationsData = await Promise.all(positionStateChecks);
+
+  const data = positionsNotificationsData.map((state) => {
+    let status = InstantCloseStatus.PROCESSING;
+    const positionNotification = state.positionState?.position_state;
+
+    if (positionNotification && positionNotification.length) {
+      positionNotification.forEach((s: NotificationResponse) => {
+        if (
+          s.action_status === ActionStatus.FAILED &&
+          (s.last_seen_action === LastSeenAction.FILL_ORDER_INSTANT_CLOSE ||
+            s.last_seen_action ===
+              LastSeenAction.INSTANT_REQUEST_TO_CLOSE_POSITION)
+        ) {
+          status = InstantCloseStatus.FAILED;
+        }
+      });
+    }
+
+    return {
+      quantity_to_close: state.quantity_to_close,
+      quote_id: state.quote_id,
+      close_price: state.close_price,
+      status,
+    };
+  });
+
+  return data;
+};

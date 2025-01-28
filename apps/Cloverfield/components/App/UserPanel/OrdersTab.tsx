@@ -5,6 +5,7 @@ import { darken } from "polished";
 
 export enum StateTabs {
   POSITIONS = "Positions",
+  INSTANT_OPEN_ORDERS = "Instant Open Orders",
   ORDER_HISTORY = "Order History",
 }
 
@@ -44,18 +45,17 @@ export default function OrdersTab({
 }): JSX.Element | null {
   return (
     <TabWrapper>
-      <TabButton
-        active={activeTab === StateTabs.POSITIONS}
-        onClick={() => setActiveTab(StateTabs.POSITIONS)}
-      >
-        {StateTabs.POSITIONS}
-      </TabButton>
-      <TabButton
-        active={activeTab === StateTabs.ORDER_HISTORY}
-        onClick={() => setActiveTab(StateTabs.ORDER_HISTORY)}
-      >
-        {StateTabs.ORDER_HISTORY}
-      </TabButton>
+      {Object.values(StateTabs).map((tab, index) => {
+        return (
+          <TabButton
+            key={index}
+            active={activeTab === tab}
+            onClick={() => setActiveTab(tab)}
+          >
+            {tab}
+          </TabButton>
+        );
+      })}
     </TabWrapper>
   );
 }

@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import { useCollateralToken } from "@symmio/frontend-sdk/constants/tokens";
 import { PositionType } from "@symmio/frontend-sdk/types/trade";
 import { toBN } from "@symmio/frontend-sdk/utils/numbers";
@@ -14,14 +16,13 @@ import {
 } from "@symmio/frontend-sdk/state/trade/hooks";
 
 import { CustomInputBox2 } from "components/InputBox";
-import { useExpertMode } from "@symmio/frontend-sdk/state/user/hooks";
-import { useMemo } from "react";
+import { useBypassPrecisionCheckMode } from "@symmio/frontend-sdk/state/user/hooks";
 
 export default function LimitPricePanel(): JSX.Element | null {
   const { chainId } = useActiveWagmi();
   const { price } = useTradePage();
   const market = useActiveMarket();
-  const userExpertMode = useExpertMode();
+  const userBypassPrecisionCheckMode = useBypassPrecisionCheckMode();
   const positionType = usePositionType();
   const setLimitPrice = useSetLimitPrice();
   const COLLATERAL_TOKEN = useCollateralToken();
@@ -48,8 +49,8 @@ export default function LimitPricePanel(): JSX.Element | null {
   })();
 
   const precision = useMemo(
-    () => (userExpertMode ? undefined : market?.pricePrecision),
-    [userExpertMode, market?.pricePrecision]
+    () => (userBypassPrecisionCheckMode ? undefined : market?.pricePrecision),
+    [userBypassPrecisionCheckMode, market?.pricePrecision]
   );
 
   return (

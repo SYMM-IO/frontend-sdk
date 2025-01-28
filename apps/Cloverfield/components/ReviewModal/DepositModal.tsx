@@ -38,6 +38,7 @@ import { useTransferCollateral } from "@symmio/frontend-sdk/callbacks/useTransfe
 import { useMintCollateral } from "@symmio/frontend-sdk/callbacks/useMintTestCollateral";
 import { Row, RowBetween, RowStart } from "components/Row";
 import { useMultiAccountAddress } from "@symmio/frontend-sdk/state/chains/hooks";
+import { TransactionStatus } from "@symmio/frontend-sdk/utils/web3";
 
 const Wrapper = styled.div`
   display: flex;
@@ -134,20 +135,15 @@ export default function DepositModal() {
       return;
     }
 
-    try {
-      setAwaitingConfirmation(true);
-      await transferBalanceCallback();
+    setAwaitingConfirmation(true);
+    const { status, message } = await transferBalanceCallback();
+    if (status === TransactionStatus.SUCCESS) {
       setTypedAmount("");
-      setAwaitingConfirmation(false);
       toggleDepositModal();
-    } catch (e) {
-      setAwaitingConfirmation(false);
-      if (e instanceof Error) {
-        console.error(e);
-      } else {
-        console.error(e);
-      }
+    } else {
+      toast.error(message);
     }
+    setAwaitingConfirmation(false);
   }, [toggleDepositModal, transferBalanceCallback, transferBalanceError]);
 
   const handleMintToken = useCallback(async () => {
@@ -156,19 +152,14 @@ export default function DepositModal() {
       return;
     }
 
-    try {
-      setAwaitingConfirmation(true);
-      await mintCallback();
+    setAwaitingConfirmation(true);
+    const { status, message } = await mintCallback();
+    if (status === TransactionStatus.SUCCESS) {
       setTypedAmount("");
-      setAwaitingConfirmation(false);
-    } catch (e) {
-      setAwaitingConfirmation(false);
-      if (e instanceof Error) {
-        console.error(e);
-      } else {
-        console.error(e);
-      }
+    } else {
+      toast.error(message);
     }
+    setAwaitingConfirmation(false);
   }, [mintCallback, mintCallbackError]);
 
   const handleApprove = async () => {

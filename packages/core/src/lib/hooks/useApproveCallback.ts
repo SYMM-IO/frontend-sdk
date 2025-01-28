@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import BigNumber from "bignumber.js";
 import { Currency } from "@uniswap/sdk-core";
+import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
 import { ApprovalState, useApproval } from "./useApproval";
 
 import {
@@ -14,6 +15,8 @@ function useGetAndTrackApproval(
   getApproval: ReturnType<typeof useApproval>[1]
 ) {
   const addTransaction = useTransactionAdder();
+  const addRecentTransaction = useAddRecentTransaction();
+
   return useCallback(() => {
     return getApproval().then((pending) => {
       if (pending) {
@@ -23,9 +26,13 @@ function useGetAndTrackApproval(
           tokenAddress,
           spender,
         });
+        addRecentTransaction({
+          hash: response,
+          description: "Approve collateral",
+        });
       }
     });
-  }, [addTransaction, getApproval]);
+  }, [addRecentTransaction, addTransaction, getApproval]);
 }
 
 // returns a variable indicating the state of the approval and a function which approves if necessary or early returns

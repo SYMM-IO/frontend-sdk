@@ -44,6 +44,8 @@ export class QuotesClient extends MuonClient {
     contractAddress?: string,
     marketId?: number
   ) {
+    let lastError;
+
     try {
       const requestParams = this._getRequestParams(
         account,
@@ -67,8 +69,9 @@ export class QuotesClient extends MuonClient {
           }
 
           break; // Exit the loop if successful
-        } catch (error) {
+        } catch (error: any) {
           console.log("Retrying with the next URL...");
+          lastError = error;
         }
       }
 
@@ -79,7 +82,7 @@ export class QuotesClient extends MuonClient {
       console.info("Response from Muon: ", result);
 
       if (!success) {
-        throw new Error("");
+        throw new Error(lastError.message);
       }
 
       const reqId = result["reqId"] as Address;
@@ -102,10 +105,10 @@ export class QuotesClient extends MuonClient {
       };
 
       return { success: true, signature: generatedSignature };
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       toast.remove();
-      toast.error("Unable to get response from Muon");
+      toast.error(error?.message || "Unable to get response from Muon");
       return { success: false, error };
     }
   }

@@ -1,24 +1,33 @@
+import { useEffect, useState } from "react";
 import { createApolloClient } from "./index";
 import useActiveWagmi from "../../lib/hooks/useActiveWagmi";
-import { useOrderHistorySubgraphAddress } from "../../state/chains";
+import { useGetUniqueElementInChains } from "../../state/chains";
+import { SupportedChainId } from "../../constants";
 
-// ORDER HISTORY SUBGRAPH
-const apolloClients = {};
-
-export function useOrderHistoryApolloClient() {
+export function useOrderHistoryApolloClient(defaultChainId?: SupportedChainId) {
   const { chainId } = useActiveWagmi();
-  const uri = useOrderHistorySubgraphAddress();
+  const orderHistorySubgraphAddresses = useGetUniqueElementInChains(
+    "ORDER_HISTORY_SUBGRAPH_ADDRESS"
+  );
+  const [apolloClients, setApolloClients] = useState<{
+    [key: string]: ReturnType<typeof createApolloClient>;
+  }>({});
 
-  if (!chainId || !uri) {
-    return;
-  }
+  useEffect(() => {
+    const clients: { [key: string]: ReturnType<typeof createApolloClient> } =
+      {};
 
-  // Check if there's already a client for this chainId
-  if (!apolloClients[chainId]) {
-    // No client exists, create a new one
-    apolloClients[chainId] = createApolloClient(uri);
-  }
+    orderHistorySubgraphAddresses.forEach(({ chainId, url }) => {
+      if (!clients[chainId]) {
+        clients[chainId] = createApolloClient(url);
+      }
+    });
 
-  // Return the existing or new client
-  return apolloClients[chainId];
+    setApolloClients(clients);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(orderHistorySubgraphAddresses)]);
+
+  const currentChainId = chainId || defaultChainId;
+
+  return currentChainId ? apolloClients[currentChainId] : undefined;
 }

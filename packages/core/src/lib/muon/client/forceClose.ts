@@ -2,38 +2,54 @@ import { toast } from "react-hot-toast";
 import { MuonClient } from "./base";
 import { Address } from "viem";
 
-export class DeallocateClient extends MuonClient {
+export class ForceCloseClient extends MuonClient {
   constructor() {
-    super({ APP_METHOD: "uPnl_A" });
+    super({ APP_METHOD: "priceRange" });
   }
 
-  static createInstance(isEnabled: boolean): DeallocateClient | null {
+  static createInstance(isEnabled: boolean): ForceCloseClient | null {
     if (isEnabled) {
-      return new DeallocateClient();
+      return new ForceCloseClient();
     }
     return null;
   }
 
   private _getRequestParams(
-    account: string | null,
+    partyA: string | null,
+    partyB: string | null,
+    t0: number,
+    t1: number,
+    symbolId: number,
     chainId?: number,
     contractAddress?: string
   ): string[][] | Error {
-    if (!account) return new Error("Param `account` is missing.");
+    if (!partyA) return new Error("Param `partyA` is missing.");
+    if (!partyB) return new Error("Param `partyB` is missing.");
+    if (!t0) return new Error("Param `start timestamp` is missing.");
+    if (!t1) return new Error("Param `end timestamp` is missing.");
+    if (!symbolId) return new Error("Param `symbolId` is missing.");
     if (!chainId) return new Error("Param `chainId` is missing.");
     if (!contractAddress)
       return new Error("Param `contractAddress` is missing.");
 
     return [
-      ["partyA", account],
+      ["partyA", partyA],
+      ["partyB", partyB],
+      ["t0", t0.toString()],
+      ["t1", t1.toString()],
+      ["symbolId", symbolId.toString()],
       ["chainId", chainId.toString()],
       ["symmio", contractAddress],
     ];
   }
 
   public async getMuonSig(
-    account: string | null,
     appName: string,
+    partyA: string | null,
+    partyB: string | null,
+    t0: number,
+    t1: number,
+    id: number,
     urls: string[],
     chainId?: number,
     contractAddress?: string
@@ -41,7 +57,11 @@ export class DeallocateClient extends MuonClient {
     let lastError;
     try {
       const requestParams = this._getRequestParams(
-        account,
+        partyA,
+        partyB,
+        t0,
+        t1,
+        id,
         chainId,
         contractAddress
       );
@@ -79,7 +99,15 @@ export class DeallocateClient extends MuonClient {
 
       const reqId = result["reqId"] as Address;
       const timestamp = BigInt(result["data"]["timestamp"]);
-      const upnl = BigInt(result["data"]["result"]["uPnl"]);
+      const symbolId = BigInt(result["data"]["result"]["symbolId"]);
+      const highest = BigInt(result["data"]["result"]["highest"]);
+      const lowest = BigInt(result["data"]["result"]["lowest"]);
+      const averagePrice = BigInt(result["data"]["result"]["mean"]);
+      const startTime = BigInt(result["data"]["result"]["startTime"]);
+      const endTime = BigInt(result["data"]["result"]["endTime"]);
+      const upnlPartyB = result["data"]["result"]["uPnlB"];
+      const upnlPartyA = result["data"]["result"]["uPnlA"];
+      const currentPrice = BigInt(result["data"]["result"]["price"]);
       const gatewaySignature = result["nodeSignature"] as Address;
       const signature = BigInt(result["signatures"][0]["signature"]);
       const owner = result["signatures"][0]["owner"] as Address;
@@ -88,7 +116,15 @@ export class DeallocateClient extends MuonClient {
       const generatedSignature = {
         reqId,
         timestamp,
-        upnl,
+        symbolId,
+        highest,
+        lowest,
+        averagePrice,
+        startTime,
+        endTime,
+        upnlPartyB,
+        upnlPartyA,
+        currentPrice,
         gatewaySignature,
         sigs: { signature, owner, nonce },
       };

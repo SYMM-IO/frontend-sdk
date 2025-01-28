@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 
-import DefaultToken from "/public/static/images/tokens/default-token.svg";
 import { SupportedChainId } from "@symmio/frontend-sdk/constants/chains";
 import useActiveWagmi from "@symmio/frontend-sdk/lib/hooks/useActiveWagmi";
 
+const DefaultToken = "/static/images/tokens/default-token.svg";
 const tokenNames = [
   "BTC",
   "USDT",
@@ -58,7 +58,7 @@ const tokenNames = [
 const LogoMap: { [token: string]: any } = {};
 
 tokenNames.forEach((token) => {
-  LogoMap[token] = require(`/public/static/images/tokens/${token}.svg`);
+  LogoMap[token] = `/static/images/tokens/${token}.svg`;
 });
 
 export default function useCurrencyLogo(contractOrSymbol?: string): string {
@@ -68,7 +68,6 @@ export default function useCurrencyLogo(contractOrSymbol?: string): string {
         return LogoMap[contractOrSymbol];
       }
       return DefaultToken;
-      // return `https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/${contractOrSymbol}/logo.png`
     } catch (err) {
       return DefaultToken;
     }

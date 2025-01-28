@@ -109,6 +109,14 @@
       "types": "./dist/callbacks/useDelegateAccess.d.ts",
       "default": "./dist/callbacks/useDelegateAccess.js"
     },
+    "./callbacks/useDelegateAccesses": {
+      "types": "./dist/callbacks/useDelegateAccesses.d.ts",
+      "default": "./dist/callbacks/useDelegateAccesses.js"
+    },
+    "./callbacks/useForceCloseQuote": {
+      "types": "./dist/callbacks/useForceCloseQuote.d.ts",
+      "default": "./dist/callbacks/useForceCloseQuote.js"
+    },
     "./callbacks/useMintTestCollateral": {
       "types": "./dist/callbacks/useMintTestCollateral.d.ts",
       "default": "./dist/callbacks/useMintTestCollateral.js"
@@ -205,13 +213,17 @@
       "types": "./dist/hooks/useCheckSign.d.ts",
       "default": "./dist/hooks/useCheckSign.js"
     },
+    "./hooks/useContractDelegateInstantOpen": {
+      "types": "./dist/hooks/useContractDelegateInstantOpen.d.ts",
+      "default": "./dist/hooks/useContractDelegateInstantOpen.js"
+    },
     "./hooks/useFundingRate": {
       "types": "./dist/hooks/useFundingRate.d.ts",
       "default": "./dist/hooks/useFundingRate.js"
     },
-    "./hooks/useInstantClose": {
-      "types": "./dist/hooks/useInstantClose.d.ts",
-      "default": "./dist/hooks/useInstantClose.js"
+    "./hooks/useInstantActions": {
+      "types": "./dist/hooks/useInstantActions.d.ts",
+      "default": "./dist/hooks/useInstantActions.js"
     },
     "./hooks/useIsAccessDelegated": {
       "types": "./dist/hooks/useIsAccessDelegated.d.ts",
@@ -309,6 +321,10 @@
       "types": "./dist/lib/hooks/useRpcChangerCallback.d.ts",
       "default": "./dist/lib/hooks/useRpcChangerCallback.js"
     },
+    "./lib/hooks/useSubAccountStorage": {
+      "types": "./dist/lib/hooks/useSubAccountStorage.d.ts",
+      "default": "./dist/lib/hooks/useSubAccountStorage.js"
+    },
     "./lib/hooks/useSupportedChainId": {
       "types": "./dist/lib/hooks/useSupportedChainId.d.ts",
       "default": "./dist/lib/hooks/useSupportedChainId.js"
@@ -336,6 +352,10 @@
     "./lib/muon/client/deallocate": {
       "types": "./dist/lib/muon/client/deallocate.d.ts",
       "default": "./dist/lib/muon/client/deallocate.js"
+    },
+    "./lib/muon/client/forceClose": {
+      "types": "./dist/lib/muon/client/forceClose.d.ts",
+      "default": "./dist/lib/muon/client/forceClose.js"
     },
     "./lib/muon/client/quotes": {
       "types": "./dist/lib/muon/client/quotes.d.ts",
@@ -504,10 +524,6 @@
     "./state/user/actions": {
       "types": "./dist/state/user/actions.d.ts",
       "default": "./dist/state/user/actions.js"
-    },
-    "./state/user/allAccountsUpdater": {
-      "types": "./dist/state/user/allAccountsUpdater.d.ts",
-      "default": "./dist/state/user/allAccountsUpdater.js"
     },
     "./state/user/hooks": {
       "types": "./dist/state/user/hooks.d.ts",

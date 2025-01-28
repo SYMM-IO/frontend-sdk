@@ -28,8 +28,12 @@ export interface MuonDataType {
   Urls: string[];
 }
 
+export interface ChainsType {
+  [chainId: number]: { [name: string]: ChainType };
+}
+
 export interface ChainsState {
-  readonly chains: { [chainId: number]: { [name: string]: ChainType } };
+  readonly chains: ChainsType;
   readonly V3_CHAIN_IDS: number[];
   readonly FALLBACK_CHAIN_ID: number;
   readonly hedgers: HedgerInfoMap;

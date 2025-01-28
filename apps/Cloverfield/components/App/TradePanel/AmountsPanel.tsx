@@ -17,7 +17,7 @@ import { formatPrice, toBN } from "@symmio/frontend-sdk/utils/numbers";
 import { InputField, OrderType } from "@symmio/frontend-sdk/types/trade";
 
 import {
-  useExpertMode,
+  useBypassPrecisionCheckMode,
   useLeverage,
   useSetLeverageCallback,
 } from "@symmio/frontend-sdk/state/user/hooks";
@@ -96,7 +96,7 @@ export default function AmountsPanel() {
   );
   const tpSlAvailable = useTpSlAvailable();
   const market = useActiveMarket();
-  const userExpertMode = useExpertMode();
+  const userBypassPrecisionCheckMode = useBypassPrecisionCheckMode();
 
   const orderType = useOrderType();
 
@@ -134,11 +134,12 @@ export default function AmountsPanel() {
       if (market) {
         const { symbol, pricePrecision, quantityPrecision, maxLeverage } =
           market;
-        if (userExpertMode) return [symbol, undefined, undefined, maxLeverage];
+        if (userBypassPrecisionCheckMode)
+          return [symbol, undefined, undefined, maxLeverage];
         return [symbol, pricePrecision, quantityPrecision, maxLeverage];
       }
       return ["", DEFAULT_PRECISION, DEFAULT_PRECISION, MAX_LEVERAGE_VALUE];
-    }, [userExpertMode, market]);
+    }, [userBypassPrecisionCheckMode, market]);
 
   useEffect(() => {
     if (leverage > maxLeverage) setLeverage(5);

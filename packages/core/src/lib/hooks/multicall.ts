@@ -18,7 +18,11 @@ export function useSingleContractMultipleData(
   contractAbi: Abi,
   functionName: string,
   callsData: any,
-  option?: any
+  query?: {
+    enabled?: boolean;
+    refetchInterval?: number;
+    [key: string]: any; // Allows for additional properties with unknown names and types
+  }
 ) {
   const configs = callsData.map((args) => ({
     address: contractAddress as Address,
@@ -26,11 +30,17 @@ export function useSingleContractMultipleData(
     functionName,
     args,
   }));
-  return useReadContracts({
-    contracts: configs,
-    ...{ option },
-    query: { refetchInterval: 2000 },
-  });
+
+  let readContractsConfig;
+
+  if (query) {
+    readContractsConfig = { contracts: configs, query };
+  } else {
+    readContractsConfig = {
+      contracts: configs,
+    };
+  }
+  return useReadContracts(readContractsConfig);
 }
 
 interface CallData {
@@ -42,7 +52,11 @@ export function useSingleContractMultipleMethods(
   contractAddress: string,
   contractAbi: Abi,
   callsData?: CallData[],
-  option?: any
+  query?: {
+    enabled?: boolean;
+    refetchInterval?: number;
+    [key: string]: any; // Allows for additional properties with unknown names and types
+  }
 ) {
   const configs =
     (contractAddress &&
@@ -64,11 +78,16 @@ export function useSingleContractMultipleMethods(
         .filter(Boolean)) ||
     [];
 
-  const readContractsConfig = {
-    contracts: configs,
-    ...option,
-    query: { refetchInterval: 2000 },
-  };
+  let readContractsConfig;
+
+  if (query) {
+    readContractsConfig = { contracts: configs, query };
+  } else {
+    readContractsConfig = {
+      contracts: configs,
+    };
+  }
+
   const result = useReadContracts(readContractsConfig);
 
   return result;
@@ -94,7 +113,11 @@ export function useMultipleContractSingleData(
   abi: Abi,
   functionName: string,
   callInputs: any,
-  option?: any
+  query?: {
+    enabled?: boolean;
+    refetchInterval?: number;
+    [key: string]: any; // Allows for additional properties with unknown names and types
+  }
 ) {
   // TODO: fix any type
   const configs = addresses.map((address, i) => ({
@@ -104,9 +127,15 @@ export function useMultipleContractSingleData(
     args: (callInputs && callInputs[i] ? [callInputs[i]] : []) as any,
   }));
 
-  return useReadContracts({
-    contracts: configs,
-    ...{ option },
-    query: { refetchInterval: 2000 },
-  });
+  let readContractsConfig;
+
+  if (query) {
+    readContractsConfig = { contracts: configs, query };
+  } else {
+    readContractsConfig = {
+      contracts: configs,
+    };
+  }
+
+  return useReadContracts(readContractsConfig);
 }

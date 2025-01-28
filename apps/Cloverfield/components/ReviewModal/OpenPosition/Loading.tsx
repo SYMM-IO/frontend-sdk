@@ -15,6 +15,9 @@ const SummaryWrap = styled(RowCenter)`
 
 const ButtonWrap = styled.div`
   margin-top: 100px;
+  & > * {
+    margin: 10px 0px;
+  }
 `;
 
 export default function Loading({ summary }: { summary: React.ReactNode }) {

@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import styled from "styled-components";
 import Image from "next/legacy/image";
+import toast from "react-hot-toast";
 
 import GRADIENT_CLOVERFIELD_LOGO from "/public/static/images/etc/GradientCloverfield.svg";
 
@@ -24,6 +25,7 @@ import {
   DotFlashing,
 } from "components/Icons";
 import { WEB_SETTING } from "@symmio/frontend-sdk/config";
+import { TransactionStatus } from "@symmio/frontend-sdk/utils/web3";
 import GradientButton from "components/Button/GradientButton";
 import TermsAndServices from "components/TermsAndServices";
 
@@ -136,19 +138,18 @@ export default function CreateAccount({ onClose }: { onClose?: () => void }) {
 
   const onAddAccount = useCallback(async () => {
     if (!addAccountToContractCallback) return;
-    try {
-      setAwaitingConfirmation(true);
-      const txHash = await addAccountToContractCallback();
+
+    setAwaitingConfirmation(true);
+    const { status, message } = await addAccountToContractCallback();
+    if (status === TransactionStatus.SUCCESS) {
+      setTxHash(message);
       setAwaitingConfirmation(false);
-      if (txHash) setTxHash(txHash.hash);
-      onClose && onClose();
-    } catch (e) {
-      if (e instanceof Error) {
-        console.error(e);
-      } else {
-        console.debug(e);
-      }
+    } else {
+      toast.error(message);
+      setAwaitingConfirmation(false);
     }
+    onClose && onClose();
+
     setAwaitingConfirmation(false);
   }, [addAccountToContractCallback, onClose]);
 

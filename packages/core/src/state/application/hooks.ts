@@ -54,6 +54,10 @@ export function useCreateAccountModalToggle(): () => void {
   return useToggleModal(ApplicationModal.CREATE_ACCOUNT);
 }
 
+export function useAdvancedSettingModalToggle(): () => void {
+  return useToggleModal(ApplicationModal.ADVANCED_SETTINGS);
+}
+
 // returns a function that allows adding a popup
 export function useAddPopup(): (
   content: PopupContent,

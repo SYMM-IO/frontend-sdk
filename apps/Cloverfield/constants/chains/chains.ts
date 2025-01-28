@@ -27,6 +27,14 @@ function getWagmiChain(supportChainList: number[]): Chain[] {
   return supportChainList.map((chainId) => supportedWagmiChain[chainId]);
 }
 
+export const WEBSOCKET_RPC_URLS: { [key in SupportedChainId]?: string } = {
+  [SupportedChainId.POLYGON]: "wss://polygon-bor-rpc.publicnode.com",
+  [SupportedChainId.BSC]: "wss://bsc-rpc.publicnode.com",
+  [SupportedChainId.MANTLE]: "wss://mantle-rpc.publicnode.com",
+  [SupportedChainId.BASE]: "wss://base-rpc.publicnode.com",
+  [SupportedChainId.BLAST]: "wss://blast.drpc.org",
+};
+
 export const ClientChain = [
   SupportedChainId.POLYGON,
   SupportedChainId.BSC,

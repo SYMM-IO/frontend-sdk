@@ -25,6 +25,15 @@ export enum TransactionCallbackState {
   VALID = "VALID",
 }
 
+export enum TransactionStatus {
+  SUCCESS = "Success",
+  EXECUTE_IN_DEV_MODE = "Execute In Dev Mode",
+  REJECTED_BY_USER = "Rejected By User",
+  CONTRACT_FUNCTION_REVERTED_ERROR = "Contract Function Reverted Error",
+  CONSTRUCT_CALL_ERROR = "Construct Call Error",
+  UNEXPECTED_ERROR = "Unexpected Error",
+}
+
 export async function createTransactionCallback(
   functionName: string,
   constructCall: () => ConstructCallReturnType,
@@ -34,7 +43,7 @@ export async function createTransactionCallback(
   wagmiConfig: Config,
   summary?: string,
   expertMode?: ReturnType<typeof useExpertMode>
-) {
+): Promise<{ status: TransactionStatus; message: string }> {
   let call: any;
   try {
     if (WEB_SETTING.notAllowedMethods.includes(functionName)) {
@@ -59,7 +68,7 @@ export async function createTransactionCallback(
       hash,
       description: summary || "-------",
     });
-    return hash;
+    return { status: TransactionStatus.SUCCESS, message: hash };
   } catch (error) {
     if (error instanceof Error) {
       console.log("Error", { error });
@@ -84,27 +93,41 @@ export async function createTransactionCallback(
           hash,
           description: summary || "-------",
         });
-        return hash;
+        return { status: TransactionStatus.EXECUTE_IN_DEV_MODE, message: hash };
       }
 
       if (error instanceof BaseError) {
         if (error instanceof UserRejectedRequestError) {
-          // TODO: error.cause
           console.log("UserRejectedRequestError", { error });
-          // TODO: handle error in client
+          return {
+            status: TransactionStatus.REJECTED_BY_USER,
+            message: error.details,
+          };
         } else if (error instanceof ContractFunctionRevertedError) {
-          // TODO: error.cause
           console.log("ContractFunctionRevertedError", { error });
-          // TODO: handle error in client
+          return {
+            status: TransactionStatus.CONTRACT_FUNCTION_REVERTED_ERROR,
+            message: error.details,
+          };
         } else {
           console.log("Error Else", { error });
-          // TODO: handle error in client
+          return {
+            status: TransactionStatus.REJECTED_BY_USER,
+            message: error.details,
+          };
         }
       } else {
-        console.error("constructCall error :", error.message);
+        return {
+          status: TransactionStatus.CONSTRUCT_CALL_ERROR,
+          message: error.message,
+        };
       }
     } else {
       console.error("Unexpected error. Could not construct calldata. ", error);
+      return {
+        status: TransactionStatus.CONSTRUCT_CALL_ERROR,
+        message: "Unexpected error. Could not construct calldata.",
+      };
     }
   }
 }

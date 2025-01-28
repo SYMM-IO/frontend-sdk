@@ -1,41 +1,11 @@
 import React from "react";
-import styled from "styled-components";
 
 import { toBN } from "@symmio/frontend-sdk/utils/numbers";
 
 import { Quote } from "@symmio/frontend-sdk/types/quote";
 import { useMarket } from "@symmio/frontend-sdk/hooks/useMarkets";
 import { CustomInputBox2 } from "components/InputBox";
-import { useExpertMode } from "@symmio/frontend-sdk/state/user/hooks";
-
-export const InputAmount = styled.input.attrs({ type: "number" })<{
-  active?: boolean;
-}>`
-  border: 0;
-  outline: none;
-  width: 100%;
-  margin-right: 2px;
-  margin-left: 2px;
-  font-size: 12px;
-  background: transparent;
-  color: ${({ theme }) => theme.text0};
-
-  appearance: textfield;
-
-  ::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  ::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  ${({ active, theme }) =>
-    active &&
-    `
-    color: ${theme.text0};
-  `}
-`;
+import { useBypassPrecisionCheckMode } from "@symmio/frontend-sdk/state/user/hooks";
 
 export default function LimitClose({
   quote,
@@ -52,9 +22,9 @@ export default function LimitClose({
   symbol?: string;
   balanceTitle?: string;
 }) {
-  const userExpertMode = useExpertMode();
+  const userBypassPrecisionCheckMode = useBypassPrecisionCheckMode();
   const { pricePrecision } = useMarket(quote?.marketId) || {};
-  const precision = userExpertMode ? undefined : pricePrecision;
+  const precision = userBypassPrecisionCheckMode ? undefined : pricePrecision;
 
   return (
     <CustomInputBox2

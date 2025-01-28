@@ -75,6 +75,8 @@ import {
 import ManageTpSlModal from "../TPSL/manage";
 import EditPencil from "components/Icons/EditPencil";
 import { useTpSlAvailable } from "@symmio/frontend-sdk/state/chains";
+import { useForceCooldowns } from "@symmio/frontend-sdk/hooks/usePartyAStats";
+import ForceCloseModal from "./ForceCloseModal";
 
 const TableStructure = styled(RowBetween)<{ active?: boolean }>`
   width: 100%;
@@ -169,6 +171,11 @@ const TwoColumnPnl = styled(Column)<{ color?: string }>`
   }
 `;
 
+const ActionButtonWrapper = styled.div`
+  display: flex;
+  gap: 4px;
+`;
+
 export const SlIconWrapper = styled.div`
   margin-left: 2px;
   padding: 0px 0px 0px 4px;
@@ -232,15 +239,7 @@ function TableHeader({
   return (
     <HeaderWrap>
       {HEADERS.map((item, key) => {
-        if (item === "Status/uPNL") {
-          return (
-            <div style={{ width: "15%" }} key={key}>
-              {item}
-            </div>
-          );
-        } else {
-          return <div key={key}>{item}</div>;
-        }
+        return <div key={key}>{item}</div>;
       })}
       <div style={{ width: "16px", height: "100%", paddingTop: "10px" }}></div>
     </HeaderWrap>
@@ -262,14 +261,25 @@ function TableRow({
   mobileVersion: boolean;
 }) {
   const theme = useTheme();
-  const { quoteStatus } = quote;
+  const { id, quoteStatus, statusModifyTimestamp } = quote;
   const activeAccountAddress = useActiveAccountAddress();
-  const { liquidationStatus, forceCancelCooldown, forceCancelCloseCooldown } =
-    useAccountPartyAStat(activeAccountAddress);
+  const { liquidationStatus } = useAccountPartyAStat(activeAccountAddress);
+  const {
+    forceCancelCloseCooldown,
+    forceCancelCooldown,
+    forceCloseFirstCooldown,
+    forceCloseMinSigPeriod,
+    forceCloseSecondCooldown,
+  } = useForceCooldowns();
   const { expired, expiredColor } = useCheckQuoteIsExpired(quote);
-  const { handleCancelClose } = useInstantClosePosition("0", "0", quote.id);
+  const { handleCancelClose } = useInstantClosePosition("0", "0", id);
+  const checkForceClose = toBN(statusModifyTimestamp)
+    .plus(forceCloseFirstCooldown)
+    .plus(forceCloseSecondCooldown)
+    .plus(forceCloseMinSigPeriod)
+    .isLessThan(Math.floor(Date.now() / 1000));
 
-  const instantCloseData = useQuoteInstantCloseData(quote.id);
+  const instantCloseData = useQuoteInstantCloseData(id);
   useInstantCloseNotifications(quote);
   const instantCloseStatusInfo = useMemo(() => {
     if (instantCloseData) {
@@ -296,13 +306,13 @@ function TableRow({
   const [remainingTime, setRemainingTime] = useState(getRemainingTime(0));
   useEffect(() => {
     const cooldown =
-      quote.quoteStatus === QuoteStatus.CANCEL_PENDING
+      quoteStatus === QuoteStatus.CANCEL_PENDING
         ? forceCancelCooldown
         : forceCancelCloseCooldown;
 
     const interval = setInterval(() => {
       const updatedTime = getRemainingTime(
-        toBN(quote.statusModifyTimestamp).plus(cooldown).times(1000).toNumber()
+        toBN(statusModifyTimestamp).plus(cooldown).times(1000).toNumber()
       );
       setRemainingTime(updatedTime);
     }, 1000);
@@ -311,8 +321,8 @@ function TableRow({
   }, [
     forceCancelCloseCooldown,
     forceCancelCooldown,
-    quote.quoteStatus,
-    quote.statusModifyTimestamp,
+    quoteStatus,
+    statusModifyTimestamp,
   ]);
 
   const [buttonText, disableButton] = useMemo(() => {
@@ -388,6 +398,7 @@ function TableRow({
       customColor={
         instantCloseStatusInfo.isInstantClose ? theme.bg4 : expiredColor
       }
+      checkForceClose={checkForceClose}
       onClickButton={onClickCloseButton}
       instantCloseStatusInfo={instantCloseStatusInfo}
     />
@@ -463,6 +474,7 @@ function QuoteRow({
   liquidatePending,
   onClickButton,
   instantCloseStatusInfo,
+  checkForceClose,
 }: {
   quote: Quote;
   buttonText: string | JSX.Element;
@@ -470,6 +482,7 @@ function QuoteRow({
   expired: boolean;
   customColor: string | undefined;
   liquidatePending: boolean;
+  checkForceClose: boolean;
   instantCloseStatusInfo: { text: string; isInstantClose: boolean };
   onClickButton: (event: React.MouseEvent<HTMLDivElement>) => void;
 }): JSX.Element | null {
@@ -485,8 +498,9 @@ function QuoteRow({
     quantityToClose,
     positionType,
     orderType,
+    marketId,
   } = quote;
-  const market = useMarket(quote.marketId);
+  const market = useMarket(marketId);
   const { name, pricePrecision } = market || {};
   const marketData = useMarketData(name);
   const leverage = useQuoteLeverage(quote);
@@ -617,11 +631,11 @@ function QuoteRow({
   const upnlPercent = useMemo(() => {
     return toBN(upnl)
       .div(quoteAvailableAmount)
-      .div(quote.openedPrice)
+      .div(openedPrice)
       .times(leverage)
       .times(100)
       .toFixed(2);
-  }, [leverage, upnl, quote.openedPrice, quoteAvailableAmount]);
+  }, [leverage, upnl, openedPrice, quoteAvailableAmount]);
 
   return useMemo(
     () => (
@@ -701,7 +715,7 @@ function QuoteRow({
             liquidatePending ? (
               <LiquidatedStatusValue>Liquidation...</LiquidatedStatusValue>
             ) : quoteStatus === QuoteStatus.OPENED ? (
-              <PnlValue color={color} style={{ width: "15%" }}>
+              <PnlValue color={color}>
                 {value === "-"
                   ? value
                   : `${value} (${Math.abs(Number(upnlPercent))})%`}
@@ -774,7 +788,7 @@ function QuoteRow({
               )}
             </TpWrapper>
           )}
-          <div>
+          <ActionButtonWrapper>
             <PositionActionButton
               expired={expired}
               liquidatePending={liquidatePending}
@@ -783,7 +797,10 @@ function QuoteRow({
             >
               {buttonText}
             </PositionActionButton>
-          </div>
+            {quoteStatus === QuoteStatus.CLOSE_PENDING &&
+              orderType === OrderType.LIMIT &&
+              checkForceClose && <ForceClose quote={quote} />}
+          </ActionButtonWrapper>
           <div
             style={{
               width: "12px",
@@ -844,12 +861,32 @@ function QuoteRow({
       disableButton,
       onClickButton,
       buttonText,
+      checkForceClose,
       showTpSlModal,
       quote,
       tpOpenPrice,
       slOpenPrice,
       setQuoteDetail,
     ]
+  );
+}
+
+function ForceClose({ quote }: { quote: Quote }) {
+  const [showForceCloseModal, setShowForceCloseModal] = useState(false);
+
+  return (
+    <React.Fragment>
+      {showForceCloseModal && (
+        <ForceCloseModal
+          quote={quote}
+          modalOpen={showForceCloseModal}
+          toggleModal={() => setShowForceCloseModal(false)}
+        />
+      )}
+      <PositionActionButton onClick={() => setShowForceCloseModal(true)}>
+        Force Close
+      </PositionActionButton>
+    </React.Fragment>
   );
 }
 

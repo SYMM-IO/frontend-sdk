@@ -2,9 +2,10 @@ import styled from "styled-components";
 
 import { Account as AccountType } from "@symmio/frontend-sdk/types/user";
 
-import { useAppDispatch } from "@symmio/frontend-sdk/state";
-import { updateAccount } from "@symmio/frontend-sdk/state/user/actions";
-import { useActiveAccountAddress } from "@symmio/frontend-sdk/state/user/hooks";
+import {
+  useActiveAccountAddress,
+  useSetActiveSubAccount,
+} from "@symmio/frontend-sdk/state/user/hooks";
 
 import { RowCenter } from "components/Row";
 import CreateAccountModal from "components/ReviewModal/CreateAccountModal";
@@ -69,13 +70,13 @@ export default function AccountsModal({
   onDismiss: () => void;
 }) {
   const activeAccountAddress = useActiveAccountAddress();
-  const dispatch = useAppDispatch();
   const showCreateAccountModal = useModalOpen(ApplicationModal.CREATE_ACCOUNT);
   const toggleCreateAccountModal = useCreateAccountModalToggle();
   const { balanceInfo, balanceInfoStatus } = useBalanceInfos();
+  const updateAccount = useSetActiveSubAccount();
 
   const onClick = (account: AccountType) => {
-    dispatch(updateAccount(account));
+    updateAccount(account.accountAddress, account.name, account.owner);
     onDismiss();
   };
 

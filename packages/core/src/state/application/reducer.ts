@@ -22,6 +22,7 @@ export enum ApplicationModal {
   WITHDRAW = "WITHDRAW",
   WITHDRAW_BAR = "WITHDRAW_BAR",
   CREATE_ACCOUNT = "CREATE_ACCOUNT",
+  ADVANCED_SETTINGS = "ADVANCED_SETTINGS",
 }
 
 export type PopupContent =

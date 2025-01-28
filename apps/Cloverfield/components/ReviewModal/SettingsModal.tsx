@@ -1,40 +1,35 @@
-import React, { useState } from "react";
-import styled from "styled-components";
+import React from "react";
+import styled, { useTheme } from "styled-components";
 
 import { ModalHeader, Modal } from "components/Modal";
-import AdvancedOptions from "./AdvancedOptions";
-import TransactionFee from "./TransactionFee";
-import ThemeSelector from "./ThemeSelector";
+
+import { RowBetween, RowEnd } from "components/Row";
+import CustomCheckbox from "components/CheckBox";
 import {
-  useSlippageTolerance,
-  useSetSlippageToleranceCallback,
-  useDarkModeManager,
+  useCustomHedgerMode,
+  useExpertMode,
+  useSetCustomHedgerModeCallback,
+  useSetExpertModeCallback,
 } from "@symmio/frontend-sdk/state/user/hooks";
 
 const MainModal = styled(Modal)`
   display: flex;
   max-width: 448px;
-  width: 100%;
+  width: 350px;
   justify-content: center;
   flex-direction: column;
-  border: 1px solid ${({ theme }) => theme.border2};
-  border-radius: 24px;
+  border: 1px solid ${({ theme }) => theme.border1};
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
-    width: 90%;
-    height: 560px;
+    max-height: unset;
   `};
 `;
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: flex-start;
-  gap: 0.8rem;
-  padding: 1.5rem 0;
-  overflow-y: scroll;
-  height: auto;
-  background: ${({ theme }) => theme.bg1};
+const Value = styled.div<{ color?: string; margin?: string }>`
+  font-size: 16px;
+  white-space: nowrap;
+  margin: ${({ margin }) => margin};
+  color: ${({ theme, color }) => color ?? theme.white};
 `;
 
 export default function SettingsModal({
@@ -46,17 +41,12 @@ export default function SettingsModal({
   isOpen: boolean;
   toggleModal: (action: boolean) => void;
 }) {
-  const [deadline, setDeadline] = useState("20");
-  const [darkMode, setDarkMode] = useDarkModeManager();
+  const { white } = useTheme();
 
-  const [useUserTxnSpeed, useSetUserTxnSpeed] = useState(0);
-
-  const slippageInfo =
-    "Setting a high slippage tolerance can help transactions succeed, but you may not get such a good price. Use with caution.";
-  const deadlineInfo =
-    "Your transaction will revert if it is left confirming for longer than this time.";
-  const txnFeeInfo =
-    "Adjusts the gas price (transaction fee) for your transaction. Higher GWEI = higher speed = higher fees";
+  const setExpertMode = useSetExpertModeCallback();
+  const isExpertMode = useExpertMode();
+  const setCustomHedgerMode = useSetCustomHedgerModeCallback();
+  const isCustomHedgerMode = useCustomHedgerMode();
 
   return (
     <>
@@ -66,39 +56,33 @@ export default function SettingsModal({
         onEscapeKeydown={() => toggleModal(false)}
       >
         <ModalHeader onClose={() => toggleModal(false)} title={title} />
-        <Wrapper>
-          <ThemeSelector
-            title="Theme"
-            amount={darkMode}
-            setAmount={setDarkMode}
-          />
+        <div style={{ padding: "12px 18px" }}>
+          <RowBetween marginBottom={"16px"}>
+            <Value color={white}>Developer Mode</Value>
+            <RowEnd width={"unset"} marginRight={"10px"}>
+              <CustomCheckbox
+                label={""}
+                id={"Developer Mode"}
+                name={"Developer Mode"}
+                checked={isExpertMode}
+                onChange={() => setExpertMode(!isExpertMode)}
+              />
+            </RowEnd>
+          </RowBetween>
 
-          <TransactionFee
-            title="Txn Speed"
-            defaultAmounts={[100, 200, 300]}
-            amount={useUserTxnSpeed}
-            setAmount={useSetUserTxnSpeed}
-            toolTipData={txnFeeInfo}
-          />
-
-          <AdvancedOptions
-            amount={useSlippageTolerance().toString()}
-            setAmount={useSetSlippageToleranceCallback()}
-            title="Slippage Tolerance"
-            defaultAmounts={["0.1", "0.5", "1.0"]}
-            unit={"%"}
-            toolTipData={slippageInfo}
-          />
-
-          <AdvancedOptions
-            amount={deadline}
-            setAmount={setDeadline}
-            title="Txn Deadline"
-            defaultAmounts={["20", "40", "60"]}
-            unit={"min"}
-            toolTipData={deadlineInfo}
-          />
-        </Wrapper>
+          <RowBetween marginBottom={"25px"}>
+            <Value color={white}>Add Custom Hedgers</Value>
+            <RowEnd width={"unset"} marginRight={"10px"}>
+              <CustomCheckbox
+                label={""}
+                id={"custom hedger mode"}
+                name={"custom hedger mode"}
+                checked={isCustomHedgerMode}
+                onChange={() => setCustomHedgerMode(!isCustomHedgerMode)}
+              />
+            </RowEnd>
+          </RowBetween>
+        </div>
       </MainModal>
     </>
   );

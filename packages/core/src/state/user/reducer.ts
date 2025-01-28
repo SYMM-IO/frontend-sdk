@@ -16,13 +16,14 @@ import {
   updateUpnlWebSocketStatus,
   updateAccountPartyAStat,
   updateAcceptTerms,
-  updateAllAccountsUpnl,
   setFEName,
   addHedger,
   selectOrUnselectHedger,
   setAllHedgerData,
   removeHedger,
   toggleDefaultHedger,
+  updateCustomHedgerMode,
+  updateBypassPrecisionCheckMode,
 } from "./actions";
 import {
   getBalanceHistory,
@@ -43,6 +44,8 @@ export const initialState: UserState = {
   matchesDarkMode: false,
   userDarkMode: true,
   userExpertMode: false,
+  customHedgerMode: false,
+  bypassPrecisionCheckMode: false,
   userSlippageTolerance: "auto",
   timestamp: currentTimestamp(),
   favorites: [],
@@ -51,7 +54,6 @@ export const initialState: UserState = {
   upnlWebSocketStatus: ConnectionStatus.CLOSED,
   activeAccountUpnl: activeAccountUpnlInitialState,
   accountsPartyAStat: {},
-  allAccountsUpnl: [],
 
   whiteListAccount: null,
   whiteListAccountState: ApiState.LOADING,
@@ -83,6 +85,12 @@ export default createReducer(initialState, (builder) =>
       state.userExpertMode = action.payload.userExpertMode;
       state.timestamp = currentTimestamp();
     })
+    .addCase(updateCustomHedgerMode, (state, action) => {
+      state.customHedgerMode = action.payload.customHedgerMode;
+    })
+    .addCase(updateBypassPrecisionCheckMode, (state, action) => {
+      state.bypassPrecisionCheckMode = action.payload.bypassPrecisionCheckMode;
+    })
     .addCase(updateUserFavorites, (state, action) => {
       state.favorites = action.payload;
     })
@@ -101,20 +109,6 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateUpnlWebSocketStatus, (state, { payload }) => {
       state.upnlWebSocketStatus = payload.status;
-    })
-    .addCase(updateAllAccountsUpnl, (state, action) => {
-      if (!state.allAccountsUpnl?.length) {
-        state.allAccountsUpnl = [];
-      }
-      const item = state.allAccountsUpnl.find(
-        (x) => x.account === action.payload.account
-      );
-
-      if (item) {
-        item.upnl = action.payload.upnl;
-      } else {
-        state.allAccountsUpnl.push(action.payload);
-      }
     })
 
     .addCase(updateAccountPartyAStat, (state, action) => {

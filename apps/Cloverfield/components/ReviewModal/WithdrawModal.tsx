@@ -35,6 +35,7 @@ import { CustomInputBox2 } from "components/InputBox";
 import { Close as CloseIcon } from "components/Icons";
 import { Row, RowBetween, RowStart } from "components/Row";
 import { WithdrawBarModalContent } from "./WithdrawBarModal";
+import { TransactionStatus } from "@symmio/frontend-sdk/utils/web3";
 
 const Wrapper = styled.div`
   display: flex;
@@ -113,20 +114,15 @@ export default function WithdrawModal() {
       return;
     }
 
-    try {
-      setAwaitingConfirmation(true);
-      await transferBalanceCallback();
+    setAwaitingConfirmation(true);
+    const { status, message } = await transferBalanceCallback();
+    if (status === TransactionStatus.SUCCESS) {
       setTypedAmount("");
-      setAwaitingConfirmation(false);
       toggleWithdrawModal();
-    } catch (e) {
-      setAwaitingConfirmation(false);
-      if (e instanceof Error) {
-        console.error(e);
-      } else {
-        console.error(e);
-      }
+    } else {
+      toast.error(message);
     }
+    setAwaitingConfirmation(false);
   }, [toggleWithdrawModal, transferBalanceCallback, transferBalanceError]);
 
   const onChange = (value: string) => {

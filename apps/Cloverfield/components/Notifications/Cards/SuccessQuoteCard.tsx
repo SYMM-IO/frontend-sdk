@@ -5,6 +5,7 @@ import { Quote } from "@symmio/frontend-sdk/types/quote";
 import {
   NotificationMessages,
   NotificationDetails,
+  LastSeenAction,
 } from "@symmio/frontend-sdk/state/notifications/types";
 
 import useCurrencyLogo, { useCollateralLogo } from "lib/hooks/useCurrencyLogo";
@@ -13,6 +14,7 @@ import { useMarket } from "@symmio/frontend-sdk/hooks/useMarkets";
 import { PartiallyFillText, PartiallyFillTitle } from "./styles";
 import BaseItem from "components/Notifications/Cards/BaseCard";
 import ShimmerAnimation from "components/ShimmerAnimation";
+import { useQuoteInstantOpenData } from "@symmio/frontend-sdk/state/quotes/hooks";
 
 export default function SuccessQuoteCard({
   notification,
@@ -26,13 +28,35 @@ export default function SuccessQuoteCard({
   loading?: boolean;
 }): JSX.Element {
   const { marketId, orderType } = quote || {};
-  const { modifyTime, lastSeenAction, quoteId } = notification;
-  const { symbol, asset } = useMarket(marketId) || {};
+  const {
+    modifyTime,
+    lastSeenAction,
+    quoteId,
+    tempQuoteId,
+    orderType: nOrderType,
+  } = notification;
+  const { marketId: instantQuoteMarketId } =
+    useQuoteInstantOpenData(tempQuoteId) || {};
+  const { symbol, asset } = useMarket(marketId ?? instantQuoteMarketId) || {};
   const token1 = useCurrencyLogo(symbol);
   const token2 = useCollateralLogo();
 
-  const text =
-    lastSeenAction !== null ? NotificationMessages[lastSeenAction] : "";
+  const getText = () => {
+    let message = "";
+
+    if (lastSeenAction === LastSeenAction.SEND_QUOTE_TRANSACTION) {
+      message = `Temp Quote${tempQuoteId} converted to ${quoteId}`;
+    } else if (lastSeenAction) {
+      message = `"${NotificationMessages[lastSeenAction]}"`;
+    }
+
+    // Add "successful" if not SEND_QUOTE_TRANSACTION
+    if (lastSeenAction !== LastSeenAction.SEND_QUOTE_TRANSACTION) {
+      message += " successful";
+    }
+
+    return `${message}`;
+  };
 
   return (
     <BaseItem
@@ -47,13 +71,13 @@ export default function SuccessQuoteCard({
           )}
           <div>
             {" "}
-            - Q{quoteId} | {orderType}
+            - Q{quoteId} | {orderType ?? nOrderType}
           </div>
         </PartiallyFillTitle>
       }
       text={
         <PartiallyFillText>
-          <div>&#34;{text}&#34; successful</div>
+          <div>{getText()}</div>
         </PartiallyFillText>
       }
       token1={token1}

@@ -14,8 +14,8 @@ import { useGetTokenWithFallbackChainId } from "@symmio/frontend-sdk/utils/token
 import {
   useAccountPartyAStat,
   useActiveAccount,
-  useExpertMode,
-  useSetExpertModeCallback,
+  useBypassPrecisionCheckMode,
+  useSetBypassPrecisionCheckModeCallback,
 } from "@symmio/frontend-sdk/state/user/hooks";
 import useActiveWagmi from "@symmio/frontend-sdk/lib/hooks/useActiveWagmi";
 import { ApplicationModal } from "@symmio/frontend-sdk/state/application/reducer";
@@ -173,7 +173,7 @@ export default function AccountOverview({
       <>
         <Wrapper>
           <TopRow>
-            <DeveloperModeTitle
+            <BypassPrecisionCheckModeTitle
               title={mobileVersion ? "Account Overview" : accountName}
             />
             <AccountHealth color={healthColor}>
@@ -270,21 +270,23 @@ function NotValidState({ text }: { text: string }) {
   );
 }
 
-export const DeveloperModeTitle = ({
+export const BypassPrecisionCheckModeTitle = ({
   title,
 }: {
   title: string | undefined;
 }) => {
-  const setExpertMode = useSetExpertModeCallback();
-  const isExpertMode = useExpertMode();
+  const setBypassPrecisionCheck = useSetBypassPrecisionCheckModeCallback();
+  const bypassPrecisionCheck = useBypassPrecisionCheckMode();
   const [tries, setTries] = useState(0);
 
   useEffect(() => {
     const toggleExpertMode = () => {
       toast.success(
-        `Developer mode ${isExpertMode ? "deactivated" : "activated"}!`
+        `Bypass Precision Check is ${
+          bypassPrecisionCheck ? "deactivated" : "activated"
+        }!`
       );
-      setExpertMode(!isExpertMode);
+      setBypassPrecisionCheck(!bypassPrecisionCheck);
       setTries(0);
     };
 
@@ -292,12 +294,13 @@ export const DeveloperModeTitle = ({
       toggleExpertMode();
     } else if (tries > 2) {
       toast.error(
-        `Developer mode is ${
-          isExpertMode ? "deactivating" : "activating"
+        `Bypass Precision Check is ${
+          bypassPrecisionCheck ? "deactivating" : "activating"
         } #${tries}`
       );
     }
-  }, [tries, setExpertMode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tries, setBypassPrecisionCheck]);
 
   const handleAccountOverviewClick = () => {
     setTries(tries + 1);

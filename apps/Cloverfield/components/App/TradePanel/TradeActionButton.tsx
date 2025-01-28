@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import { DotFlashing } from "components/Icons";
 import { useToggleOpenPositionModal } from "@symmio/frontend-sdk/state/application/hooks";
 import {
@@ -29,7 +30,8 @@ import {
 } from "@symmio/frontend-sdk/state/user/hooks";
 import { WEB_SETTING } from "@symmio/frontend-sdk/config";
 import OpenPositionButton from "components/Button/OpenPositionButton";
-import { useSendDelegateAccess } from "@symmio/frontend-sdk/hooks/useTpSl";
+import { useTpSlDelegateAccesses } from "@symmio/frontend-sdk/callbacks/useDelegateAccesses";
+import { TransactionStatus } from "@symmio/frontend-sdk/utils/web3";
 
 export default function TradeActionButtons(): JSX.Element | null {
   const validatedContext = useInvalidContext();
@@ -55,18 +57,17 @@ export default function TradeActionButtons(): JSX.Element | null {
     () => (market ? market.pricePrecision : DEFAULT_PRECISION),
     [market]
   );
-  const { callback: setDelegateAccessCallBack, error } =
-    useSendDelegateAccess();
+  const { setDelegateAccessCallBack, error } = useTpSlDelegateAccesses();
 
   const handleDelegateAccess = useCallback(async () => {
     if (error) console.debug({ error });
     if (!setDelegateAccessCallBack) return;
-    try {
-      setDelegateLoading(true);
-      const txHash = await setDelegateAccessCallBack();
-      console.log({ txHash });
-    } catch (e) {
-      console.error(e);
+
+    setDelegateLoading(true);
+    const { status, message } = await setDelegateAccessCallBack();
+    if (status !== TransactionStatus.SUCCESS) {
+      toast.error(message);
+      setDelegateLoading(false);
     }
   }, [error, setDelegateAccessCallBack]);
 

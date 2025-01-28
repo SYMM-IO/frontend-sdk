@@ -4,7 +4,13 @@ const { createReducer } = ((toolkitRaw as any).default ??
 import find from "lodash/find.js";
 import unionBy from "lodash/unionBy.js";
 
-import { InstantCloseResponse, InstantCloseStatus, QuotesState } from "./types";
+import {
+  InstantCloseItem,
+  InstantCloseResponse,
+  InstantOpenItem,
+  InstantOpenResponse,
+  QuotesState,
+} from "./types";
 import { Quote } from "../../types/quote";
 
 import { ApiState } from "../../types/api";
@@ -23,7 +29,9 @@ import {
   setTpSlData,
   updateQuoteInstantCloseStatus,
 } from "./actions";
-import { getHistory, getInstantCloses } from "./thunks";
+import { getHistory, getInstantActions } from "./thunks";
+import { getPositionTypeByIndex } from "../../hooks/useQuotes";
+import { OrderType } from "../../types/trade";
 
 export const initialState: QuotesState = {
   history: {},
@@ -35,6 +43,7 @@ export const initialState: QuotesState = {
   historyState: ApiState.LOADING,
   hasMoreHistory: false,
   instantClosesStates: {},
+  instantOpensStates: {},
   openInstantClosesState: ApiState.LOADING,
 };
 
@@ -157,32 +166,66 @@ export default createReducer(initialState, (builder) =>
       }
     )
 
-    .addCase(getInstantCloses.pending, (state) => {
+    .addCase(getInstantActions.pending, (state) => {
       state.openInstantClosesState = ApiState.LOADING;
     })
 
     .addCase(
-      getInstantCloses.fulfilled,
-      (state, { payload: { openInstantCloses } }) => {
+      getInstantActions.fulfilled,
+      (state, { payload: { instantCloses, instantOpens } }) => {
         const instantClosesStates = state.instantClosesStates;
+        const instantOpensStates = state.instantOpensStates;
 
-        openInstantCloses.forEach((d: InstantCloseResponse) => {
+        instantCloses.forEach((d: InstantCloseResponse) => {
           const data = instantClosesStates[d.quote_id];
-
           if (!data || data.amount !== d.quantity_to_close) {
             instantClosesStates[d.quote_id] = {
-              amount: d.quantity_to_close,
+              amount: d.quantity_to_close.toString(),
               timestamp: Math.floor(new Date().getTime() / 1000),
-              status: InstantCloseStatus.FAILED,
-            };
+              status: d.status,
+            } as InstantCloseItem;
           }
         });
 
+        const existingKeys = new Set(
+          Object.keys(instantOpensStates).map((n) => Number(n))
+        );
+
+        instantOpens.forEach((d: InstantOpenResponse) => {
+          const data = instantOpensStates[d.temp_quote_id];
+
+          if (!data) {
+            instantOpensStates[d.temp_quote_id] = {
+              positionType: getPositionTypeByIndex(d.position_type),
+              orderType:
+                d.order_type === 1 ? OrderType.MARKET : OrderType.LIMIT,
+              id: d.temp_quote_id,
+              marketId: d.symbol_id,
+              requestedOpenPrice: d.requested_open_price.toString(),
+              quantity: d.quantity.toString(),
+              partyAAddress: d.party_a_address,
+              CVA: d.cva.toString(),
+              LF: d.lf.toString(),
+              partyAMM: d.partyAmm.toString(),
+              partyBMM: d.partyBmm.toString(),
+
+              createTimestamp: d.create_time,
+              statusModifyTimestamp: d.modify_time,
+              version: d.version,
+            } as InstantOpenItem;
+          }
+          existingKeys.delete(d.temp_quote_id);
+        });
+
+        existingKeys.forEach((key) => {
+          delete instantOpensStates[key];
+        });
         state.instantClosesStates = instantClosesStates;
+        state.instantOpensStates = instantOpensStates;
       }
     )
 
-    .addCase(getInstantCloses.rejected, (state) => {
+    .addCase(getInstantActions.rejected, (state) => {
       state.openInstantClosesState = ApiState.ERROR;
       console.error("Unable to fetch from The Hedger");
     })

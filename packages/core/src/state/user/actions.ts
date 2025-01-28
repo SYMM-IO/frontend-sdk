@@ -14,6 +14,14 @@ export const updateUserDarkMode = createAction<{ userDarkMode: boolean }>(
 export const updateUserExpertMode = createAction<{ userExpertMode: boolean }>(
   "user/updateUserExpertMode"
 );
+export const updateCustomHedgerMode = createAction<{
+  customHedgerMode: boolean;
+}>("user/updateCustomHedgerMode");
+
+export const updateBypassPrecisionCheckMode = createAction<{
+  bypassPrecisionCheckMode: boolean;
+}>("user/updateBypassPrecisionCheckMode");
+
 export const updateUserFavorites = createAction<string[]>(
   "user/updateUserFavorites"
 );
@@ -39,10 +47,7 @@ export const updateAccountPartyAStat = createAction<{
 export const updateAcceptTerms = createAction<TermsStatus>(
   "user/updateAcceptTerms"
 );
-export const updateAllAccountsUpnl = createAction<{
-  account: string;
-  upnl: AccountUpnl;
-}>("user/updateAllAccountsUpnl");
+
 export const setFEName = createAction<string>("user/setFEName");
 
 export const setAllHedgerData = createAction<AddedHedgersData>(

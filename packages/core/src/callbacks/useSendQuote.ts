@@ -5,7 +5,6 @@ import {
   DEFAULT_PRECISION,
   LIMIT_ORDER_DEADLINE,
   MARKET_ORDER_DEADLINE,
-  MARKET_PRICE_COEFFICIENT,
 } from "../constants/misc";
 import {
   useAppName,
@@ -21,6 +20,7 @@ import { useHedgerInfo, useSetNotionalCap } from "../state/hedger/hooks";
 import { getAppNameHeader, getNotionalCapUrl } from "../state/hedger/thunks";
 import {
   useActiveAccountAddress,
+  useBypassPrecisionCheckMode,
   useExpertMode,
   usePartyBsWhiteList,
   useSlippageTolerance,
@@ -67,12 +67,13 @@ import { DIAMOND_ABI } from "../constants";
 
 export function useSentQuoteCallback(): {
   state: TransactionCallbackState;
-  callback: null | (() => Promise<any>);
+  callback: null | (() => ReturnType<typeof createTransactionCallback>);
   error: string | null;
 } {
   const { account, chainId } = useActiveWagmi();
   const addTransaction = useTransactionAdder();
   const userExpertMode = useExpertMode();
+  const userBypassPrecisionCheckMode = useBypassPrecisionCheckMode();
   const addRecentTransaction = useAddRecentTransaction();
   const wagmiConfig = useWagmiConfig();
 
@@ -96,34 +97,18 @@ export function useSentQuoteCallback(): {
   const slippage = useSlippageTolerance();
   const pricePrecision = useMemo(
     () =>
-      userExpertMode ? undefined : market?.pricePrecision ?? DEFAULT_PRECISION,
-    [market?.pricePrecision, userExpertMode]
+      userBypassPrecisionCheckMode
+        ? undefined
+        : market?.pricePrecision ?? DEFAULT_PRECISION,
+    [market?.pricePrecision, userBypassPrecisionCheckMode]
   );
   const openPrice = useMemo(() => (price ? price : "0"), [price]);
-  const autoSlippage = market ? market.autoSlippage : MARKET_PRICE_COEFFICIENT;
   const MuonData = useMuonData();
 
-  const openPriceFinal = useMemo(() => {
-    if (orderType === OrderType.LIMIT) return openPrice;
-
-    if (slippage === "auto") {
-      return positionType === PositionType.SHORT
-        ? toBN(openPrice).div(autoSlippage).toString()
-        : toBN(openPrice).times(autoSlippage).toString();
-    }
-
-    const spSigned =
-      positionType === PositionType.SHORT ? slippage : slippage * -1;
-    const slippageFactored = toBN(100 - spSigned).div(100);
-    return toBN(openPrice).times(slippageFactored).toString();
-  }, [orderType, openPrice, slippage, positionType, autoSlippage]);
-
   const openPriceWied = useMemo(
-    () => toWei(formatPrice(openPriceFinal, pricePrecision ?? 20)),
-    [openPriceFinal, pricePrecision]
+    () => toWei(formatPrice(openPrice, pricePrecision ?? 20)),
+    [openPrice, pricePrecision]
   );
-
-  // console.log({ openPrice, openPriceFinal, openPriceWied, pricePrecision });
 
   const quantityAsset = useMemo(
     () => (toBN(formattedAmounts[1]).isNaN() ? "0" : formattedAmounts[1]),
@@ -132,7 +117,7 @@ export function useSentQuoteCallback(): {
 
   const notionalValue = useNotionalValue(
     quantityAsset,
-    formatPrice(openPriceFinal, pricePrecision)
+    formatPrice(openPrice, pricePrecision)
   );
   const lockedCVA = useLockedCVA(notionalValue);
   const lockedLF = useLockedLF(notionalValue);

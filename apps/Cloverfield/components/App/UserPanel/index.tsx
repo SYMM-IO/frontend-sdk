@@ -6,14 +6,17 @@ import { Quote } from "@symmio/frontend-sdk/types/quote";
 import useActiveWagmi from "@symmio/frontend-sdk/lib/hooks/useActiveWagmi";
 import { useActiveAccountAddress } from "@symmio/frontend-sdk/state/user/hooks";
 import {
-  useGetOpenInstantClosesCallback,
+  useGetOpenInstantOrdersCallback,
   useGetOrderHistoryCallback,
   useHistoryQuotes,
+  useInstantOpensData,
   usePendingsQuotes,
   usePositionsQuotes,
   useQuoteDetail,
   useSetQuoteDetailCallback,
 } from "@symmio/frontend-sdk/state/quotes/hooks";
+import { sortQuotesByModifyTimestamp } from "@symmio/frontend-sdk/hooks/useQuotes";
+import { InstantOpenItem } from "@symmio/frontend-sdk/state/quotes/types";
 
 import { Card } from "components/Card";
 import History from "./History";
@@ -23,6 +26,7 @@ import { ItemsPerPage } from "./PaginateTable";
 import ArrowRightTriangle from "components/Icons/ArrowRightTriangle";
 import { RowCenter } from "components/Row";
 import { IconWrapper } from "components/Icons";
+import InstantOpenOrders from "./InstantOpenOrders";
 
 const Wrapper = styled(Card)`
   padding: 0;
@@ -57,12 +61,13 @@ export default function UserPanel(): JSX.Element | null {
   const { quotes: closed, hasMoreHistory } = useHistoryQuotes();
   const { quotes: positions } = usePositionsQuotes();
   const { quotes: pendings } = usePendingsQuotes();
+  const instantOpenData = useInstantOpensData();
   const getHistory = useGetOrderHistoryCallback();
-  const getOpenInstantCloses = useGetOpenInstantClosesCallback();
+  const getOpenInstantOrders = useGetOpenInstantOrdersCallback();
 
   useEffect(() => {
-    if (positions.length) getOpenInstantCloses();
-  }, [getOpenInstantCloses, positions.length]);
+    getOpenInstantOrders();
+  }, [getOpenInstantOrders, positions.length]);
 
   function getHistoryQuotes() {
     const skip = page * ItemsPerPage;
@@ -73,20 +78,23 @@ export default function UserPanel(): JSX.Element | null {
   }
 
   const positionQuotes: Quote[] = useMemo(() => {
-    return [...pendings, ...positions].sort(
-      (a: Quote, b: Quote) =>
-        Number(b.statusModifyTimestamp) - Number(a.statusModifyTimestamp)
-    );
+    return [...pendings, ...positions].sort(sortQuotesByModifyTimestamp);
   }, [pendings, positions]);
+
+  const instantOpenQuotes: InstantOpenItem[] = useMemo(() => {
+    return Object.values(instantOpenData).sort(sortQuotesByModifyTimestamp);
+  }, [instantOpenData]);
 
   const currentOrders = useMemo(() => {
     switch (selectedTab) {
       case StateTabs.POSITIONS:
         return positionQuotes;
+      case StateTabs.INSTANT_OPEN_ORDERS:
+        return instantOpenQuotes;
       default:
         return closed;
     }
-  }, [selectedTab, positionQuotes, closed]);
+  }, [selectedTab, positionQuotes, instantOpenQuotes, closed]);
 
   const paginatedItems = useMemo(() => {
     return currentOrders.slice((page - 1) * ItemsPerPage, page * ItemsPerPage);
@@ -95,9 +103,13 @@ export default function UserPanel(): JSX.Element | null {
   const Rows = useMemo(() => {
     switch (selectedTab) {
       case StateTabs.POSITIONS:
-        return <Position quotes={paginatedItems} />;
+        return <Position quotes={paginatedItems as Quote[]} />;
+      case StateTabs.INSTANT_OPEN_ORDERS:
+        return (
+          <InstantOpenOrders quotes={paginatedItems as InstantOpenItem[]} />
+        );
       default:
-        return <History quotes={paginatedItems} />;
+        return <History quotes={paginatedItems as Quote[]} />;
     }
   }, [selectedTab, paginatedItems]);
 

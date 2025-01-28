@@ -23,12 +23,14 @@ import {
 import { useActiveAccountAddress } from "../user/hooks";
 import { sortQuotesByModifyTimestamp } from "../../hooks/useQuotes";
 import { useOrderHistoryApolloClient } from "../../apollo/client/orderHistory";
-import { getHistory, getInstantCloses } from "./thunks";
+import { getHistory, getInstantActions } from "./thunks";
 import { useAppName, useOrderHistorySubgraphAddress } from "../chains";
 import {
   InstantCloseItem,
   InstantCloseObject,
   InstantCloseStatus,
+  InstantOpenItem,
+  InstantOpenObject,
   TpSlContent,
 } from "./types";
 import { useHedgerInfo } from "../hedger/hooks";
@@ -101,6 +103,20 @@ export function useListenersQuotes(): number[] {
 export function useInstantClosesData(): InstantCloseObject {
   const data = useAppSelector((state) => state.quotes.instantClosesStates);
   return data;
+}
+
+export function useInstantOpensData(): InstantOpenObject {
+  const data = useAppSelector((state) => state.quotes.instantOpensStates);
+  return data;
+}
+
+export function useQuoteInstantOpenData(
+  id: number | undefined
+): InstantOpenItem | null {
+  const data: InstantOpenItem = useAppSelector(
+    (state) => state.quotes.instantOpensStates
+  );
+  return id !== undefined ? data[id] ?? null : null;
 }
 
 export function useQuoteInstantCloseData(id: number): InstantCloseItem {
@@ -232,17 +248,17 @@ export function useGetOrderHistoryCallback() {
       skip: number,
       ItemsPerPage: number
     ) => {
-      if (!chainId || !account) return;
+      if (!chainId || !account || !client) return;
       thunkDispatch(
         getHistory({ account, chainId, client, first, skip, ItemsPerPage })
       );
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [thunkDispatch, subgraphAddress]
+    [thunkDispatch, subgraphAddress, client]
   );
 }
 
-export function useGetOpenInstantClosesCallback() {
+export function useGetOpenInstantOrdersCallback() {
   const thunkDispatch: AppThunkDispatch = useAppDispatch();
   const { baseUrl } = useHedgerInfo() || {};
   const account = useActiveAccountAddress();
@@ -251,7 +267,7 @@ export function useGetOpenInstantClosesCallback() {
   return useCallback(() => {
     if (!account) return;
     thunkDispatch(
-      getInstantCloses({
+      getInstantActions({
         account,
         baseUrl,
         appName,

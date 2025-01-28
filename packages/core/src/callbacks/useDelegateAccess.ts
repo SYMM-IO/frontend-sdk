@@ -23,11 +23,11 @@ import {
   usePartyBWhitelistAddress,
   useWagmiConfig,
 } from "../state/chains";
-import { MULTI_ACCOUNT_ABI } from "../constants";
+import { CLOSE_QUOTE_HASH_CONTRACT, MULTI_ACCOUNT_ABI } from "../constants";
 
 export function useDelegateAccess(): {
   state: TransactionCallbackState;
-  callback: null | (() => Promise<any>);
+  callback: null | (() => ReturnType<typeof createTransactionCallback>);
   error: string | null;
 } {
   const { account, chainId } = useActiveWagmi();
@@ -65,7 +65,7 @@ export function useDelegateAccess(): {
       const args = [
         activeAccountAddress as Address,
         partyBWhiteList[0] as Address,
-        "0x501e891f" as Address,
+        CLOSE_QUOTE_HASH_CONTRACT as Address,
         true,
       ] as const;
 
@@ -81,7 +81,7 @@ export function useDelegateAccess(): {
             args: [
               activeAccountAddress as Address,
               partyBWhiteList[0] as Address,
-              "0x501e891f" as Address,
+              CLOSE_QUOTE_HASH_CONTRACT as Address,
               true,
             ],
           }),
@@ -112,8 +112,10 @@ export function useDelegateAccess(): {
 
     const txInfo = {
       type: TransactionType.SIGN_MESSAGE,
-      text: "Enable instance close",
+      text: "Enable instant close",
     } as SignMessageTransactionInfo;
+
+    const summary = `Enable instant close`;
 
     return {
       state: TransactionCallbackState.VALID,
@@ -125,7 +127,8 @@ export function useDelegateAccess(): {
           addTransaction,
           addRecentTransaction,
           txInfo,
-          wagmiConfig
+          wagmiConfig,
+          summary
         ),
     };
   }, [

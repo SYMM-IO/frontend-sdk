@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
+import toast from "react-hot-toast";
 import Image from "next/image";
 
 import GRADIENT_CLOVERFIELD_LOGO from "/public/static/images/etc/GradientCloverfield.svg";
@@ -15,6 +16,7 @@ import { useSignMessage } from "@symmio/frontend-sdk/callbacks/useMultiAccount";
 import { useWriteSign } from "@symmio/frontend-sdk/callbacks/useWriteSign";
 import { useGetMessage } from "@symmio/frontend-sdk/hooks/useCheckSign";
 import GradientButton from "components/Button/GradientButton";
+import { TransactionStatus } from "@symmio/frontend-sdk/utils/web3";
 
 const Wrapper = styled.div`
   display: flex;
@@ -118,15 +120,12 @@ function ActionButton({ isTermsAccepted }: { isTermsAccepted: boolean }) {
   const onWriteSignCb = useCallback(
     async (sign: string) => {
       if (!writeSignCallback || !sign) return;
-      try {
-        await writeSignCallback(sign);
-      } catch (e) {
-        if (e instanceof Error) {
-          console.error(e);
-        } else {
-          console.debug(e);
-        }
+
+      const { status, message } = await writeSignCallback(sign);
+      if (status !== TransactionStatus.SUCCESS) {
+        toast.error(message);
       }
+
       setAwaitingConfirmation(false);
     },
     [writeSignCallback]

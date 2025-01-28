@@ -24,7 +24,10 @@ import { SIGNATURE_STORE_ABI } from "../constants";
 
 export function useWriteSign(): {
   state: TransactionCallbackState;
-  callback: null | ((sign: string) => Promise<any>);
+
+  callback:
+    | null
+    | ((sign: string) => ReturnType<typeof createTransactionCallback>);
   error: string | null;
 } {
   const { account, chainId } = useActiveWagmi();
