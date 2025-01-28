@@ -11,7 +11,7 @@ export const BSC_MUON_BASE_URLS = [
 ];
 
 export const POLYGON_MUON_BASE_URL = [
-  "https://polygon-testnet-oracle.rasa.capital",
+  "https://polygon-testnet-oracle.rasa.capital/v1/",
 ];
 
 export const MANTLE_MUON_BASE_URL = [

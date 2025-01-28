@@ -92,6 +92,7 @@ export function useAccountsLength(): {
     args: [account as Address],
     query: {
       enabled: Boolean(account) && isSupportedChainId,
+      refetchInterval: 2000,
     },
   });
 
