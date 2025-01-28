@@ -161,10 +161,7 @@ export default function WithdrawCooldown({
     transferBalanceError,
   ]);
 
-  const fixedAccountBalance = formatPrice(
-    accountBalance,
-    collateralCurrency?.decimals
-  );
+  const fixedAccountBalance = formatPrice(accountBalance, 6);
 
   if (toBN(fixedAccountBalance).isGreaterThan(0)) {
     if (diff > 0) {
