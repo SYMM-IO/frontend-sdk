@@ -13,9 +13,9 @@ enum ReadyState {
 }
 import { useAppDispatch, AppThunkDispatch } from "../declaration";
 import useIsWindowVisible from "../../lib/hooks/useIsWindowVisible";
-import { autoRefresh, retry } from "../../utils/retry";
+import { autoRefresh } from "../../utils/retry";
 
-import { ApiState, ConnectionStatus } from "../../types/api";
+import { ConnectionStatus } from "../../types/api";
 import {
   MarketDataMap as PricesType,
   MarketData,
@@ -26,12 +26,10 @@ import {
   useSetWebSocketStatus,
   useSetPrices,
   useHedgerInfo,
-  useMarketsStatus,
   useMarketNotionalCap,
   useSetDepth,
   useMarkets,
   useSetFundingRates,
-  useOpenInterestStatus,
 } from "./hooks";
 import {
   getMarkets,
@@ -85,7 +83,6 @@ function useFetchMarkets(
 ) {
   const appName = useAppName();
   const { baseUrl } = hedger || {};
-  const marketsStatus = useMarketsStatus();
 
   const hedgerMarket = useCallback(
     (options?: { [x: string]: any }) => {
@@ -109,16 +106,6 @@ function useFetchMarkets(
       controller.abort();
     };
   }, [hedgerMarket]);
-
-  //if error occurs it will retry to fetch markets 5 times
-  useEffect(() => {
-    if (marketsStatus === ApiState.ERROR)
-      retry(hedgerMarket, {
-        n: 5,
-        minWait: 1000,
-        maxWait: 10000,
-      });
-  }, [marketsStatus, hedgerMarket]);
 }
 
 function useFetchOpenInterest(
@@ -127,7 +114,6 @@ function useFetchOpenInterest(
 ) {
   const appName = useAppName();
   const { baseUrl } = hedger || {};
-  const marketsStatus = useOpenInterestStatus();
 
   const hedgerOpenInterest = useCallback(
     (options?: { [x: string]: any }) => {
@@ -155,16 +141,6 @@ function useFetchOpenInterest(
       controller.abort();
     };
   }, [hedgerOpenInterest]);
-
-  //if error occurs it will retry to fetch markets 5 times
-  useEffect(() => {
-    if (marketsStatus === ApiState.ERROR)
-      retry(hedgerOpenInterest, {
-        n: 5,
-        minWait: 1000,
-        maxWait: 10000,
-      });
-  }, [marketsStatus, hedgerOpenInterest]);
 }
 
 function useFetchNotionalCap(
@@ -172,7 +148,7 @@ function useFetchNotionalCap(
   thunkDispatch: AppThunkDispatch,
   activeMarket?: Market
 ) {
-  const { marketNotionalCap, marketNotionalCapStatus } = useMarketNotionalCap();
+  const { marketNotionalCap } = useMarketNotionalCap();
   const { baseUrl } = hedger || {};
   const appName = useAppName();
 
@@ -193,17 +169,6 @@ function useFetchNotionalCap(
   useEffect(() => {
     if (activeMarket) return autoRefresh(notionalCaps, 60 * 60);
   }, [activeMarket, notionalCaps]);
-
-  //if error occurs it will retry to fetch markets 5 times
-  useEffect(() => {
-    if (activeMarket && marketNotionalCapStatus === ApiState.ERROR) {
-      retry(notionalCaps, {
-        n: 5,
-        minWait: 3000,
-        maxWait: 10000,
-      });
-    }
-  }, [marketNotionalCapStatus, activeMarket, notionalCaps]);
 }
 
 function usePriceWebSocket() {
@@ -315,10 +280,6 @@ function useFundingRateWebSocket() {
       return ConnectionStatus.CLOSED;
     }
   }, [readyState]);
-
-  // useEffect(() => {
-  //   updateWebSocketStatus(connectionStatus)
-  // }, [connectionStatus, updateWebSocketStatus])
 
   useEffect(() => {
     if (connectionStatus === ConnectionStatus.OPEN && activeMarket) {
