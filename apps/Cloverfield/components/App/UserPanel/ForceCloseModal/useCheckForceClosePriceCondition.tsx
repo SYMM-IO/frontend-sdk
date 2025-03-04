@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 
 import { Quote } from "@symmio/frontend-sdk/types/quote";
@@ -87,20 +87,24 @@ export default function useCheckForceClosePriceCondition({
         processChunks();
       }
     };
-
     fetchKlineData();
   }, [dateRange, marketName]);
 
   // long  —> requested Limit Close Price <= price / slippage
   // short —> requested Limit Close Price >= price * slippage
 
+  const openTimestamp = useRef(0);
+  const closeTimestamp = useRef(0);
+
   useEffect(() => {
     if (requestedCloseLimitPrice && positionType) {
       const isPriceConditionMet = candles.some((candle) => {
-        const [, , highPrice, lowPrice] = candle;
+        const [openTime, , highPrice, lowPrice, , , closeTime] = candle;
         const closeLimitPrice = toBN(requestedCloseLimitPrice);
         const gapRatio = toBN(1).plus(forceCloseGapRatio);
 
+        openTimestamp.current = openTime;
+        closeTimestamp.current = closeTime;
         if (positionType === PositionType.LONG) {
           return closeLimitPrice.isLessThanOrEqualTo(
             toBN(highPrice).div(gapRatio)
@@ -111,10 +115,18 @@ export default function useCheckForceClosePriceCondition({
           );
         }
       });
-
+      if (!isPriceConditionMet) {
+        openTimestamp.current = 0;
+        closeTimestamp.current = 0;
+      }
       setForceCloseEnabled(isPriceConditionMet);
     }
   }, [candles, forceCloseGapRatio, positionType, requestedCloseLimitPrice]);
 
-  return { forceCloseEnabled, error };
+  return {
+    forceCloseEnabled,
+    error,
+    openTimestamp: openTimestamp.current,
+    closeTimestamp: closeTimestamp.current,
+  };
 }

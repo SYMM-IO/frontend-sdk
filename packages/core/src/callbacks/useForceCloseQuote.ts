@@ -74,7 +74,7 @@ export function useForceCloseQuoteCallback(
 
     const { AppName, Urls } = MuonData[chainId];
     const t0 = dateRange[0].getTime() / 1000;
-    const t1 = dateRange[1].getTime() / 1000;
+    const t1 = Math.ceil(dateRange[1].getTime() / 1000);
     const partyB = PARTY_B_WHITELIST[chainId];
     const { success, signature, error } =
       await ForceClosePositionClient.getMuonSig(
