@@ -185,18 +185,18 @@ function ActionButton({
 
   const [awaitingCancelConfirmation, setAwaitingCancelConfirmation] =
     useState(false);
-
-  const { forceCloseEnabled, closeTimestamp, openTimestamp } =
-    useCheckForceClosePriceCondition({
-      dateRange,
-      quote,
-      marketName,
-    });
   const {
     forceCloseFirstCooldown,
     forceCloseMinSigPeriod,
     forceCloseSecondCooldown,
   } = useForceCooldowns();
+  const { forceCloseEnabled, closeTimestamp, openTimestamp } =
+    useCheckForceClosePriceCondition({
+      dateRange,
+      quote,
+      marketName,
+      cooldowns: { forceCloseFirstCooldown, forceCloseSecondCooldown },
+    });
   const { callback: forceCloseCallback, error } = useForceCloseQuoteCallback(
     quote,
     [new Date(openTimestamp), new Date(closeTimestamp)]
