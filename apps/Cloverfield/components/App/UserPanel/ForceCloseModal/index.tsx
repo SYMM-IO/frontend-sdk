@@ -1,8 +1,6 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import BigNumber from "bignumber.js";
-import DateRangePicker from "rsuite/DateRangePicker";
-import "rsuite/dist/rsuite-no-reset.min.css";
 
 import useActiveWagmi from "@symmio/frontend-sdk/lib/hooks/useActiveWagmi";
 import { Quote, QuoteStatus } from "@symmio/frontend-sdk/types/quote";
@@ -104,18 +102,16 @@ export default function ForceCloseModal({
     }, [closedAmount, fillAmount, quantity, quantityToClose, quoteStatus]);
 
   const [dateRange, setDateRange] = useState<[Date, Date] | null>(null);
-  const handleChange = (value: [Date, Date] | null) => {
-    if (value) {
-      const [t0, t1] = value.map((t) => {
-        const newDate = new Date(t.getTime());
-        newDate.setSeconds(0);
-        return newDate;
-      });
+  useEffect(() => {
+    if (quote) {
+      const t0 = new Date(quote.statusModifyTimestamp * 1000);
+      const t1 = new Date(Math.ceil(Date.now()));
+      t0.setSeconds(0);
+      t1.setSeconds(0, 0);
+      t1.setMinutes(t1.getMinutes() + 1);
       setDateRange([t0, t1]);
-    } else {
-      setDateRange(null);
     }
-  };
+  }, [quote]);
 
   return (
     <Modal
@@ -142,13 +138,6 @@ export default function ForceCloseModal({
             notFilledAmount,
             quantityPrecision
           )} ${symbol})`}
-        />
-
-        <DateRangePicker
-          value={dateRange}
-          onChange={handleChange}
-          format="MM/dd/yyyy HH:mm"
-          placeholder="Select Date Range"
         />
 
         {dateRange && dateRange[0] && dateRange[1] && (
@@ -193,24 +182,31 @@ function ActionButton({
 }): JSX.Element | null {
   const { account, chainId } = useActiveWagmi();
   const isPendingTxs = useIsHavePendingTransaction();
-  const { callback: forceCloseCallback, error } = useForceCloseQuoteCallback(
-    quote,
-    dateRange
-  );
 
   const [awaitingCancelConfirmation, setAwaitingCancelConfirmation] =
     useState(false);
-
-  const { forceCloseEnabled } = useCheckForceClosePriceCondition({
-    dateRange,
-    quote,
-    marketName,
-  });
   const {
     forceCloseFirstCooldown,
     forceCloseMinSigPeriod,
     forceCloseSecondCooldown,
   } = useForceCooldowns();
+
+  const {
+    forceCloseEnabled,
+    closeTimestamp,
+    openTimestamp,
+    loading: forceCloseCalculationLoading,
+  } = useCheckForceClosePriceCondition({
+    dateRange,
+    quote,
+    marketName,
+    cooldowns: { forceCloseFirstCooldown, forceCloseSecondCooldown },
+  });
+
+  const { callback: forceCloseCallback, error } = useForceCloseQuoteCallback(
+    quote,
+    [new Date(openTimestamp), new Date(closeTimestamp)]
+  );
 
   const { statusModifyTimestamp, deadline } = quote;
 
@@ -225,23 +221,17 @@ function ActionButton({
   );
 
   const { isForceCloseAllowed, forceCloseError } = useMemo(() => {
-    if (!dateRange || !dateRange[0] || !dateRange[1]) {
-      return {
-        isForceCloseAllowed: false,
-        forceCloseError: "Enter Date Range",
-      };
-    }
-
     // Here we check force close range conditions
-    const startTimestampBN = toBN(dateRange[0].getTime() / 1000);
-    const endTimestampBN = toBN(dateRange[1].getTime() / 1000);
+    const startTimestampBN = toBN(openTimestamp / 1000);
+    const endTimestampBN = toBN(Math.ceil(closeTimestamp / 1000));
+
     if (
+      !startTimestampBN.isZero() &&
       startTimestampBN.isLessThan(
         toBN(forceCloseFirstCooldown).plus(statusModifyTimestamp)
       )
     ) {
       // require(sig.startTime >= quote.statusModifyTimestamp + maLayout.forceCloseFirstCooldown, "PartyAFacet: Cooldown not reached");
-
       return {
         isForceCloseAllowed: false,
         forceCloseError: "Cooldown not reached",
@@ -266,12 +256,21 @@ function ActionButton({
       };
     }
     if (
+      !endTimestampBN.isZero() &&
+      !startTimestampBN.isZero() &&
       endTimestampBN.minus(startTimestampBN).isLessThan(forceCloseMinSigPeriod)
     ) {
       // require(sig.endTime - sig.startTime >= maLayout.forceCloseMinSigPeriod, "PartyAFacet: Invalid signature period");
       return {
         isForceCloseAllowed: false,
         forceCloseError: "Invalid signature period",
+      };
+    }
+
+    if (forceCloseCalculationLoading) {
+      return {
+        isForceCloseAllowed: false,
+        forceCloseError: "Calculating",
       };
     }
 
@@ -284,13 +283,15 @@ function ActionButton({
 
     return { isForceCloseAllowed: true };
   }, [
-    dateRange,
-    deadline,
-    forceCloseEnabled,
+    openTimestamp,
+    closeTimestamp,
     forceCloseFirstCooldown,
-    forceCloseMinSigPeriod,
-    forceCloseSecondCooldown,
     statusModifyTimestamp,
+    forceCloseSecondCooldown,
+    deadline,
+    forceCloseMinSigPeriod,
+    forceCloseCalculationLoading,
+    forceCloseEnabled,
   ]);
 
   const handleForceClose = useCallback(async () => {
