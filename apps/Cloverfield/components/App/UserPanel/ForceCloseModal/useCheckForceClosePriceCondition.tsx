@@ -38,6 +38,7 @@ export default function useCheckForceClosePriceCondition({
   };
 }) {
   const [candles, setCandles] = useState<KlineArray>([]);
+  const [calculatingLoading, setCalculatingLoading] = useState<boolean>(false);
   const {
     marketId,
     positionType,
@@ -80,7 +81,7 @@ export default function useCheckForceClosePriceCondition({
       const processChunks = async () => {
         const maxLimit = 500;
         const chunks: KlineArray[] = [];
-
+        setCalculatingLoading(true);
         for (let start = t0; start < t1; start += maxLimit * 60) {
           const end = Math.min(start + maxLimit * 60, t1);
           try {
@@ -95,6 +96,7 @@ export default function useCheckForceClosePriceCondition({
         // Flatten the array of chunks
         const allCandles = chunks.flat();
         setCandles(allCandles);
+        setCalculatingLoading(false);
       };
 
       processChunks();
@@ -167,5 +169,6 @@ export default function useCheckForceClosePriceCondition({
     error,
     openTimestamp: openTimestamp.current,
     closeTimestamp: closeTimestamp.current,
+    loading: calculatingLoading,
   };
 }

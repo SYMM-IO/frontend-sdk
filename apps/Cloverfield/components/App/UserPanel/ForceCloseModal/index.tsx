@@ -190,13 +190,19 @@ function ActionButton({
     forceCloseMinSigPeriod,
     forceCloseSecondCooldown,
   } = useForceCooldowns();
-  const { forceCloseEnabled, closeTimestamp, openTimestamp } =
-    useCheckForceClosePriceCondition({
-      dateRange,
-      quote,
-      marketName,
-      cooldowns: { forceCloseFirstCooldown, forceCloseSecondCooldown },
-    });
+
+  const {
+    forceCloseEnabled,
+    closeTimestamp,
+    openTimestamp,
+    loading: forceCloseCalculationLoading,
+  } = useCheckForceClosePriceCondition({
+    dateRange,
+    quote,
+    marketName,
+    cooldowns: { forceCloseFirstCooldown, forceCloseSecondCooldown },
+  });
+
   const { callback: forceCloseCallback, error } = useForceCloseQuoteCallback(
     quote,
     [new Date(openTimestamp), new Date(closeTimestamp)]
@@ -261,6 +267,13 @@ function ActionButton({
       };
     }
 
+    if (forceCloseCalculationLoading) {
+      return {
+        isForceCloseAllowed: false,
+        forceCloseError: "Calculating",
+      };
+    }
+
     if (!forceCloseEnabled) {
       return {
         isForceCloseAllowed: false,
@@ -272,12 +285,13 @@ function ActionButton({
   }, [
     openTimestamp,
     closeTimestamp,
-    deadline,
-    forceCloseEnabled,
     forceCloseFirstCooldown,
-    forceCloseMinSigPeriod,
-    forceCloseSecondCooldown,
     statusModifyTimestamp,
+    forceCloseSecondCooldown,
+    deadline,
+    forceCloseMinSigPeriod,
+    forceCloseCalculationLoading,
+    forceCloseEnabled,
   ]);
 
   const handleForceClose = useCallback(async () => {
