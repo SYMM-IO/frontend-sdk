@@ -1,12 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-import BigNumber from "bignumber.js";
 
 import useActiveWagmi from "@symmio/frontend-sdk/lib/hooks/useActiveWagmi";
 import { Quote, QuoteStatus } from "@symmio/frontend-sdk/types/quote";
-import { BN_ZERO, formatPrice, toBN } from "@symmio/frontend-sdk/utils/numbers";
+import { toBN } from "@symmio/frontend-sdk/utils/numbers";
 import { useMarket } from "@symmio/frontend-sdk/hooks/useMarkets";
-import { useQuoteFillAmount } from "@symmio/frontend-sdk/hooks/useQuotes";
 import { useIsHavePendingTransaction } from "@symmio/frontend-sdk/state/transactions/hooks";
 import { useForceCooldowns } from "@symmio/frontend-sdk/hooks/usePartyAStats";
 import { useForceCloseQuoteCallback } from "@symmio/frontend-sdk/callbacks/useForceCloseQuote";
@@ -52,54 +50,8 @@ export default function ForceCloseModal({
   toggleModal: () => void;
   quote: Quote | null;
 }) {
-  const {
-    marketId,
-    quantity,
-    positionType,
-    quoteStatus,
-    quantityToClose,
-    closedAmount,
-  } = quote || {};
-  const {
-    name: marketName,
-    quantityPrecision,
-    symbol,
-  } = useMarket(marketId) || {};
-
-  const fillAmount = useQuoteFillAmount(quote ?? ({} as Quote));
-
-  const [notFilledAmount, filledAmount, notFilledPercent, filledPercent] =
-    useMemo(() => {
-      if (!quantity || !quantityToClose || !closedAmount)
-        return [BN_ZERO, BN_ZERO, BN_ZERO, BN_ZERO];
-
-      const fillAmountBN = toBN(fillAmount ?? 0);
-      if (fillAmountBN.isEqualTo(0)) {
-        return [toBN(quantityToClose), BN_ZERO, toBN(100), BN_ZERO];
-      } else if (
-        quoteStatus === QuoteStatus.CLOSE_PENDING ||
-        quoteStatus === QuoteStatus.CANCEL_CLOSE_PENDING
-      ) {
-        const notFilledAmount = toBN(quantityToClose)
-          .plus(closedAmount)
-          .minus(fillAmountBN);
-        return [
-          notFilledAmount,
-          fillAmountBN.minus(closedAmount),
-          notFilledAmount.div(quantityToClose).times(100),
-          fillAmountBN.minus(closedAmount).div(quantityToClose).times(100),
-        ];
-      } else {
-        const notFilledAmount = toBN(quantity).minus(fillAmountBN);
-
-        return [
-          notFilledAmount,
-          fillAmountBN,
-          notFilledAmount.div(quantity).times(100),
-          fillAmountBN.div(quantity).times(100),
-        ];
-      }
-    }, [closedAmount, fillAmount, quantity, quantityToClose, quoteStatus]);
+  const { marketId, positionType } = quote || {};
+  const { name: marketName } = useMarket(marketId) || {};
 
   const [dateRange, setDateRange] = useState<[Date, Date] | null>(null);
   useEffect(() => {
@@ -125,21 +77,6 @@ export default function ForceCloseModal({
         positionType={positionType}
       />
       <Wrapper>
-        <InfoItem
-          label="Order Filled Size:"
-          amount={`${filledPercent.toFixed(2)}% (${formatPrice(
-            filledAmount,
-            quantityPrecision
-          )} ${symbol})`}
-        />
-        <InfoItem
-          label="Order Not Filled Size:"
-          amount={`${notFilledPercent.toFixed(2)}% (${formatPrice(
-            notFilledAmount,
-            quantityPrecision
-          )} ${symbol})`}
-        />
-
         {dateRange && dateRange[0] && dateRange[1] && (
           <React.Fragment>
             <InfoItem
@@ -158,7 +95,6 @@ export default function ForceCloseModal({
             quote={quote}
             dateRange={dateRange}
             marketName={marketName}
-            notFilledPercent={notFilledPercent}
             toggleModal={toggleModal}
           />
         )}
@@ -170,13 +106,11 @@ export default function ForceCloseModal({
 function ActionButton({
   quote,
   dateRange,
-  notFilledPercent,
   marketName,
   toggleModal,
 }: {
   quote: Quote;
   dateRange: [Date, Date] | null;
-  notFilledPercent: BigNumber;
   marketName: string | undefined;
   toggleModal: () => void;
 }): JSX.Element | null {
@@ -212,12 +146,10 @@ function ActionButton({
 
   const buttonText = useMemo(
     () =>
-      notFilledPercent.eq(100)
-        ? quote?.quoteStatus === QuoteStatus.CLOSE_PENDING
-          ? "Force Close"
-          : "Cancel"
-        : `Cancel Remaining ${notFilledPercent.toFixed(2)}%`,
-    [notFilledPercent, quote?.quoteStatus]
+      quote?.quoteStatus === QuoteStatus.CLOSE_PENDING
+        ? "Force Close"
+        : "Cancel",
+    [quote?.quoteStatus]
   );
 
   const { isForceCloseAllowed, forceCloseError } = useMemo(() => {
