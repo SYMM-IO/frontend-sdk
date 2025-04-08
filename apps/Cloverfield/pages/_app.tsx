@@ -17,6 +17,7 @@ import ConfigSDKComponent from "./configSDK";
 import { setUseWhatChange } from "@simbathesailor/use-what-changed";
 import Updaters from "@symmio/frontend-sdk/state/updaters";
 import ErrorBoundary from "components/App/ErrorBoundaries";
+import { StateProvider } from "@symmio/frontend-sdk/context/configSdkContext";
 
 // const Updaters = dynamic(() => import("@symmio/frontend-sdk/state/updaters"), {
 //   ssr: false,
@@ -60,12 +61,14 @@ export default function MyApp({ Component, pageProps }: AppProps) {
                 <ModalProvider backgroundComponent={ModalBackground}>
                   <Toaster position="bottom-center" />
                   <BlockNumberProvider wagmiConfig={wagmiConfig}>
-                    <Popups />
-                    <Updaters />
-                    <ConfigSDKComponent />
-                    <Layout>
-                      <Component {...pageProps} />
-                    </Layout>
+                    <StateProvider>
+                      <Popups />
+                      <Updaters />
+                      <ConfigSDKComponent />
+                      <Layout>
+                        <Component {...pageProps} />
+                      </Layout>
+                    </StateProvider>
                   </BlockNumberProvider>
                 </ModalProvider>
               </ThemeProvider>
