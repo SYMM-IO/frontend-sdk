@@ -8,6 +8,7 @@ import {
   BASE_MUON_BASE_URL,
   BLAST_MUON_BASE_URL,
   ARBITRUM_MUON_BASE_URL,
+  IOTA_MUON_BASE_URL,
 } from "constants/chains/misc";
 
 export const BSCChain: MuonDataType = {
@@ -38,6 +39,11 @@ export const BlastChain: MuonDataType = {
 export const ArbitrumChain: MuonDataType = {
   AppName: MUON_APP_NAME,
   Urls: ARBITRUM_MUON_BASE_URL,
+};
+
+export const IotaChain: MuonDataType = {
+  AppName: MUON_APP_NAME,
+  Urls: IOTA_MUON_BASE_URL,
 };
 
 export const MuonInfo: { [chainId: number]: MuonDataType } = {

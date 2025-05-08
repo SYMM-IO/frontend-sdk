@@ -78,6 +78,10 @@ export function isBLAST(chainId: number): chainId is SupportedChainId.BLAST {
   return chainId === SupportedChainId.BLAST;
 }
 
+export function isIOTA(chainId: number): chainId is SupportedChainId.IOTA {
+  return chainId === SupportedChainId.IOTA;
+}
+
 class BscNativeCurrency extends NativeCurrency {
   equals(other: Currency): boolean {
     return other.isNative && other.chainId === this.chainId;
@@ -186,6 +190,24 @@ class BlastNativeCurrency extends NativeCurrency {
   }
 }
 
+class IotaNativeCurrency extends NativeCurrency {
+  equals(other: Currency): boolean {
+    return other.isNative && other.chainId === this.chainId;
+  }
+
+  get wrapped(): Token {
+    if (!isIOTA(this.chainId)) throw new Error("Not IOTA");
+    const wrapped = WRAPPED_NATIVE_CURRENCY[this.chainId];
+    invariant(wrapped instanceof Token);
+    return wrapped;
+  }
+
+  public constructor(chainId: number) {
+    if (!isIOTA(chainId)) throw new Error("Not IOTA");
+    super(chainId, 18, "IOTA", "IOTA");
+  }
+}
+
 class ExtendedEther extends Ether {
   public get wrapped(): Token {
     const wrapped = WRAPPED_NATIVE_CURRENCY[this.chainId];
@@ -214,6 +236,8 @@ export function nativeOnChain(chainId: number): NativeCurrency | Token {
     nativeCurrency = new BaseNativeCurrency(chainId);
   } else if (isBLAST(chainId)) {
     nativeCurrency = new BlastNativeCurrency(chainId);
+  } else if (isIOTA(chainId)) {
+    nativeCurrency = new IotaNativeCurrency(chainId);
   } else {
     nativeCurrency = ExtendedEther.onChain(chainId);
   }

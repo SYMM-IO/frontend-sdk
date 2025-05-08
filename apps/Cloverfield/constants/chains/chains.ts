@@ -11,6 +11,7 @@ import {
   Chain,
 } from "wagmi/chains";
 import { FrontEndsName } from "./addresses";
+import { iota } from "./customChains";
 
 const supportedWagmiChain = {
   [SupportedChainId.FANTOM]: fantom,
@@ -21,6 +22,7 @@ const supportedWagmiChain = {
   [SupportedChainId.MAINNET]: mainnet,
   [SupportedChainId.MANTLE]: mantle,
   [SupportedChainId.BLAST]: blast,
+  [SupportedChainId.IOTA]: iota,
 };
 
 function getWagmiChain(supportChainList: number[]): Chain[] {
@@ -33,6 +35,7 @@ export const WEBSOCKET_RPC_URLS: { [key in SupportedChainId]?: string } = {
   [SupportedChainId.MANTLE]: "wss://mantle-rpc.publicnode.com",
   [SupportedChainId.BASE]: "wss://base-rpc.publicnode.com",
   [SupportedChainId.BLAST]: "wss://blast.drpc.org",
+  [SupportedChainId.IOTA]: "wss://ws.json-rpc.evm.iotaledger.net",
 };
 
 export const ClientChain = [
@@ -41,6 +44,7 @@ export const ClientChain = [
   SupportedChainId.MANTLE,
   SupportedChainId.BASE,
   SupportedChainId.BLAST,
+  SupportedChainId.IOTA,
 ];
 
 export const ALL_CHAINS = Object.values(supportedWagmiChain);

@@ -460,6 +460,28 @@ export const ArbitrumChainCloverfieldFE: ChainType = {
     "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/arbitrum_analytics/latest/gn",
 };
 
+export const IotaChainCloverfieldFE: ChainType = {
+  COLLATERAL_SYMBOL: "USDT",
+  COLLATERAL_DECIMALS: 6,
+  COLLATERAL_ADDRESS: "0xC1B8045A6ef2934Cf0f78B0dbD489969Fa9Be7E4",
+
+  DIAMOND_ADDRESS: "0xc258535aaF6ad3cEd5D2E03e2B66C35262488309",
+  MULTI_ACCOUNT_ADDRESS: "0xdfC2a55a44aD3d3aAbFe8D1C498Ea923c6D39526",
+  PARTY_B_WHITELIST: "0x10b682bf5b380c900BF4507c07e7365873A2293C",
+  SIGNATURE_STORE_ADDRESS: "0xA822227d7f537cc7F33c1483350a1879d48CC714",
+  TP_SL_WALLET_ADDRESS: "",
+
+  MULTICALL3_ADDRESS: "0x0b5c8032cAb255A01eCfA84b436Bd01442c118C3",
+  USDC_ADDRESS: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+  WRAPPED_NATIVE_ADDRESS: "0x6e47f8d48a01b44DF3fFF35d258A10A3AEdC114c",
+  ANALYTICS_SUBGRAPH_ADDRESS:
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/iota_analytics/latest/gn",
+  ORDER_HISTORY_SUBGRAPH_ADDRESS:
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/arbitrum_analytics/latest/gn",
+  FUNDING_RATE_SUBGRAPH_ADDRESS:
+    "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/arbitrum_analytics/latest/gn",
+};
+
 export const contractInfo: {
   [chainId: number]: { [name: string]: ChainType };
 } = {
@@ -496,5 +518,8 @@ export const contractInfo: {
   [SupportedChainId.BLAST]: {
     [FrontEndsName.CORE]: BlastChainCoreFE,
     [FrontEndsName.INTENT_X]: BlastChainIntentXFE,
+  },
+  [SupportedChainId.IOTA]: {
+    [FrontEndsName.CLOVERFIELD]: IotaChainCloverfieldFE,
   },
 };

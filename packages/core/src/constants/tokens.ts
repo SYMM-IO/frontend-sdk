@@ -108,4 +108,11 @@ export const WRAPPED_NATIVE_CURRENCY: { [chainId: number]: Token | undefined } =
       "WETH",
       "Wrapped Ether"
     ),
+    [SupportedChainId.IOTA]: new Token(
+      SupportedChainId.IOTA,
+      ChainInfo[SupportedChainId.IOTA].WRAPPED_NATIVE_ADDRESS,
+      18,
+      "WIOTA",
+      "Wrapped IOTA"
+    ),
   };

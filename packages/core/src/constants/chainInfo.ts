@@ -160,4 +160,18 @@ export const ChainInfo: { [chainId: number]: Info } = {
     blockExplorerUrl: "https://blastscan.io/",
     WRAPPED_NATIVE_ADDRESS: "0x4300000000000000000000000000000000000004",
   },
+  [SupportedChainId.IOTA]: {
+    chainId: "0x2276",
+    chainName: "Iota",
+    label: "Iota",
+    nativeCurrency: {
+      name: "IOTA",
+      symbol: "IOTA",
+      decimals: 18,
+    },
+
+    rpcUrl: "https://rpc.ankr.com/iota_evm",
+    blockExplorerUrl: "https://explorer.evm.iota.org/",
+    WRAPPED_NATIVE_ADDRESS: "0x6e47f8d48a01b44DF3fFF35d258A10A3AEdC114c",
+  },
 };
