@@ -11,7 +11,7 @@ export interface QuotesState {
   historyState: ApiState;
   hasMoreHistory?: boolean;
   instantClosesStates: InstantCloseObject;
-  instantOpensStates: InstantCloseObject;
+  instantOpensStates: InstantOpenObject;
   openInstantClosesState: ApiState;
   tpSlQuoteData: { [quoteId: number]: TpSlContent };
 }

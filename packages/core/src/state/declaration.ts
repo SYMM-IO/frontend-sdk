@@ -1,4 +1,4 @@
-import {
+import type {
   Action,
   AnyAction,
   Store,
@@ -22,7 +22,7 @@ import {
 } from "react-redux";
 import "symbol-observable";
 import reducer from "./reducer";
-import crossBrowserListener from "../utils/reduxPersistListener";
+// import crossBrowserListener from "../utils/reduxPersistListener";
 
 // const PERSISTED_KEYS: string[] = ["user", "transactions"];
 
@@ -36,7 +36,7 @@ import crossBrowserListener from "../utils/reduxPersistListener";
 export type RootState = ReturnType<typeof reducer>;
 function makeStore() {
   return configureStore({
-    reducer: reducer,
+    reducer,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         thunk: true,

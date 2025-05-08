@@ -69,6 +69,6 @@ export default createReducer(initialState, (builder) =>
     state.hedgers = hedgers;
     state.appName = appName;
     state.MuonData = MuonData;
-    state.wagmiConfig = wagmiConfig;
+    state.wagmiConfig = wagmiConfig as any;
   })
 );

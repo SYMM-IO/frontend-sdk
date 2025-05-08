@@ -22,7 +22,7 @@ export const updateBypassPrecisionCheckMode = createAction<{
   bypassPrecisionCheckMode: boolean;
 }>("user/updateBypassPrecisionCheckMode");
 
-export const updateUserFavorites = createAction<string[]>(
+export const updateUserFavorites = createAction<number[]>(
   "user/updateUserFavorites"
 );
 export const updateUserLeverage = createAction<number>(

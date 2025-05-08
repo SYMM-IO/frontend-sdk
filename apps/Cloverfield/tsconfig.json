@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2021",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -20,56 +16,27 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
-      "assets/*": [
-        "./assets/*"
-      ],
-      "components/*": [
-        "./components/*"
-      ],
-      "constants/*": [
-        "./constants/*"
-      ],
-      "connection/*": [
-        "./connection/*"
-      ],
-      "hooks/*": [
-        "./hooks/*"
-      ],
-      "lib/*": [
-        "./lib/*"
-      ],
-      "state": [
-        "./state"
-      ],
-      "state/*": [
-        "./state/*"
-      ],
-      "theme": [
-        "./theme"
-      ],
-      "theme/*": [
-        "./theme/*"
-      ],
-      "utils/*": [
-        "./utils/*"
-      ],
-      "pages/*": [
-        "./pages/*"
-      ],
-      "types/*": [
-        "./types/*"
-      ],
-      "@symmio/frontend-sdk/*": [
-        "../../packages/core/src/*"
-      ]
+      "assets/*": ["./assets/*"],
+      "components/*": ["./components/*"],
+      "constants/*": ["./constants/*"],
+      "connection/*": ["./connection/*"],
+      "hooks/*": ["./hooks/*"],
+      "lib/*": ["./lib/*"],
+      "state": ["./state"],
+      "state/*": ["./state/*"],
+      "theme": ["./theme"],
+      "theme/*": ["./theme/*"],
+      "utils/*": ["./utils/*"],
+      "pages/*": ["./pages/*"],
+      "types/*": ["./types/*"],
+      "@symmio/frontend-sdk/*": ["./.yalc/@symmio/frontend-sdk/dist/*"]
     }
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    ".yalc/@symmio/frontend-sdk"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

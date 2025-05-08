@@ -369,7 +369,7 @@ export const getPaidAmount = createAsyncThunk(
     client,
   }: {
     quoteId: number;
-    client: ApolloClient<NormalizedCacheObject>;
+    client: ApolloClient<NormalizedCacheObject> | undefined;
   }) => {
     if (!client) {
       throw new Error("Apollo client is not provided");

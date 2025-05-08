@@ -1,4 +1,6 @@
 import { useCallback, useEffect } from "react";
+import { Address } from "viem";
+
 import {
   useActiveAccount,
   useFEName,
@@ -23,7 +25,7 @@ export default function useSubAccountStorage() {
       id: number,
       feName: string,
       accountName: string,
-      accountAddress: string,
+      accountAddress: Address,
       accountOwner: string
     ) => {
       rpcChangerCallback(id);

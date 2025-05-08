@@ -118,6 +118,7 @@ export default function UserPanel(): JSX.Element | null {
     if (currentOrders.length === (page - 1) * ItemsPerPage && page > 1) {
       setPage((page) => page - 1);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentOrders.length]);
 
   useEffect(() => {

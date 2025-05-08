@@ -113,7 +113,7 @@ export function useInstantOpensData(): InstantOpenObject {
 export function useQuoteInstantOpenData(
   id: number | undefined
 ): InstantOpenItem | null {
-  const data: InstantOpenItem = useAppSelector(
+  const data: InstantOpenObject = useAppSelector(
     (state) => state.quotes.instantOpensStates
   );
   return id !== undefined ? data[id] ?? null : null;

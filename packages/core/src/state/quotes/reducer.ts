@@ -178,7 +178,7 @@ export default createReducer(initialState, (builder) =>
 
         instantCloses.forEach((d: InstantCloseResponse) => {
           const data = instantClosesStates[d.quote_id];
-          if (!data || data.amount !== d.quantity_to_close) {
+          if (!data || data.amount !== d.quantity_to_close.toString()) {
             instantClosesStates[d.quote_id] = {
               amount: d.quantity_to_close.toString(),
               timestamp: Math.floor(new Date().getTime() / 1000),
