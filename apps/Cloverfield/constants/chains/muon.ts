@@ -53,4 +53,5 @@ export const MuonInfo: { [chainId: number]: MuonDataType } = {
   [SupportedChainId.BASE]: BaseChain,
   [SupportedChainId.BLAST]: BlastChain,
   [SupportedChainId.ARBITRUM]: ArbitrumChain,
+  [SupportedChainId.IOTA]: IotaChain,
 };

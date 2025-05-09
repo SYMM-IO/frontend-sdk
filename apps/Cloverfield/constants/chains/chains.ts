@@ -35,7 +35,6 @@ export const WEBSOCKET_RPC_URLS: { [key in SupportedChainId]?: string } = {
   [SupportedChainId.MANTLE]: "wss://mantle-rpc.publicnode.com",
   [SupportedChainId.BASE]: "wss://base-rpc.publicnode.com",
   [SupportedChainId.BLAST]: "wss://blast.drpc.org",
-  [SupportedChainId.IOTA]: "wss://ws.json-rpc.evm.iotaledger.net",
 };
 
 export const ClientChain = [

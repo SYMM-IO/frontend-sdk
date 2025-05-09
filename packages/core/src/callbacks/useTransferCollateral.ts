@@ -238,9 +238,9 @@ export function useTransferCollateral(
           value: BigInt(0),
         },
       };
-    } catch (error) {
+    } catch (error: any) {
       if (error && typeof error === "string") throw new Error(error);
-      throw new Error("error3");
+      throw new Error(error.message || "error3");
     }
   }, [
     chainId,
