@@ -1,5 +1,8 @@
 import { SupportedChainId } from "@symmio/frontend-sdk/constants/chains";
-import { ChainType } from "@symmio/frontend-sdk/state/chains/reducer";
+import {
+  ChainsType,
+  ChainType,
+} from "@symmio/frontend-sdk/context/configSdkContext";
 
 export enum FrontEndsName {
   ALPHA = "Alpha",
@@ -482,9 +485,7 @@ export const IotaChainCloverfieldFE: ChainType = {
     "https://api.goldsky.com/api/public/project_cm1hfr4527p0f01u85mz499u8/subgraphs/arbitrum_analytics/latest/gn",
 };
 
-export const contractInfo: {
-  [chainId: number]: { [name: string]: ChainType };
-} = {
+export const contractInfo: ChainsType = {
   [SupportedChainId.FANTOM]: { [FrontEndsName.CLOVERFIELD]: FantomChain },
   [SupportedChainId.BSC]: {
     [FrontEndsName.ALPHA]: BSCChainAlphaFE,
