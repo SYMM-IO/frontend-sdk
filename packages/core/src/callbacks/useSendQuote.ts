@@ -2,6 +2,7 @@ import { useCallback, useMemo } from "react";
 
 import useActiveWagmi from "../lib/hooks/useActiveWagmi";
 import {
+  AddressZero,
   DEFAULT_PRECISION,
   LIMIT_ORDER_DEADLINE,
   MARKET_ORDER_DEADLINE,
@@ -9,6 +10,7 @@ import {
 import {
   useAppName,
   useDiamondAddress,
+  useMultiAccountAddress,
   useMuonData,
   useWagmiConfig,
 } from "../state/chains/hooks";
@@ -63,7 +65,7 @@ import { SendQuoteClient } from "../lib/muon";
 import { Abi, Address, encodeFunctionData } from "viem";
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
 import { useCollateralAddress } from "../state/chains/hooks";
-import { DIAMOND_ABI } from "../constants";
+import { DIAMOND_ABI, SupportedChainId } from "../constants";
 
 export function useSentQuoteCallback(): {
   state: TransactionCallbackState;
@@ -81,8 +83,16 @@ export function useSentQuoteCallback(): {
   const isSupportedChainId = useSupportedChainId();
 
   const DIAMOND_ADDRESS = useDiamondAddress();
+  const MULTI_ACCOUNT_ADDRESS = useMultiAccountAddress();
+  const affiliate = useMemo(() => {
+    return chainId
+      ? chainId === SupportedChainId.IOTA
+        ? AddressZero
+        : MULTI_ACCOUNT_ADDRESS[chainId]
+      : "";
+  }, [MULTI_ACCOUNT_ADDRESS, chainId]);
 
-  const functionName = "sendQuote";
+  const functionName = "sendQuoteWithAffiliate";
   const COLLATERAL_ADDRESS = useCollateralAddress();
   const collateralCurrency = useCurrency(
     chainId ? COLLATERAL_ADDRESS[chainId] : undefined
@@ -193,7 +203,8 @@ export function useSentQuoteCallback(): {
         !cva ||
         !partyAmm ||
         !partyBmm ||
-        !lf
+        !lf ||
+        !affiliate
       ) {
         throw new Error("Missing dependencies.");
       }
@@ -224,6 +235,7 @@ export function useSentQuoteCallback(): {
         toWei(maxFundingRate),
 
         BigInt(deadline),
+        affiliate,
         signature,
       ];
       console.log(args);
@@ -258,6 +270,7 @@ export function useSentQuoteCallback(): {
     partyAmm,
     partyBmm,
     lf,
+    affiliate,
     getNotionalCap,
     getSignature,
     quantityAsset,
