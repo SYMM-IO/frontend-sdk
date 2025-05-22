@@ -48,6 +48,7 @@ export default function OpenPositionModal() {
     if (txHash !== "" && !isPendingTxs) {
       toggleModal();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPendingTxs, txHash]);
 
   const content =

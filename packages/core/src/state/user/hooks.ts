@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { shallowEqual } from "react-redux";
+import { Address } from "viem";
 
 import { makeHttpRequest } from "../../utils/http";
 import { BALANCE_HISTORY_ITEMS_NUMBER } from "../../constants/misc";
@@ -408,7 +409,7 @@ export function useAddHedgerCallback() {
 
   return useCallback(
     (name: string, address: string) => {
-      dispatch(addHedger({ name, address, chainId }));
+      if (chainId) dispatch(addHedger({ name, address, chainId }));
     },
     [chainId, dispatch]
   );
@@ -420,7 +421,7 @@ export function useSelectOrUnselectHedgerCallback() {
 
   return useCallback(
     (hedger: AddedHedger) => {
-      dispatch(selectOrUnselectHedger({ hedger, chainId }));
+      if (chainId) dispatch(selectOrUnselectHedger({ hedger, chainId }));
     },
     [chainId, dispatch]
   );
@@ -443,7 +444,7 @@ export function useRemoveHedgerCallback() {
 
   return useCallback(
     (address: string) => {
-      dispatch(removeHedger({ address, chainId }));
+      if (chainId) dispatch(removeHedger({ address, chainId }));
     },
     [chainId, dispatch]
   );
@@ -461,7 +462,7 @@ export function useSetActiveSubAccount() {
   const dispatch = useAppDispatch();
 
   return useCallback(
-    (accountAddress?: string, name?: string, owner?: string) => {
+    (accountAddress?: Address, name?: string, owner?: string) => {
       dispatch(
         updateAccount(
           accountAddress && name && owner

@@ -80,7 +80,7 @@ export const getBalanceHistory = createAsyncThunk(
     chainId: number | undefined;
     skip: number;
     first: number;
-    client: ApolloClient<NormalizedCacheObject>;
+    client: ApolloClient<NormalizedCacheObject> | undefined;
   }) => {
     if (!account) {
       throw new Error("account is undefined");
