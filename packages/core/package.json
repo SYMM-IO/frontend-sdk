@@ -32,7 +32,9 @@
     "redux-persist-node-storage": "^2.0.0",
     "tiny-invariant": "^1.2.0",
     "viem": "^2.15.1",
-    "wagmi": "^2.10.2"
+    "wagmi": "^2.10.2",
+    "react-hot-toast": "^2.4.1",
+    "siwe": "^2.3.2"
   },
   "scripts": {
     "build": "rimraf ./dist && tsc",
@@ -63,7 +65,7 @@
     "eslint-plugin-unused-imports": "^3.0.0",
     "fs-extra": "^11.1.1",
     "prettier": "^2.7.1",
-    "rimraf": "~5.0.0",
+    "rimraf": "~6.0.1",
     "tsc-esm-fix": "^2.20.17",
     "typescript": "5.2"
   },
@@ -72,10 +74,6 @@
     "./.DS_Store": {
       "types": "./dist/.DS_Store.d.ts",
       "default": "./dist/.DS_Store.js"
-    },
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
     },
     "./apollo/queries": {
       "types": "./dist/apollo/queries.d.ts",
@@ -140,6 +138,10 @@
     "./config": {
       "types": "./dist/config/index.d.ts",
       "default": "./dist/config/index.js"
+    },
+    "./constants/.DS_Store": {
+      "types": "./dist/constants/.DS_Store.d.ts",
+      "default": "./dist/constants/.DS_Store.js"
     },
     "./constants/chainInfo": {
       "types": "./dist/constants/chainInfo.d.ts",

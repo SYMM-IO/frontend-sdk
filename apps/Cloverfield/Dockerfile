@@ -20,6 +20,10 @@ RUN yarn install
 COPY . ./
 
 
+# Swap configs just before building
+RUN mv tsconfig.json tsconfig.local.json 
+RUN mv tsconfig.docker.json tsconfig.json
+
 # RUN cp .env.example .env
 
 RUN ls -al .yalc
